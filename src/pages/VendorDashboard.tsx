@@ -78,26 +78,26 @@ const VendorDashboard = () => {
 
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
-      <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+      <Loader2 className="h-8 w-8 text-brand animate-spin" />
     </div>
   );
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-8">
-        <Store className="h-8 w-8 text-orange-500" /> Vendor Dashboard
+        <Store className="h-8 w-8 text-brand" /> Vendor Dashboard
       </h1>
 
       {/* Tabs */}
       <div className="flex gap-4 mb-6 border-b border-gray-200">
         <button
-          className={`pb-3 px-2 text-sm font-bold flex items-center gap-2 ${activeTab === 'inventory' ? 'text-orange-600 border-b-2 border-orange-600' : 'text-gray-500 hover:text-gray-700'}`}
+          className={`pb-3 px-2 text-sm font-bold flex items-center gap-2 ${activeTab === 'inventory' ? 'text-brand border-b-2 border-brand' : 'text-gray-500 hover:text-gray-700'}`}
           onClick={() => setActiveTab('inventory')}
         >
           <PackageSearch className="h-4 w-4" /> My Inventory
         </button>
         <button
-          className={`pb-3 px-2 text-sm font-bold flex items-center gap-2 ${activeTab === 'requests' ? 'text-orange-600 border-b-2 border-orange-600' : 'text-gray-500 hover:text-gray-700'}`}
+          className={`pb-3 px-2 text-sm font-bold flex items-center gap-2 ${activeTab === 'requests' ? 'text-brand border-b-2 border-brand' : 'text-gray-500 hover:text-gray-700'}`}
           onClick={() => setActiveTab('requests')}
         >
           <ClipboardList className="h-4 w-4" /> Admin Requests
@@ -110,7 +110,7 @@ const VendorDashboard = () => {
             <h2 className="text-xl font-bold">Inventory Items</h2>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-orange-700 transition"
+              className="flex items-center gap-2 bg-brand-dark text-white px-4 py-2 rounded-xl font-bold hover:bg-brand-dark transition"
             >
               <Plus className="h-4 w-4" /> Add Item
             </button>
@@ -129,7 +129,7 @@ const VendorDashboard = () => {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {inventory.map(item => (
-                  <tr key={item._id} className="hover:bg-orange-50/30">
+                  <tr key={item._id} className="hover:bg-brand-light/30/30">
                     <td className="px-5 py-3 font-medium">{item.ingredientId?.name || 'Unknown'}</td>
                     <td className="px-5 py-3 text-gray-600">{item.packageWeight} {item.unit}</td>
                     <td className="px-5 py-3 font-bold text-gray-900">Rs. {item.price?.toFixed(2) || '0.00'}</td>
@@ -173,7 +173,7 @@ const VendorDashboard = () => {
                   const cfg = statusConfig[req.status] || statusConfig.Pending;
                   const StatusIcon = cfg.icon;
                   return (
-                    <tr key={req._id} className="hover:bg-orange-50/30">
+                    <tr key={req._id} className="hover:bg-brand-light/30/30">
                       <td className="px-5 py-3 text-gray-500">{new Date(req.createdAt).toLocaleDateString()}</td>
                       <td className="px-5 py-3">
                         <ul className="list-disc list-inside text-gray-700">
@@ -192,7 +192,7 @@ const VendorDashboard = () => {
                         <select
                           value={req.status}
                           onChange={(e) => handleStatusChange(req._id, e.target.value)}
-                          className="pl-3 pr-8 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs font-medium focus:ring-orange-500 focus:border-orange-500 cursor-pointer"
+                          className="pl-3 pr-8 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs font-medium focus:ring-brand focus:border-brand cursor-pointer"
                         >
                           {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
@@ -219,7 +219,7 @@ const VendorDashboard = () => {
             <form onSubmit={handleAddItem} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Ingredient</label>
-                <select required value={newItem.ingredientId} onChange={e => setNewItem({ ...newItem, ingredientId: e.target.value })} className="w-full px-3 py-2 border rounded-xl bg-gray-50 focus:ring-orange-500 focus:border-orange-500">
+                <select required value={newItem.ingredientId} onChange={e => setNewItem({ ...newItem, ingredientId: e.target.value })} className="w-full px-3 py-2 border rounded-xl bg-gray-50 focus:ring-brand focus:border-brand">
                   <option value="">Select Ingredient</option>
                   {ingredients.map(ing => <option key={ing._id} value={ing._id}>{ing.name} ({ing.baseUnit})</option>)}
                 </select>
@@ -245,12 +245,12 @@ const VendorDashboard = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <input type="checkbox" id="rtc" checked={newItem.isReadyToCook} onChange={e => setNewItem({ ...newItem, isReadyToCook: e.target.checked })} className="rounded text-orange-600 focus:ring-orange-500 h-4 w-4" />
+                <input type="checkbox" id="rtc" checked={newItem.isReadyToCook} onChange={e => setNewItem({ ...newItem, isReadyToCook: e.target.checked })} className="rounded text-brand focus:ring-brand h-4 w-4" />
                 <label htmlFor="rtc" className="text-sm text-gray-700">Is this Ready-to-Cook? (e.g. chopped/cleaned)</label>
               </div>
               <div className="flex justify-end gap-3 mt-6">
                 <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-gray-500 font-medium hover:text-gray-700">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700">Save Item</button>
+                <button type="submit" className="px-4 py-2 bg-brand-dark text-white font-bold rounded-xl hover:bg-brand-dark">Save Item</button>
               </div>
             </form>
           </div>

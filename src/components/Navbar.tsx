@@ -17,7 +17,7 @@ const Navbar = () => {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <nav className="bg-orange-700 text-white shadow-lg sticky top-0 z-50">
+    <nav className="bg-brand-light text-brand-dark shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2">
@@ -29,46 +29,46 @@ const Navbar = () => {
           {/* ── Desktop Nav ─────────────────────────────────────── */}
           <div className="hidden md:block">
             <div className="flex items-center space-x-6">
-              <Link to="/recipes" className="hover:text-orange-600 transition-colors">Recipes</Link>
-              <Link to="/categories" className="hover:text-orange-600 transition-colors">Categories</Link>
+              <Link to="/recipes" className="hover:text-brand transition-colors">Recipes</Link>
+              <Link to="/categories" className="hover:text-brand transition-colors">Categories</Link>
               {isAuthenticated ? (
                 <>
-                  <Link to="/cart" className="hover:text-orange-600 transition-colors relative">
+                  <Link to="/cart" className="hover:text-brand transition-colors relative">
                     <ShoppingBag className="h-5 w-5" />
                   </Link>
-                  <Link to="/orders" className="hover:text-orange-200 transition-colors" title="Orders">
+                  <Link to="/orders" className="hover:text-brand transition-colors" title="Orders">
                     <ClipboardList className="h-5 w-5" />
                   </Link>
-                  <Link to="/mealplans" className="hover:text-orange-200 transition-colors" title="Meal Plans">
+                  <Link to="/mealplans" className="hover:text-brand transition-colors" title="Meal Plans">
                     <CalendarDays className="h-5 w-5" />
                   </Link>
 
                   {/* Admin link */}
                   {user?.role === 'admin' && (
-                    <Link to="/admin/dashboard" className="hover:text-orange-200 transition-colors" title="Admin Dashboard">
+                    <Link to="/admin/dashboard" className="hover:text-brand transition-colors" title="Admin Dashboard">
                       <BarChart3 className="h-5 w-5" />
                     </Link>
                   )}
 
                   {/* Vendor link */}
                   {user?.role === 'vendor' && (
-                    <Link to="/vendor/dashboard" className="hover:text-orange-200 transition-colors" title="Vendor Dashboard">
+                    <Link to="/vendor/dashboard" className="hover:text-brand transition-colors" title="Vendor Dashboard">
                       <Store className="h-5 w-5" />
                     </Link>
                   )}
 
                   {/* User dropdown area */}
-                  <div className="flex items-center space-x-3 pl-2 border-l border-orange-500/50">
+                  <div className="flex items-center space-x-3 pl-2 border-l border-brand/50">
                     <Link
                       to="/profile"
-                      className="text-sm font-medium hover:text-orange-200 transition-colors truncate max-w-[120px]"
+                      className="text-sm font-medium hover:text-brand transition-colors truncate max-w-[120px]"
                       title={user?.name}
                     >
                       {user?.name || 'Profile'}
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="flex items-center space-x-1 bg-orange-700 hover:bg-orange-800 px-3 py-1.5 rounded-md transition-colors"
+                      className="flex items-center space-x-1 bg-brand-dark text-white hover:bg-brand-dark/80 px-3 py-1.5 rounded-md transition-colors"
                     >
                       <LogOut className="h-4 w-4" />
                       <span>Logout</span>
@@ -76,7 +76,7 @@ const Navbar = () => {
                   </div>
                 </>
               ) : (
-                <Link to="/login" className="flex items-center space-x-1 bg-white text-orange-600 hover:bg-orange-100 px-4 py-1.5 rounded-full font-medium transition-colors shadow-sm">
+                <Link to="/login" className="flex items-center space-x-1 bg-white text-brand-dark hover:bg-brand-light px-4 py-1.5 rounded-full font-medium transition-colors shadow-sm">
                   <User className="h-4 w-4" />
                   <span>Login</span>
                 </Link>
@@ -88,7 +88,7 @@ const Navbar = () => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="text-white hover:text-orange-200 transition-colors"
+              className="text-brand-dark hover:text-brand transition-colors"
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -99,43 +99,43 @@ const Navbar = () => {
 
       {/* ── Mobile Menu ───────────────────────────────────────── */}
       {mobileOpen && (
-        <div className="md:hidden bg-orange-700 border-t border-orange-600 animate-[slideDown_0.2s_ease]">
+        <div className="md:hidden bg-brand-light border-t border-brand/30 animate-[slideDown_0.2s_ease]">
           <div className="px-4 py-4 space-y-2">
-            <Link to="/recipes" onClick={closeMobile} className="block px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+            <Link to="/recipes" onClick={closeMobile} className="block px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
               Recipes
             </Link>
-            <Link to="/categories" onClick={closeMobile} className="block px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+            <Link to="/categories" onClick={closeMobile} className="block px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
               Categories
             </Link>
 
             {isAuthenticated ? (
               <>
-                <Link to="/cart" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                <Link to="/cart" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
                   <ShoppingBag className="h-4 w-4" /> Cart
                 </Link>
-                <Link to="/orders" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                <Link to="/orders" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
                   <ClipboardList className="h-4 w-4" /> Orders
                 </Link>
-                <Link to="/mealplans" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                <Link to="/mealplans" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
                   <CalendarDays className="h-4 w-4" /> Meal Plans
                 </Link>
-                <Link to="/profile" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                <Link to="/profile" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
                   <User className="h-4 w-4" /> {user?.name || 'Profile'}
                 </Link>
                 {user?.role === 'admin' && (
-                  <Link to="/admin/dashboard" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors text-yellow-200">
+                  <Link to="/admin/dashboard" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors text-brand-dark font-medium">
                     <BarChart3 className="h-4 w-4" /> Admin Dashboard
                   </Link>
                 )}
                 {user?.role === 'vendor' && (
-                  <Link to="/vendor/dashboard" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors text-yellow-200">
+                  <Link to="/vendor/dashboard" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors text-brand-dark font-medium">
                     <Store className="h-4 w-4" /> Vendor Dashboard
                   </Link>
                 )}
-                <div className="border-t border-orange-600 pt-2 mt-2">
+                <div className="border-t border-brand/30 pt-2 mt-2">
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-2 w-full px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors text-orange-200"
+                    className="flex items-center gap-2 w-full px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors text-red-600"
                   >
                     <LogOut className="h-4 w-4" /> Logout
                   </button>
@@ -145,7 +145,7 @@ const Navbar = () => {
               <Link
                 to="/login"
                 onClick={closeMobile}
-                className="block text-center bg-white text-orange-600 hover:bg-orange-50 px-4 py-2 rounded-full font-medium transition-colors mt-2"
+                className="block text-center bg-white text-brand-dark hover:bg-brand-light px-4 py-2 rounded-full font-medium transition-colors mt-2"
               >
                 Login
               </Link>

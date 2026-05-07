@@ -42,7 +42,7 @@ const AdminDashboard = () => {
 
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
-      <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+      <Loader2 className="h-8 w-8 text-brand animate-spin" />
     </div>
   );
 
@@ -54,7 +54,7 @@ const AdminDashboard = () => {
 
   const stats = [
     { label: 'Total Users', value: data.totalUsers, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Total Orders', value: data.totalOrders, icon: ShoppingBag, color: 'text-orange-600', bg: 'bg-orange-50' },
+    { label: 'Total Orders', value: data.totalOrders, icon: ShoppingBag, color: 'text-brand', bg: 'bg-brand-light/30' },
     { label: 'Total Revenue', value: `Rs. ${(data.totalRevenue || 0).toLocaleString()}`, icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     { label: 'Total Recipes', value: data.totalRecipes, icon: UtensilsCrossed, color: 'text-violet-600', bg: 'bg-violet-50' },
   ];
@@ -83,9 +83,9 @@ const AdminDashboard = () => {
       description: 'View all orders and update their status',
       to: '/admin/orders',
       icon: ClipboardList,
-      color: 'text-orange-600',
-      bg: 'bg-orange-50',
-      hoverBg: 'hover:border-orange-200',
+      color: 'text-brand',
+      bg: 'bg-brand-light/30',
+      hoverBg: 'hover:border-brand-light',
     },
     {
       title: 'Vendor Requests',
@@ -101,7 +101,7 @@ const AdminDashboard = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-8">
-        <BarChart3 className="h-8 w-8 text-orange-500" /> Admin Dashboard
+        <BarChart3 className="h-8 w-8 text-brand" /> Admin Dashboard
       </h1>
 
       {/* Stats Grid */}
@@ -137,11 +137,11 @@ const AdminDashboard = () => {
                     <Icon className={`h-6 w-6 ${link.color}`} />
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors">{link.title}</h3>
+                    <h3 className="font-bold text-gray-900 group-hover:text-brand transition-colors">{link.title}</h3>
                     <p className="text-sm text-gray-500">{link.description}</p>
                   </div>
                 </div>
-                <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
+                <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-brand group-hover:translate-x-1 transition-all" />
               </div>
             </Link>
           );
@@ -153,7 +153,7 @@ const AdminDashboard = () => {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-gray-900">Orders by Status</h2>
-            <Link to="/admin/orders" className="text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors">
+            <Link to="/admin/orders" className="text-sm font-medium text-brand hover:text-brand-dark transition-colors">
               View All →
             </Link>
           </div>
@@ -179,9 +179,9 @@ const AdminDashboard = () => {
           <h2 className="text-lg font-bold text-gray-900 mb-4">Top Recipes</h2>
           <div className="space-y-3">
             {(data as any).popularRecipes.map((recipe: any, idx: number) => (
-              <div key={recipe._id || idx} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-orange-50/50 transition-colors">
+              <div key={recipe._id || idx} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-brand-light/30/50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <span className="h-8 w-8 flex items-center justify-center rounded-lg bg-orange-100 text-orange-700 font-extrabold text-sm">{idx + 1}</span>
+                  <span className="h-8 w-8 flex items-center justify-center rounded-lg bg-brand-light text-brand-dark font-extrabold text-sm">{idx + 1}</span>
                   {recipe.imageUrl && (
                     <img src={recipe.imageUrl} alt="" className="h-10 w-10 rounded-lg object-cover" />
                   )}

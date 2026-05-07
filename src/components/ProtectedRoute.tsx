@@ -17,8 +17,8 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-14 w-14 rounded-full bg-orange-100 flex items-center justify-center animate-pulse">
-            <Loader2 className="h-7 w-7 text-orange-600 animate-spin" />
+          <div className="h-14 w-14 rounded-full bg-brand-light flex items-center justify-center animate-pulse">
+            <Loader2 className="h-7 w-7 text-brand animate-spin" />
           </div>
           <p className="text-sm text-gray-400 font-medium">Checking authentication…</p>
         </div>

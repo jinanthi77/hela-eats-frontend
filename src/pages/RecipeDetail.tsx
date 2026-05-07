@@ -125,8 +125,8 @@ const RecipeDetail = () => {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-14 w-14 rounded-full bg-orange-100 flex items-center justify-center animate-pulse">
-            <Loader2 className="h-7 w-7 text-orange-600 animate-spin" />
+          <div className="h-14 w-14 rounded-full bg-brand-light flex items-center justify-center animate-pulse">
+            <Loader2 className="h-7 w-7 text-brand animate-spin" />
           </div>
           <p className="text-sm text-gray-400 font-medium">Loading recipe…</p>
         </div>
@@ -140,7 +140,7 @@ const RecipeDetail = () => {
         <p className="text-red-500 font-medium text-lg">{error || 'Recipe not found'}</p>
         <button
           onClick={() => navigate('/recipes')}
-          className="px-6 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors font-medium"
+          className="px-6 py-2 bg-brand-light text-brand-dark rounded-lg hover:bg-brand-light/70 transition-colors font-medium"
         >
           Back to Recipes
         </button>
@@ -163,7 +163,7 @@ const RecipeDetail = () => {
       {/* ── Back Button ────────────────────────────────────────── */}
       <button
         onClick={() => navigate(-1)}
-        className="inline-flex items-center gap-2 text-gray-500 hover:text-orange-600 mb-6 transition-colors group"
+        className="inline-flex items-center gap-2 text-gray-500 hover:text-brand mb-6 transition-colors group"
       >
         <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
         <span className="text-sm font-medium">Back</span>
@@ -179,7 +179,7 @@ const RecipeDetail = () => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-100 to-red-50 text-orange-300">
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-light to-brand-light/30 text-brand">
               <UtensilsCrossed className="h-24 w-24" />
             </div>
           )}
@@ -187,7 +187,7 @@ const RecipeDetail = () => {
 
         <div className="flex flex-col justify-center">
           {categoryName && (
-            <span className="inline-block text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-full mb-3 w-fit uppercase tracking-wide">
+            <span className="inline-block text-xs font-bold text-brand-dark bg-brand-light/50 px-3 py-1 rounded-full mb-3 w-fit uppercase tracking-wide">
               {categoryName}
             </span>
           )}
@@ -198,8 +198,8 @@ const RecipeDetail = () => {
 
           {/* ── Quick Stats ─────────────────────────────────────── */}
           <div className="grid grid-cols-3 gap-3 mb-6">
-            <div className="bg-orange-50 rounded-2xl p-4 text-center">
-              <Clock className="h-5 w-5 text-orange-500 mx-auto mb-1" />
+            <div className="bg-brand-light/30 rounded-2xl p-4 text-center">
+              <Clock className="h-5 w-5 text-brand mx-auto mb-1" />
               <p className="text-xs text-gray-500">Prep</p>
               <p className="text-sm font-bold text-gray-900">{recipe.prepTime || 0}m</p>
             </div>
@@ -239,7 +239,7 @@ const RecipeDetail = () => {
             <button
               onClick={handleAddToCart}
               disabled={addingToCart}
-              className="flex-1 flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-orange-600/20 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="flex-1 flex items-center justify-center gap-2 bg-brand-dark hover:bg-brand-dark/90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-brand-dark/20 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {addingToCart ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -298,9 +298,9 @@ const RecipeDetail = () => {
               </span>
             </h2>
 
-            <div className="mb-4 p-3.5 bg-orange-50/50 border border-orange-100 rounded-xl">
+            <div className="mb-4 p-3.5 bg-brand-light/30 border border-brand-light rounded-xl">
               <p className="text-sm text-gray-600 leading-relaxed">
-                <span className="font-semibold text-orange-800">Smart Deselect:</span> If you already have any of the following ingredients at home, you can purchase the others through us instead of selecting them here.
+                <span className="font-semibold text-brand-dark">Smart Deselect:</span> If you already have any of the following ingredients at home, you can purchase the others through us instead of selecting them here.
               </p>
             </div>
 
@@ -321,18 +321,18 @@ const RecipeDetail = () => {
                       }}
                       className={`flex items-center justify-between gap-3 text-sm p-3 rounded-xl border transition-all cursor-pointer ${isExcluded
                         ? 'bg-gray-50 border-gray-100 opacity-60'
-                        : 'bg-orange-50/30 border-orange-100 hover:bg-orange-50/50'
+                        : 'bg-brand-light/20 border-brand-light hover:bg-brand-light/30'
                         }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`flex items-center justify-center w-5 h-5 rounded border ${isExcluded ? 'border-gray-300 bg-white' : 'border-orange-500 bg-orange-500'} transition-colors`}>
+                        <div className={`flex items-center justify-center w-5 h-5 rounded border ${isExcluded ? 'border-gray-300 bg-white' : 'border-brand bg-brand'} transition-colors`}>
                           {!isExcluded && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                         </div>
                         <span className={`font-medium ${isExcluded ? 'text-gray-500 line-through' : 'text-gray-800'}`}>
                           {ing.name}
                         </span>
                       </div>
-                      <span className={`font-bold px-3 py-1 rounded-lg border shadow-sm text-xs ${isExcluded ? 'text-gray-400 bg-gray-50 border-gray-100' : 'text-orange-700 bg-white border-orange-100'}`}>
+                      <span className={`font-bold px-3 py-1 rounded-lg border shadow-sm text-xs ${isExcluded ? 'text-gray-400 bg-gray-50 border-gray-100' : 'text-brand-dark bg-white border-brand-light'}`}>
                         {ing.quantity} {ing.unit}
                       </span>
                     </li>
@@ -352,7 +352,7 @@ const RecipeDetail = () => {
             <ol className="space-y-4">
               {instructions.map((step, i) => (
                 <li key={i} className="flex gap-4 group">
-                  <div className="flex-shrink-0 h-8 w-8 rounded-full bg-orange-100 text-orange-600 font-bold text-sm flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                  <div className="flex-shrink-0 h-8 w-8 rounded-full bg-brand-light text-brand-dark font-bold text-sm flex items-center justify-center group-hover:bg-brand-dark group-hover:text-white transition-colors">
                     {i + 1}
                   </div>
                   <div className="flex-1 pt-1">

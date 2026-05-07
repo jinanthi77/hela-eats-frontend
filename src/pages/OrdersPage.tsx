@@ -33,7 +33,7 @@ const OrdersPage = () => {
 
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
-      <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+      <Loader2 className="h-8 w-8 text-brand animate-spin" />
     </div>
   );
 
@@ -41,7 +41,7 @@ const OrdersPage = () => {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-          <ClipboardList className="h-8 w-8 text-orange-500" /> My Orders
+          <ClipboardList className="h-8 w-8 text-brand" /> My Orders
         </h1>
         <p className="text-gray-500 mt-1">Track and manage your orders</p>
       </div>
@@ -51,7 +51,7 @@ const OrdersPage = () => {
           <Package className="h-16 w-16 text-gray-200 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-400 mb-2">No orders yet</h2>
           <p className="text-gray-400 mb-6">Browse recipes and place your first order!</p>
-          <Link to="/recipes" className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-xl font-bold hover:bg-orange-700 transition-colors">Browse Recipes</Link>
+          <Link to="/recipes" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-dark text-white rounded-xl font-bold hover:bg-brand-dark transition-colors">Browse Recipes</Link>
         </div>
       ) : (
         <div className="space-y-4">
@@ -75,7 +75,7 @@ const OrdersPage = () => {
                     {order.totalPrice != null && (
                       <span className="text-lg font-extrabold text-gray-900">Rs. {order.totalPrice.toFixed(2)}</span>
                     )}
-                    <Eye className="h-5 w-5 text-gray-300 group-hover:text-orange-500 transition-colors" />
+                    <Eye className="h-5 w-5 text-gray-300 group-hover:text-brand transition-colors" />
                   </div>
                 </div>
               </Link>

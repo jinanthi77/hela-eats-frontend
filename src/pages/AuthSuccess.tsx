@@ -47,13 +47,13 @@ const AuthSuccess = () => {
         {/* Animated icon area */}
         <div className="mb-6 flex justify-center">
           {status === 'loading' && (
-            <div className="h-16 w-16 rounded-full bg-orange-100 flex items-center justify-center animate-pulse">
-              <Loader2 className="h-8 w-8 text-orange-600 animate-spin" />
+            <div className="h-16 w-16 rounded-full bg-brand-light flex items-center justify-center animate-pulse">
+              <Loader2 className="h-8 w-8 text-brand animate-spin" />
             </div>
           )}
           {status === 'success' && (
-            <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center animate-[scaleIn_0.3s_ease]">
-              <CheckCircle2 className="h-8 w-8 text-green-600" />
+            <div className="h-16 w-16 rounded-full bg-brand-light flex items-center justify-center animate-[scaleIn_0.3s_ease]">
+              <CheckCircle2 className="h-8 w-8 text-brand" />
             </div>
           )}
           {status === 'error' && (
@@ -74,7 +74,7 @@ const AuthSuccess = () => {
         {status === 'error' && (
           <button
             onClick={() => navigate('/login')}
-            className="mt-6 inline-flex items-center px-5 py-2.5 rounded-xl bg-orange-600 text-white font-semibold hover:bg-orange-700 transition-colors"
+            className="mt-6 inline-flex items-center px-5 py-2.5 rounded-xl bg-brand-dark text-white font-semibold hover:bg-brand-dark transition-colors"
           >
             Back to Login
           </button>

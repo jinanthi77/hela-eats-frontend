@@ -100,7 +100,7 @@ const AdminVendorRequests = () => {
 
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
-      <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+      <Loader2 className="h-8 w-8 text-brand animate-spin" />
     </div>
   );
 
@@ -108,18 +108,18 @@ const AdminVendorRequests = () => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <Link to="/admin/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-orange-600 transition-colors mb-2">
+          <Link to="/admin/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-brand transition-colors mb-2">
             <ArrowLeft className="h-3.5 w-3.5" /> Admin Dashboard
           </Link>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Store className="h-8 w-8 text-orange-500" /> Vendor Requests
+            <Store className="h-8 w-8 text-brand" /> Vendor Requests
           </h1>
         </div>
         <div className="flex gap-3">
           <button onClick={fetchData} className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition">
             <RefreshCw className="h-4 w-4" /> Refresh
           </button>
-          <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition">
+          <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 px-4 py-2 bg-brand-dark text-white font-bold rounded-xl hover:bg-brand-dark transition">
             <Plus className="h-4 w-4" /> New Request
           </button>
         </div>
@@ -142,7 +142,7 @@ const AdminVendorRequests = () => {
               const cfg = statusConfig[req.status] || statusConfig.Pending;
               const StatusIcon = cfg.icon;
               return (
-                <tr key={req._id} className="hover:bg-orange-50/30">
+                <tr key={req._id} className="hover:bg-brand-light/30/30">
                   <td className="px-5 py-3 text-gray-500">{new Date(req.createdAt).toLocaleDateString()}</td>
                   <td className="px-5 py-3">
                     <p className="font-medium text-gray-900">{req.vendorId?.name || 'Unknown'}</p>
@@ -165,7 +165,7 @@ const AdminVendorRequests = () => {
                     <select
                       value={req.status}
                       onChange={(e) => handleStatusChange(req._id, e.target.value)}
-                      className="pl-3 pr-8 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs font-medium focus:ring-orange-500 focus:border-orange-500 cursor-pointer"
+                      className="pl-3 pr-8 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs font-medium focus:ring-brand focus:border-brand cursor-pointer"
                     >
                       {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
@@ -191,7 +191,7 @@ const AdminVendorRequests = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Select Vendor</label>
-                <select required value={newRequest.vendorId} onChange={e => setNewRequest({ ...newRequest, vendorId: e.target.value })} className="w-full px-3 py-2 border rounded-xl bg-gray-50 focus:ring-orange-500">
+                <select required value={newRequest.vendorId} onChange={e => setNewRequest({ ...newRequest, vendorId: e.target.value })} className="w-full px-3 py-2 border rounded-xl bg-gray-50 focus:ring-brand">
                   <option value="">-- Choose a Vendor --</option>
                   {vendors.map(v => <option key={v._id} value={v._id}>{v.name} ({v.email})</option>)}
                 </select>
@@ -200,7 +200,7 @@ const AdminVendorRequests = () => {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="block text-sm font-medium text-gray-700">Requested Items</label>
-                  <button type="button" onClick={addItemRow} className="text-sm font-bold text-orange-600 hover:text-orange-700">
+                  <button type="button" onClick={addItemRow} className="text-sm font-bold text-brand hover:text-brand-dark">
                     + Add Row
                   </button>
                 </div>
@@ -241,12 +241,12 @@ const AdminVendorRequests = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Notes / Instructions (Optional)</label>
-                <textarea value={newRequest.notes} onChange={e => setNewRequest({ ...newRequest, notes: e.target.value })} rows={3} className="w-full px-3 py-2 border rounded-xl bg-gray-50 focus:ring-orange-500"></textarea>
+                <textarea value={newRequest.notes} onChange={e => setNewRequest({ ...newRequest, notes: e.target.value })} rows={3} className="w-full px-3 py-2 border rounded-xl bg-gray-50 focus:ring-brand"></textarea>
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t">
                 <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-gray-500 font-medium hover:text-gray-700">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700">Send Request</button>
+                <button type="submit" className="px-4 py-2 bg-brand-dark text-white font-bold rounded-xl hover:bg-brand-dark">Send Request</button>
               </div>
             </form>
           </div>
