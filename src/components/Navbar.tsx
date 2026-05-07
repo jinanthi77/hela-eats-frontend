@@ -1,0 +1,160 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { ShoppingBag, Menu, User, LogOut, X, ClipboardList, CalendarDays, BarChart3, Store } from 'lucide-react';
+
+const Navbar = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    setMobileOpen(false);
+    navigate('/login');
+  };
+
+  const closeMobile = () => setMobileOpen(false);
+
+  return (
+    <nav className="bg-orange-700 text-white shadow-lg sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center space-x-2">
+            <Link to="/" className="flex items-center space-x-2 hover:opacity-90 transition-opacity">
+              <img src="/logo.png" alt="Hela Eats Logo" className="h-22 w-22 object-contain" />
+            </Link>
+          </div>
+
+          {/* ── Desktop Nav ─────────────────────────────────────── */}
+          <div className="hidden md:block">
+            <div className="flex items-center space-x-6">
+              <Link to="/recipes" className="hover:text-orange-600 transition-colors">Recipes</Link>
+              <Link to="/categories" className="hover:text-orange-600 transition-colors">Categories</Link>
+              {isAuthenticated ? (
+                <>
+                  <Link to="/cart" className="hover:text-orange-600 transition-colors relative">
+                    <ShoppingBag className="h-5 w-5" />
+                  </Link>
+                  <Link to="/orders" className="hover:text-orange-200 transition-colors" title="Orders">
+                    <ClipboardList className="h-5 w-5" />
+                  </Link>
+                  <Link to="/mealplans" className="hover:text-orange-200 transition-colors" title="Meal Plans">
+                    <CalendarDays className="h-5 w-5" />
+                  </Link>
+
+                  {/* Admin link */}
+                  {user?.role === 'admin' && (
+                    <Link to="/admin/dashboard" className="hover:text-orange-200 transition-colors" title="Admin Dashboard">
+                      <BarChart3 className="h-5 w-5" />
+                    </Link>
+                  )}
+
+                  {/* Vendor link */}
+                  {user?.role === 'vendor' && (
+                    <Link to="/vendor/dashboard" className="hover:text-orange-200 transition-colors" title="Vendor Dashboard">
+                      <Store className="h-5 w-5" />
+                    </Link>
+                  )}
+
+                  {/* User dropdown area */}
+                  <div className="flex items-center space-x-3 pl-2 border-l border-orange-500/50">
+                    <Link
+                      to="/profile"
+                      className="text-sm font-medium hover:text-orange-200 transition-colors truncate max-w-[120px]"
+                      title={user?.name}
+                    >
+                      {user?.name || 'Profile'}
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center space-x-1 bg-orange-700 hover:bg-orange-800 px-3 py-1.5 rounded-md transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <Link to="/login" className="flex items-center space-x-1 bg-white text-orange-600 hover:bg-orange-100 px-4 py-1.5 rounded-full font-medium transition-colors shadow-sm">
+                  <User className="h-4 w-4" />
+                  <span>Login</span>
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {/* ── Mobile Toggle ───────────────────────────────────── */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="text-white hover:text-orange-200 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Mobile Menu ───────────────────────────────────────── */}
+      {mobileOpen && (
+        <div className="md:hidden bg-orange-700 border-t border-orange-600 animate-[slideDown_0.2s_ease]">
+          <div className="px-4 py-4 space-y-2">
+            <Link to="/recipes" onClick={closeMobile} className="block px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+              Recipes
+            </Link>
+            <Link to="/categories" onClick={closeMobile} className="block px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+              Categories
+            </Link>
+
+            {isAuthenticated ? (
+              <>
+                <Link to="/cart" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                  <ShoppingBag className="h-4 w-4" /> Cart
+                </Link>
+                <Link to="/orders" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                  <ClipboardList className="h-4 w-4" /> Orders
+                </Link>
+                <Link to="/mealplans" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                  <CalendarDays className="h-4 w-4" /> Meal Plans
+                </Link>
+                <Link to="/profile" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                  <User className="h-4 w-4" /> {user?.name || 'Profile'}
+                </Link>
+                {user?.role === 'admin' && (
+                  <Link to="/admin/dashboard" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors text-yellow-200">
+                    <BarChart3 className="h-4 w-4" /> Admin Dashboard
+                  </Link>
+                )}
+                {user?.role === 'vendor' && (
+                  <Link to="/vendor/dashboard" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors text-yellow-200">
+                    <Store className="h-4 w-4" /> Vendor Dashboard
+                  </Link>
+                )}
+                <div className="border-t border-orange-600 pt-2 mt-2">
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 w-full px-3 py-2 rounded-lg hover:bg-orange-600 transition-colors text-orange-200"
+                  >
+                    <LogOut className="h-4 w-4" /> Logout
+                  </button>
+                </div>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                onClick={closeMobile}
+                className="block text-center bg-white text-orange-600 hover:bg-orange-50 px-4 py-2 rounded-full font-medium transition-colors mt-2"
+              >
+                Login
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+};
+
+export default Navbar;
