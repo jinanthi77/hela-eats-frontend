@@ -1,5 +1,41 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════════════
+   HELA EATS — CENTRAL DESIGN TOKENS
+   ─────────────────────────────────────────────────────────────────────
+   Change colors & fonts HERE to update the ENTIRE app.
+   No need to touch any other file.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Brand Colors ──────────────────────────────────────────────────── */
+  --color-brand-dark: #054802;
+  /* Dark green — buttons, navbar, headings    */
+  --color-brand: #38A445;
+  /* Medium green — category bar, accents      */
+  --color-brand-light: #C6FACC;
+  /* Light green — backgrounds, highlights    */
+
+  /* ── Font Families ─────────────────────────────────────────────────── */
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Poppins', system-ui, sans-serif;
+}
+
+/* ── Base Typography ─────────────────────────────────────────────────── */
+
+body {
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+}
+
 /* ─── Custom Keyframe Animations ────────────────────────────────────── */
 
 @keyframes slideInRight {
@@ -7,6 +43,7 @@
     opacity: 0;
     transform: translateX(100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -18,6 +55,7 @@
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -29,6 +67,7 @@
     opacity: 0;
     transform: scale(0.8);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -40,6 +79,7 @@
     opacity: 0;
     transform: translateY(16px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

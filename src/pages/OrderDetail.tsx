@@ -51,14 +51,14 @@ const OrderDetail = () => {
 
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
-      <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+      <Loader2 className="h-8 w-8 text-brand animate-spin" />
     </div>
   );
 
   if (!order) return (
     <div className="min-h-[60vh] flex items-center justify-center flex-col space-y-4">
       <p className="text-red-500 font-medium text-lg">Order not found</p>
-      <button onClick={() => navigate('/orders')} className="px-6 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors">Back to Orders</button>
+      <button onClick={() => navigate('/orders')} className="px-6 py-2 bg-brand-light text-brand-dark rounded-lg hover:bg-brand-light transition-colors">Back to Orders</button>
     </div>
   );
 
@@ -67,7 +67,7 @@ const OrderDetail = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <button onClick={() => navigate('/orders')} className="inline-flex items-center gap-2 text-gray-500 hover:text-orange-600 mb-6 transition-colors group">
+      <button onClick={() => navigate('/orders')} className="inline-flex items-center gap-2 text-gray-500 hover:text-brand mb-6 transition-colors group">
         <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
         <span className="text-sm font-medium">All Orders</span>
       </button>
@@ -122,7 +122,7 @@ const OrderDetail = () => {
               <CreditCard className="h-5 w-5" /><span className="font-medium">Card (Stripe)</span>
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-green-600">
+            <div className="flex items-center gap-2 text-brand">
               <Banknote className="h-5 w-5" /><span className="font-medium">Cash on Delivery</span>
             </div>
           )}

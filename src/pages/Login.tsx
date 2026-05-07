@@ -77,7 +77,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black flex w-full font-sans overflow-hidden">
+    <div className="min-h-screen bg-black flex w-full font-body overflow-hidden">
 
       {/* ─── Left Column (Form) ─────────────────────────────────── */}
       <div className="w-full lg:w-[50%] flex justify-center items-center lg:items-start flex-col px-8 lg:px-12 xl:px-24 relative z-10">
@@ -107,7 +107,7 @@ const Login = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full px-3 py-2.5 text-sm border border-green-800/40 rounded-lg focus:outline-none focus:border-green-800 focus:ring-1 focus:ring-green-800 transition-colors placeholder:text-gray-400"
+                  className="block w-full px-3 py-2.5 text-sm border border-brand-dark/40 rounded-lg focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark transition-colors placeholder:text-gray-400"
                   placeholder="Enter Your Email Address"
                 />
               </div>
@@ -123,13 +123,13 @@ const Login = () => {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-3 pr-10 py-2.5 text-sm border border-green-800/40 rounded-lg focus:outline-none focus:border-green-800 focus:ring-1 focus:ring-green-800 transition-colors placeholder:text-gray-400"
+                    className="block w-full pl-3 pr-10 py-2.5 text-sm border border-brand-dark/40 rounded-lg focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark transition-colors placeholder:text-gray-400"
                     placeholder="Enter Your Password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-green-800 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand-dark transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -142,7 +142,7 @@ const Login = () => {
                 <div className="flex justify-end mt-1.5">
                   <Link
                     to="/forgot-password"
-                    className="text-[11px] font-bold text-[#0a4d1a] hover:underline"
+                    className="text-[11px] font-bold text-brand-dark hover:underline"
                   >
                     Forgot Your Password?
                   </Link>
@@ -153,7 +153,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center items-center py-2.5 px-4 rounded-lg text-sm font-bold text-white bg-[#0a4d1a] hover:bg-[#083a13] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0a4d1a] disabled:opacity-70 disabled:cursor-not-allowed transition-all mt-6"
+                className="w-full flex justify-center items-center py-2.5 px-4 rounded-lg text-sm font-bold text-white bg-brand-dark hover:bg-brand-dark/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-dark disabled:opacity-70 disabled:cursor-not-allowed transition-all mt-6"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Log In'}
               </button>
@@ -188,7 +188,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => navigate('/register')}
-                className="text-[10px] text-gray-400 hover:text-[#0a4d1a] underline underline-offset-2 transition-colors mt-2"
+                className="text-[10px] text-gray-400 hover:text-brand-dark underline underline-offset-2 transition-colors mt-2"
               >
                 Don't have an account? Register here
               </button>
@@ -198,7 +198,7 @@ const Login = () => {
             <div className="mt-8 flex justify-end">
               <button
                 onClick={() => navigate('/')}
-                className="text-[11px] font-bold text-gray-900 hover:text-[#0a4d1a] flex items-center gap-1 transition-colors"
+                className="text-[11px] font-bold text-gray-900 hover:text-brand-dark flex items-center gap-1 transition-colors"
               >
                 &lt; Go back
               </button>

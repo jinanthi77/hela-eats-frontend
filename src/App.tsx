@@ -40,7 +40,7 @@ function App() {
       <AuthProvider>
         <ToastProvider>
           <Router>
-            <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+            <div className="min-h-screen bg-white flex flex-col font-body">
               <Navbar />
               <main className="flex-grow">
                 <Routes>
@@ -175,7 +175,7 @@ function App() {
                 </Routes>
               </main>
 
-              <footer className="bg-white border-t border-gray-200 flex items-center py-8 mt-auto">
+              <footer className="bg-brand-light border-t border-brand/20 flex items-center py-8 mt-auto">
                 <div className="max-w-7xl mx-auto px-4 text-center text-gray-700 text-sm">
                   <img
                     src="/logo.png"

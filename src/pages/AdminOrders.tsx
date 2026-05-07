@@ -75,7 +75,7 @@ const AdminOrders = () => {
 
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
-      <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+      <Loader2 className="h-8 w-8 text-brand animate-spin" />
     </div>
   );
 
@@ -84,11 +84,11 @@ const AdminOrders = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <Link to="/admin/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-orange-600 transition-colors mb-2">
+          <Link to="/admin/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-brand transition-colors mb-2">
             <ArrowLeft className="h-3.5 w-3.5" /> Admin Dashboard
           </Link>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <ClipboardList className="h-8 w-8 text-orange-500" /> Manage Orders
+            <ClipboardList className="h-8 w-8 text-brand" /> Manage Orders
           </h1>
         </div>
         <button onClick={fetchOrders} disabled={loading}
@@ -100,7 +100,7 @@ const AdminOrders = () => {
       {/* Status Filter Chips */}
       <div className="flex flex-wrap gap-2 mb-6">
         <button onClick={() => setFilterStatus('all')}
-          className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${filterStatus === 'all' ? 'bg-orange-600 text-white shadow' : 'bg-white text-gray-500 border border-gray-200 hover:border-orange-300'}`}>
+          className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${filterStatus === 'all' ? 'bg-brand-dark text-white shadow' : 'bg-white text-gray-500 border border-gray-200 hover:border-brand-light'}`}>
           All ({orders.length})
         </button>
         {STATUSES.map((s) => {
@@ -108,7 +108,7 @@ const AdminOrders = () => {
           const count = statusCounts[s] || 0;
           return (
             <button key={s} onClick={() => setFilterStatus(s)}
-              className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${filterStatus === s ? `${cfg.bg} ${cfg.color} ring-2 ring-offset-1 ring-current` : 'bg-white text-gray-500 border border-gray-200 hover:border-orange-300'}`}>
+              className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${filterStatus === s ? `${cfg.bg} ${cfg.color} ring-2 ring-offset-1 ring-current` : 'bg-white text-gray-500 border border-gray-200 hover:border-brand-light'}`}>
               {s} ({count})
             </button>
           );
@@ -145,7 +145,7 @@ const AdminOrders = () => {
                   const userEmail = typeof order.user === 'string' ? '' : order.user?.email || '';
 
                   return (
-                    <tr key={order._id} className="hover:bg-orange-50/30 transition-colors">
+                    <tr key={order._id} className="hover:bg-brand-light/30/30 transition-colors">
                       <td className="px-5 py-3">
                         <span className="font-mono text-xs font-bold text-gray-900">
                           {order.orderNumber || `#${order._id.slice(-8).toUpperCase()}`}
@@ -183,13 +183,13 @@ const AdminOrders = () => {
                       <td className="px-5 py-3 text-xs text-gray-400">{new Date(order.createdAt).toLocaleDateString()}</td>
                       <td className="px-5 py-3 text-right">
                         {updatingId === order._id ? (
-                          <Loader2 className="h-5 w-5 text-orange-500 animate-spin ml-auto" />
+                          <Loader2 className="h-5 w-5 text-brand animate-spin ml-auto" />
                         ) : (
                           <div className="relative inline-block">
                             <select
                               value={order.status}
                               onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                              className="appearance-none pl-3 pr-8 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs font-medium focus:ring-orange-500 focus:border-orange-500 cursor-pointer transition-colors hover:bg-gray-100"
+                              className="appearance-none pl-3 pr-8 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs font-medium focus:ring-brand focus:border-brand cursor-pointer transition-colors hover:bg-gray-100"
                             >
                               {STATUSES.map((s) => (
                                 <option key={s} value={s}>{s}</option>

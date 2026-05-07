@@ -145,14 +145,14 @@ const ProfilePage = () => {
 
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
-      <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+      <Loader2 className="h-8 w-8 text-brand animate-spin" />
     </div>
   );
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-8">
-        <UserIcon className="h-8 w-8 text-orange-500" /> My Profile
+        <UserIcon className="h-8 w-8 text-brand" /> My Profile
       </h1>
 
       {/* Basic Info */}
@@ -162,10 +162,10 @@ const ProfilePage = () => {
           <div className="flex flex-col items-center gap-3">
             <div className="relative group">
               {profile?.profilePicture?.url ? (
-                <img src={profile.profilePicture.url} alt="Profile" className="h-28 w-28 rounded-full object-cover border-4 border-orange-50 shadow-md" />
+                <img src={profile.profilePicture.url} alt="Profile" className="h-28 w-28 rounded-full object-cover border-4 border-brand-light/30 shadow-md" />
               ) : (
-                <div className="h-28 w-28 rounded-full bg-orange-50 flex items-center justify-center border-4 border-white shadow-md">
-                  <UserIcon className="h-12 w-12 text-orange-300" />
+                <div className="h-28 w-28 rounded-full bg-brand-light/30 flex items-center justify-center border-4 border-white shadow-md">
+                  <UserIcon className="h-12 w-12 text-brand-light" />
                 </div>
               )}
               {uploadingImage && (
@@ -179,7 +179,7 @@ const ProfilePage = () => {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingImage}
-                  className="p-2 bg-orange-500 hover:bg-orange-600 text-white rounded-full shadow-lg transition-colors disabled:opacity-50"
+                  className="p-2 bg-brand hover:bg-brand-dark text-white rounded-full shadow-lg transition-colors disabled:opacity-50"
                   title="Upload picture"
                 >
                   <Camera className="h-4 w-4" />
@@ -204,7 +204,7 @@ const ProfilePage = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-orange-500 focus:border-orange-500 transition-colors" />
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-brand focus:border-brand transition-colors" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -214,7 +214,7 @@ const ProfilePage = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                 <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-brand focus:border-brand transition-colors"
                   placeholder="+94 71 234 5678" />
               </div>
               <div>
@@ -225,7 +225,7 @@ const ProfilePage = () => {
               </div>
             </div>
             <button onClick={handleSave} disabled={saving}
-              className="flex items-center gap-2 px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50">
+              className="flex items-center gap-2 px-6 py-2.5 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-colors disabled:opacity-50">
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Changes
             </button>
           </div>
@@ -241,7 +241,7 @@ const ProfilePage = () => {
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">Dietary Preference</label>
           <select value={dietary} onChange={(e) => setDietary(e.target.value)}
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:ring-orange-500 focus:border-orange-500">
+            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:ring-brand focus:border-brand">
             {DIETARY_OPTIONS.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
           </select>
         </div>
@@ -260,7 +260,7 @@ const ProfilePage = () => {
           <div className="flex gap-2">
             <input type="text" value={newAllergy} onChange={(e) => setNewAllergy(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddAllergy()}
-              className="flex-1 px-4 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-orange-500 focus:border-orange-500 transition-colors text-sm"
+              className="flex-1 px-4 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-brand focus:border-brand transition-colors text-sm"
               placeholder="Add allergy (e.g. nuts)" />
             <button onClick={handleAddAllergy} className="px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-xl transition-colors">
               <Plus className="h-4 w-4" />
@@ -274,10 +274,10 @@ const ProfilePage = () => {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-orange-500" /> Addresses
+            <MapPin className="h-5 w-5 text-brand" /> Addresses
           </h2>
           <button onClick={() => setShowAddressForm(!showAddressForm)}
-            className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1">
+            className="text-sm text-brand hover:text-brand-dark font-medium flex items-center gap-1">
             {showAddressForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
             {showAddressForm ? 'Cancel' : 'Add'}
           </button>
@@ -287,7 +287,7 @@ const ProfilePage = () => {
             {profile.addresses.map((addr, i) => (
               <div key={i} className="p-4 rounded-xl bg-gray-50 border border-gray-100">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">{addr.label}</span>
+                  <span className="text-xs font-bold text-brand bg-brand-light/30 px-2 py-0.5 rounded-full">{addr.label}</span>
                   {addr.isDefault && <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Default</span>}
                 </div>
                 <p className="text-sm text-gray-700 font-medium">{addr.fullName}</p>
@@ -301,7 +301,7 @@ const ProfilePage = () => {
         )}
 
         {showAddressForm && (
-          <div className="mt-4 p-4 bg-orange-50 rounded-xl border border-orange-100 animate-[fadeInUp_0.2s_ease]">
+          <div className="mt-4 p-4 bg-brand-light/30 rounded-xl border border-brand-light animate-[fadeInUp_0.2s_ease]">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <input type="text" value={addressLabel} onChange={(e) => setAddressLabel(e.target.value)} placeholder="Label (e.g. Home)" className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white" />
               <input type="text" value={addressFullName} onChange={(e) => setAddressFullName(e.target.value)} placeholder="Full Name" className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white" />
@@ -311,7 +311,7 @@ const ProfilePage = () => {
               <input type="text" value={addressLine2} onChange={(e) => setAddressLine2(e.target.value)} placeholder="Address Line 2 (optional)" className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white sm:col-span-2" />
             </div>
             <button onClick={handleAddAddress} disabled={saving}
-              className="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg transition-colors text-sm disabled:opacity-50">
+              className="px-5 py-2 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-lg transition-colors text-sm disabled:opacity-50">
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Add Address'}
             </button>
           </div>
@@ -322,12 +322,12 @@ const ProfilePage = () => {
       {/* 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
         <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Leaf className="h-5 w-5 text-green-500" /> My Pantry
+          <Leaf className="h-5 w-5 text-brand" /> My Pantry
         </h2>
         {profile?.pantry && profile.pantry.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {profile.pantry.map((item, i) => (
-              <span key={i} className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-100">
+              <span key={i} className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-light/30 text-brand-dark rounded-full text-sm font-medium border border-brand-light">
                 {item.ingredientId?.name || 'Unknown'}
                 <button onClick={() => handleRemovePantryItem(item.ingredientId?._id)}
                   disabled={pantryLoading}
