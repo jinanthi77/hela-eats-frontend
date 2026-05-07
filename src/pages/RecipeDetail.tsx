@@ -261,7 +261,7 @@ const RecipeDetail = () => {
             <Zap className="h-5 w-5 text-emerald-600" />
             Nutrition per serving
           </h2>
-          <div className="grid grid-cols-4 gap-4 text-center">
+          <div className="grid grid-cols-5 gap-4 text-center">
             <div>
               <p className="text-2xl font-extrabold text-emerald-700">{nutrition.calories || 0}</p>
               <p className="text-xs text-gray-500 mt-1">Calories</p>
@@ -273,10 +273,14 @@ const RecipeDetail = () => {
               </p>
             </div>
             <div>
-              <p className="text-2xl font-extrabold text-amber-700">{nutrition.carbs || 0}g</p>
+              <p className="text-2xl font-extrabold text-amber-700">{nutrition.carbohydrate || 0}g</p>
               <p className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
-                <Wheat className="h-3 w-3" /> Carbs
+                <Wheat className="h-3 w-3" /> Carbohydrate
               </p>
+            </div>
+            <div>
+              <p className="text-2xl font-extrabold text-lime-700">{nutrition.fiber || 0}g</p>
+              <p className="text-xs text-gray-500 mt-1">Fiber</p>
             </div>
             <div>
               <p className="text-2xl font-extrabold text-rose-700">{nutrition.fat || 0}g</p>
