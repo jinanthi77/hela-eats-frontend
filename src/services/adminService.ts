@@ -53,7 +53,7 @@ export interface RecipePayload {
   standardServingSize?: number;
   ingredients?: { ingredientId: string; exactQuantity: number; unit: string }[];
   steps?: { stepNumber: number; instruction: string }[];
-  nutritionPerStandardServing?: { calories: number; protein: number; carbs: number; fat: number };
+  nutritionPerStandardServing?: { calories: number; protein: number; carbohydrate: number; fiber: number; fat: number };
 }
 
 export const adminCreateRecipe = async (payload: RecipePayload): Promise<Recipe> => {

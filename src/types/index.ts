@@ -86,13 +86,15 @@ export interface Recipe {
   nutrition?: {
     calories: number;
     protein: number;
-    carbs: number;
+    carbohydrate: number;
+    fiber: number;
     fat: number;
   };
   nutritionPerStandardServing?: {
     calories: number;
     protein: number;
-    carbs: number;
+    carbohydrate: number;
+    fiber: number;
     fat: number;
   };
   image?: string;
@@ -233,7 +235,8 @@ export interface MealPlanDay {
   totalDailyNutrition?: {
     calories: number;
     protein: number;
-    carbs: number;
+    carbohydrate: number;
+    fiber: number;
     fat: number;
   };
 }

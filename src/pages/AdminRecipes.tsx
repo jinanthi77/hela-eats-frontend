@@ -26,7 +26,7 @@ const emptyForm: RecipePayload = {
   standardServingSize: 1,
   ingredients: [],
   steps: [],
-  nutritionPerStandardServing: { calories: 0, protein: 0, carbs: 0, fat: 0 },
+  nutritionPerStandardServing: { calories: 0, protein: 0, carbohydrate: 0, fiber: 0, fat: 0 },
 };
 
 const AdminRecipes = () => {
@@ -98,7 +98,7 @@ const AdminRecipes = () => {
       standardServingSize: (recipe as any).standardServingSize || recipe.servings || 1,
       ingredients: mappedIngs,
       steps: (recipe as any).steps || [],
-      nutritionPerStandardServing: (recipe as any).nutritionPerStandardServing || recipe.nutrition || { calories: 0, protein: 0, carbs: 0, fat: 0 },
+      nutritionPerStandardServing: (recipe as any).nutritionPerStandardServing || recipe.nutrition || { calories: 0, protein: 0, carbohydrate: 0, fiber: 0, fat: 0 },
     });
     setRecipeIngredients(mappedIngs);
     setSteps((recipe as any).steps?.length > 0 ? (recipe as any).steps : [{ stepNumber: 1, instruction: '' }]);
@@ -302,8 +302,8 @@ const AdminRecipes = () => {
           {/* Nutrition */}
           <div className="mb-5">
             <label className="block text-sm font-bold text-gray-900 mb-2">Nutrition (per serving)</label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {(['calories', 'protein', 'carbs', 'fat'] as const).map(field => (
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+              {(['calories', 'protein', 'carbohydrate', 'fiber', 'fat'] as const).map(field => (
                 <div key={field}>
                   <label className="block text-xs text-gray-500 mb-1 capitalize">{field}{field === 'calories' ? ' (kcal)' : ' (g)'}</label>
                   <input type="number" min={0} step="0.1"
