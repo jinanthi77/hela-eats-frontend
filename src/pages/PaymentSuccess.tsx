@@ -26,7 +26,7 @@ const PaymentSuccess = () => {
   if (status === 'loading') return (
     <div className="min-h-[60vh] flex items-center justify-center">
       <div className="text-center">
-        <Loader2 className="h-12 w-12 text-orange-500 animate-spin mx-auto mb-4" />
+        <Loader2 className="h-12 w-12 text-brand animate-spin mx-auto mb-4" />
         <p className="text-gray-500 font-medium">Verifying your payment…</p>
       </div>
     </div>
@@ -40,7 +40,7 @@ const PaymentSuccess = () => {
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Payment Failed</h1>
         <p className="text-gray-500 mb-6">Something went wrong with your payment. Please try again.</p>
-        <Link to="/orders" className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-xl font-bold hover:bg-orange-700 transition-colors">
+        <Link to="/orders" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-dark text-white rounded-xl font-bold hover:bg-brand-dark transition-colors">
           View Orders <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
@@ -57,7 +57,7 @@ const PaymentSuccess = () => {
         <p className="text-gray-500 mb-6">Your order has been confirmed and is being prepared.</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           {orderId && (
-            <Link to={`/orders/${orderId}`} className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-xl font-bold hover:bg-orange-700 transition-colors">
+            <Link to={`/orders/${orderId}`} className="inline-flex items-center gap-2 px-6 py-3 bg-brand-dark text-white rounded-xl font-bold hover:bg-brand-dark transition-colors">
               View Order <ArrowRight className="h-4 w-4" />
             </Link>
           )}

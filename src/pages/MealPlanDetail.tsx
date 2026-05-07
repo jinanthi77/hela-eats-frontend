@@ -83,20 +83,20 @@ const MealPlanDetail = () => {
 
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
-      <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+      <Loader2 className="h-8 w-8 text-brand animate-spin" />
     </div>
   );
 
   if (!plan) return (
     <div className="min-h-[60vh] flex items-center justify-center flex-col space-y-4">
       <p className="text-red-500 font-medium text-lg">Meal plan not found</p>
-      <button onClick={() => navigate('/mealplans')} className="px-6 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors">Back to Plans</button>
+      <button onClick={() => navigate('/mealplans')} className="px-6 py-2 bg-brand-light text-brand-dark rounded-lg hover:bg-brand-light transition-colors">Back to Plans</button>
     </div>
   );
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <button onClick={() => navigate('/mealplans')} className="inline-flex items-center gap-2 text-gray-500 hover:text-orange-600 mb-6 transition-colors group">
+      <button onClick={() => navigate('/mealplans')} className="inline-flex items-center gap-2 text-gray-500 hover:text-brand mb-6 transition-colors group">
         <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
         <span className="text-sm font-medium">All Plans</span>
       </button>
@@ -104,7 +104,7 @@ const MealPlanDetail = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <CalendarDays className="h-8 w-8 text-orange-500" /> {plan.name}
+            <CalendarDays className="h-8 w-8 text-brand" /> {plan.name}
           </h1>
           <p className="text-sm text-gray-400 mt-1">
             {new Date(plan.startDate).toLocaleDateString()} — {new Date(plan.endDate).toLocaleDateString()}
@@ -112,11 +112,11 @@ const MealPlanDetail = () => {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleAddToCart}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors text-sm">
+            className="flex items-center gap-2 px-4 py-2 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl transition-colors text-sm">
             <ShoppingCart className="h-4 w-4" /> Add to Cart
           </button>
           <button onClick={handleSave} disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-colors text-sm disabled:opacity-50">
+            className="flex items-center gap-2 px-4 py-2 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-colors text-sm disabled:opacity-50">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save
           </button>
         </div>
@@ -143,7 +143,7 @@ const MealPlanDetail = () => {
                       return (
                         <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
                           <div className="flex items-center gap-3">
-                            <span className={`text-xs font-bold px-2 py-1 rounded-full ${entry.mealType === 'breakfast' ? 'bg-amber-100 text-amber-700' : entry.mealType === 'lunch' ? 'bg-blue-100 text-blue-700' : entry.mealType === 'dinner' ? 'bg-violet-100 text-violet-700' : 'bg-green-100 text-green-700'}`}>
+                            <span className={`text-xs font-bold px-2 py-1 rounded-full ${entry.mealType === 'breakfast' ? 'bg-amber-100 text-amber-700' : entry.mealType === 'lunch' ? 'bg-blue-100 text-blue-700' : entry.mealType === 'dinner' ? 'bg-violet-100 text-violet-700' : 'bg-brand-light text-brand-dark'}`}>
                               {entry.mealType}
                             </span>
                             <span className="text-sm font-medium text-gray-700">{getRecipeName(entry.recipe)}</span>
@@ -168,26 +168,26 @@ const MealPlanDetail = () => {
           <h3 className="text-lg font-bold text-gray-900 mb-4">Add Meal Entry</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
             <select value={newDay} onChange={(e) => setNewDay(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:ring-orange-500 focus:border-orange-500">
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:ring-brand focus:border-brand">
               {DAYS.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
             <select value={newMealType} onChange={(e) => setNewMealType(e.target.value as any)}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:ring-orange-500 focus:border-orange-500">
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:ring-brand focus:border-brand">
               {MEAL_TYPES.map((t) => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
             </select>
             <select value={newRecipeId} onChange={(e) => setNewRecipeId(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:ring-orange-500 focus:border-orange-500">
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 focus:ring-brand focus:border-brand">
               {recipes.map((r) => <option key={r._id} value={r._id}>{r.title}</option>)}
             </select>
           </div>
           <div className="flex gap-2">
-            <button onClick={handleAddEntry} className="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-colors text-sm">Add</button>
+            <button onClick={handleAddEntry} className="px-5 py-2 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-colors text-sm">Add</button>
             <button onClick={() => setShowAddForm(false)} className="px-5 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 font-bold rounded-xl transition-colors text-sm">Cancel</button>
           </div>
         </div>
       ) : (
         <button onClick={() => setShowAddForm(true)}
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 border-2 border-dashed border-gray-200 text-gray-400 hover:text-orange-600 hover:border-orange-300 font-medium rounded-2xl transition-colors">
+          className="w-full flex items-center justify-center gap-2 py-3 px-4 border-2 border-dashed border-gray-200 text-gray-400 hover:text-brand hover:border-brand-light font-medium rounded-2xl transition-colors">
           <Plus className="h-5 w-5" /> Add Meal Entry
         </button>
       )}

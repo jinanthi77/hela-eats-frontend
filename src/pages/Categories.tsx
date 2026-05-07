@@ -27,7 +27,7 @@ const Categories = () => {
   if (error) return (
     <div className="min-h-[50vh] flex items-center justify-center flex-col space-y-4">
       <p className="text-red-500 font-medium text-lg">{error}</p>
-      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors">Try Again</button>
+      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-brand-light text-brand-dark rounded-lg hover:bg-brand-light transition-colors">Try Again</button>
     </div>
   );
 
@@ -53,7 +53,7 @@ const Categories = () => {
                 {category.image ? (
                   <img src={category.image} alt={category.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-100 to-red-50 text-orange-400 group-hover:scale-105 transition-transform duration-500">
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-light to-red-50 text-brand group-hover:scale-105 transition-transform duration-500">
                     <span className="text-4xl font-bold opacity-50">{category.name.charAt(0)}</span>
                   </div>
                 )}
@@ -62,7 +62,7 @@ const Categories = () => {
                 </div>
               </div>
               <div className="p-5 flex-1">
-                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">{category.name}</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-brand transition-colors">{category.name}</h3>
                 <p className="text-gray-500 text-sm line-clamp-2">{category.description}</p>
               </div>
             </Link>

@@ -69,7 +69,7 @@ const MealPlansPage = () => {
 
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
-      <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+      <Loader2 className="h-8 w-8 text-brand animate-spin" />
     </div>
   );
 
@@ -78,12 +78,12 @@ const MealPlansPage = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <CalendarDays className="h-8 w-8 text-orange-500" /> Meal Plans
+            <CalendarDays className="h-8 w-8 text-brand" /> Meal Plans
           </h1>
           <p className="text-gray-500 mt-1">Plan your weekly meals and shop smarter</p>
         </div>
         <button onClick={() => setShowCreate(!showCreate)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-colors shadow-lg shadow-orange-600/20">
+          className="flex items-center gap-2 px-5 py-2.5 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-colors shadow-lg shadow-brand-dark/20">
           {showCreate ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
           {showCreate ? 'Cancel' : 'New Plan'}
         </button>
@@ -97,22 +97,22 @@ const MealPlansPage = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Plan Name</label>
               <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-orange-500 focus:border-orange-500 bg-gray-50 focus:bg-white transition-colors"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand focus:border-brand bg-gray-50 focus:bg-white transition-colors"
                 placeholder="My Weekly Plan" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
               <input type="date" value={newStart} onChange={(e) => setNewStart(e.target.value)} required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-orange-500 focus:border-orange-500 bg-gray-50 focus:bg-white transition-colors" />
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand focus:border-brand bg-gray-50 focus:bg-white transition-colors" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
               <input type="date" value={newEnd} onChange={(e) => setNewEnd(e.target.value)} required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-orange-500 focus:border-orange-500 bg-gray-50 focus:bg-white transition-colors" />
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand focus:border-brand bg-gray-50 focus:bg-white transition-colors" />
             </div>
           </div>
           <button type="submit" disabled={creating}
-            className="flex items-center gap-2 px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50">
+            className="flex items-center gap-2 px-6 py-2.5 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-colors disabled:opacity-50">
             {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
             Create Plan
           </button>
@@ -146,7 +146,7 @@ const MealPlansPage = () => {
                       const count = plan.entries.filter((e) => e.mealType === type).length;
                       if (count === 0) return null;
                       return (
-                        <span key={type} className="text-xs px-2 py-1 rounded-full bg-orange-50 text-orange-600 font-medium">
+                        <span key={type} className="text-xs px-2 py-1 rounded-full bg-brand-light/30 text-brand font-medium">
                           {count} {type}
                         </span>
                       );
@@ -156,11 +156,11 @@ const MealPlansPage = () => {
 
                 <div className="flex items-center gap-2">
                   <Link to={`/mealplans/${plan._id}`}
-                    className="p-2 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors">
+                    className="p-2 text-gray-400 hover:text-brand hover:bg-brand-light/30 rounded-lg transition-colors">
                     <Eye className="h-5 w-5" />
                   </Link>
                   <button onClick={() => handleAddToCart(plan._id)} disabled={actionId === plan._id}
-                    className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-30">
+                    className="p-2 text-gray-400 hover:text-brand hover:bg-brand-light/30 rounded-lg transition-colors disabled:opacity-30">
                     {actionId === plan._id ? <Loader2 className="h-5 w-5 animate-spin" /> : <ShoppingCart className="h-5 w-5" />}
                   </button>
                   <button onClick={() => handleDelete(plan._id)} disabled={actionId === plan._id}

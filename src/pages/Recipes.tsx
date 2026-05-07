@@ -54,7 +54,7 @@ const Recipes = () => {
   if (error) return (
     <div className="min-h-[50vh] flex items-center justify-center flex-col space-y-4">
       <p className="text-red-500 font-medium text-lg">{error}</p>
-      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors">Try Again</button>
+      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-brand-light text-brand-dark rounded-lg hover:bg-brand-light/70 transition-colors">Try Again</button>
     </div>
   );
 
@@ -74,7 +74,7 @@ const Recipes = () => {
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search recipes..."
-            className="pl-10 pr-10 py-2 w-full md:w-72 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all shadow-sm"
+            className="pl-10 pr-10 py-2 w-full md:w-72 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all shadow-sm"
           />
           {searchTerm && (
             <button onClick={() => handleSearch('')} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
@@ -90,8 +90,8 @@ const Recipes = () => {
           {categories.map((cat) => (
             <button key={cat._id} onClick={() => handleCategoryFilter(cat._id)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${selectedCategory === cat._id
-                ? 'bg-orange-600 text-white border-orange-600 shadow-md'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-orange-300 hover:text-orange-600'}`}>
+                ? 'bg-brand-dark text-white border-brand-dark shadow-md'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-brand-light hover:text-brand'}`}>
               {cat.name}
             </button>
           ))}
@@ -120,16 +120,16 @@ const Recipes = () => {
                 {recipe.imageUrl || recipe.image ? (
                   <img src={recipe.imageUrl || recipe.image} alt={recipe.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400 bg-orange-50">
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 bg-brand-light/30">
                     <UtensilsCrossed className="h-12 w-12" />
                   </div>
                 )}
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-orange-600 shadow-sm">
+                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-brand-dark shadow-sm">
                   {recipe.difficulty}
                 </div>
               </div>
               <div className="p-5">
-                <h3 className="text-lg font-bold text-gray-900 mb-2 truncate group-hover:text-orange-600 transition-colors">{recipe.title}</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-2 truncate group-hover:text-brand transition-colors">{recipe.title}</h3>
                 <p className="text-gray-500 text-sm line-clamp-2 mb-4">{recipe.description}</p>
                 <div className="flex items-center justify-between text-sm text-gray-500 border-t border-gray-50 pt-4 mt-auto">
                   <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Prep: {recipe.prepTime}m</span>

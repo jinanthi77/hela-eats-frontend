@@ -33,12 +33,12 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-orange-50/50">
+    <div className="min-h-screen bg-white">
       {/* ── Hero Section ───────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center space-y-4 mb-16 animate-fade-in-up">
           <h1 className="text-5xl font-extrabold text-gray-900 tracking-tight">
-            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-900">Hela Eats</span>
+            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-dark">Hela Eats</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Discover authentic Sri Lankan recipes, order ingredients directly, and plan your meals effortlessly.
@@ -47,15 +47,15 @@ const Home = () => {
 
         {/* ── Quick Actions ─────────────────────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          <Link to="/recipes" className="group p-6 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-orange-100 flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <Link to="/recipes" className="group p-6 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-brand-light flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-brand-light text-brand-dark rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Utensils className="h-8 w-8" />
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-2">Browse Recipes</h3>
             <p className="text-gray-500 text-sm">Explore a wide variety of delicious meals curated just for you.</p>
           </Link>
 
-          <Link to="/categories" className="group p-6 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-orange-100 flex flex-col items-center text-center">
+          <Link to="/categories" className="group p-6 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-brand-light flex flex-col items-center text-center">
             <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <List className="h-8 w-8" />
             </div>
@@ -63,15 +63,15 @@ const Home = () => {
             <p className="text-gray-500 text-sm">Find exactly what you're craving by browsing through our categories.</p>
           </Link>
 
-          <Link to="/cart" className="group p-6 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-orange-100 flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <Link to="/cart" className="group p-6 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-brand-light flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-brand-light text-brand rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <ShoppingCart className="h-8 w-8" />
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-2">Your Cart</h3>
             <p className="text-gray-500 text-sm">Manage your selected ingredients and proceed to checkout easily.</p>
           </Link>
 
-          <Link to="/login" className="group p-6 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-orange-100 flex flex-col items-center text-center">
+          <Link to="/login" className="group p-6 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-brand-light flex flex-col items-center text-center">
             <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <UserCheck className="h-8 w-8" />
             </div>
@@ -85,22 +85,22 @@ const Home = () => {
           <div className="mb-16">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900">Browse by Category</h2>
-              <Link to="/categories" className="text-orange-600 hover:text-orange-700 font-medium text-sm flex items-center gap-1 transition-colors">
+              <Link to="/categories" className="text-brand hover:text-brand-dark font-medium text-sm flex items-center gap-1 transition-colors">
                 View All <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               {categories.map((cat) => (
                 <Link key={cat._id} to={`/categories/${cat.slug}`}
-                  className="group bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-orange-200 transition-all text-center">
+                  className="group bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-light transition-all text-center">
                   {(cat as any).imageUrl ? (
                     <img src={(cat as any).imageUrl} alt={cat.name} className="h-16 w-16 mx-auto rounded-xl object-cover mb-3 group-hover:scale-105 transition-transform" />
                   ) : (
-                    <div className="h-16 w-16 mx-auto rounded-xl bg-orange-50 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
-                      <ChefHat className="h-8 w-8 text-orange-400" />
+                    <div className="h-16 w-16 mx-auto rounded-xl bg-brand-light/50 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                      <ChefHat className="h-8 w-8 text-brand" />
                     </div>
                   )}
-                  <p className="font-bold text-gray-900 text-sm group-hover:text-orange-600 transition-colors">{cat.name}</p>
+                  <p className="font-bold text-gray-900 text-sm group-hover:text-brand transition-colors">{cat.name}</p>
                   {cat.recipeCount != null && (
                     <p className="text-xs text-gray-400 mt-1">{cat.recipeCount} recipes</p>
                   )}
@@ -114,14 +114,14 @@ const Home = () => {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Explore Recipes</h2>
-            <Link to="/recipes" className="text-orange-600 hover:text-orange-700 font-medium text-sm flex items-center gap-1 transition-colors">
+            <Link to="/recipes" className="text-brand hover:text-brand-dark font-medium text-sm flex items-center gap-1 transition-colors">
               View All <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
           {loading ? (
             <div className="flex items-center justify-center py-16">
-              <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+              <Loader2 className="h-8 w-8 text-brand animate-spin" />
             </div>
           ) : recipes.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-sm">
@@ -139,16 +139,16 @@ const Home = () => {
                       <img src={recipe.imageUrl || recipe.image} alt={recipe.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400 bg-orange-50">
+                      <div className="w-full h-full flex items-center justify-center text-gray-400 bg-brand-light/30">
                         <UtensilsCrossed className="h-12 w-12" />
                       </div>
                     )}
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-orange-600 shadow-sm">
+                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-brand-dark shadow-sm">
                       {recipe.difficulty}
                     </div>
                   </div>
                   <div className="p-5">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 truncate group-hover:text-orange-600 transition-colors">{recipe.title}</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 truncate group-hover:text-brand transition-colors">{recipe.title}</h3>
                     <p className="text-gray-500 text-sm line-clamp-2 mb-4">{recipe.description}</p>
                     <div className="flex items-center justify-between text-sm text-gray-500 border-t border-gray-50 pt-4 mt-auto">
                       <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Prep: {recipe.prepTime || 0}m</span>
@@ -163,8 +163,8 @@ const Home = () => {
 
         {/* ── About Us ──────────────────────────────────── */}
         <div className="mt-32 mb-20 text-center px-4">
-          <h2 className="text-6xl font-bold text-green-900 mb-6" style={{ fontFamily: 'Georgia, serif' }}>HelaEats</h2>
-          <h3 className="text-xl font-bold text-green-800 mb-8 max-w-4xl mx-auto leading-relaxed">
+          <h2 className="text-6xl font-bold text-brand-dark mb-6 font-heading">HelaEats</h2>
+          <h3 className="text-xl font-bold text-brand-dark mb-8 max-w-4xl mx-auto leading-relaxed">
             Personalized Recipe-to-Cart Platform, Automating Grocery Shopping and Healthy Meal Preparation
           </h3>
           <div className="max-w-5xl mx-auto text-black space-y-2 text-[17px] font-medium leading-relaxed">
@@ -184,7 +184,7 @@ const Home = () => {
         </div>
 
         <div className="mb-24 text-center px-4">
-          <h2 className="text-3xl font-bold text-green-800 mb-3">Be a part of the Our Community</h2>
+          <h2 className="text-3xl font-bold text-brand-dark mb-3">Be a part of the Our Community</h2>
           <h3 className="text-2xl font-bold text-black mb-12">Join As a Trusted Vendor or Be an Excellent Delivery Person</h3>
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-12 text-left max-w-5xl mx-auto">
@@ -195,7 +195,7 @@ const Home = () => {
                 business and profit more than you earn by only doing one business.
               </p>
               <div className="flex items-center gap-4 mt-12">
-                <div className="w-10 h-10 rounded-full border-2 border-green-800 flex items-center justify-center text-green-800">
+                <div className="w-10 h-10 rounded-full border-2 border-brand-dark flex items-center justify-center text-brand-dark">
                   <Mail className="h-5 w-5" />
                 </div>
                 <span className="font-bold text-[15px] text-black">Email: helaeatsvendor@gmail.com</span>
@@ -214,28 +214,28 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row justify-between items-center gap-8">
             <div className="flex flex-col items-center text-center gap-4">
               <span className="font-bold text-[15px] text-black">Email: helaeats@gmail.com</span>
-              <div className="w-12 h-12 rounded-full border-2 border-green-800 flex items-center justify-center text-green-800 hover:bg-green-50 transition-colors cursor-pointer">
+              <div className="w-12 h-12 rounded-full border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-light/50 transition-colors cursor-pointer">
                 <Mail className="h-5 w-5" />
               </div>
             </div>
 
             <div className="flex flex-col items-center text-center gap-4">
               <span className="font-bold text-[15px] text-black">Hotline: +94 77 421 35 04</span>
-              <div className="w-12 h-12 rounded-full border-2 border-green-800 flex items-center justify-center text-green-800 hover:bg-green-50 transition-colors cursor-pointer">
+              <div className="w-12 h-12 rounded-full border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-light/50 transition-colors cursor-pointer">
                 <img src="https://www.svgrepo.com/show/469455/phone.svg" alt="phone" className="h-6 w-6" />
               </div>
             </div>
 
             <div className="flex flex-col items-center text-center gap-4">
               <span className="font-bold text-[15px] text-black">Facebook</span>
-              <div className="w-12 h-12 rounded-full border-2 border-green-800 flex items-center justify-center text-green-800 hover:bg-green-50 transition-colors cursor-pointer">
+              <div className="w-12 h-12 rounded-full border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-light/30 transition-colors cursor-pointer">
                 <img src="https://www.svgrepo.com/show/303117/facebook-2-logo.svg" alt="facebook" className="h-6 w-6" />
               </div>
             </div>
 
             <div className="flex flex-col items-center text-center gap-4">
               <span className="font-bold text-[15px] text-black">Instagram</span>
-              <div className="w-12 h-12 rounded-full border-2 border-green-800 flex items-center justify-center text-green-800 hover:bg-green-50 transition-colors cursor-pointer">
+              <div className="w-12 h-12 rounded-full border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-light/30 transition-colors cursor-pointer">
                 <img src="https://www.svgrepo.com/show/452229/instagram-1.svg" alt="instagram" className="h-6 w-6" />
               </div>
             </div>

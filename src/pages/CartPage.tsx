@@ -84,8 +84,8 @@ const CartPage = () => {
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
-        <div className="h-14 w-14 rounded-full bg-orange-100 flex items-center justify-center animate-pulse">
-          <Loader2 className="h-7 w-7 text-orange-600 animate-spin" />
+        <div className="h-14 w-14 rounded-full bg-brand-light flex items-center justify-center animate-pulse">
+          <Loader2 className="h-7 w-7 text-brand animate-spin" />
         </div>
         <p className="text-sm text-gray-400 font-medium">Loading your cart…</p>
       </div>
@@ -100,7 +100,7 @@ const CartPage = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <ShoppingCart className="h-8 w-8 text-orange-500" />
+            <ShoppingCart className="h-8 w-8 text-brand" />
             Your Cart
           </h1>
           <p className="text-gray-500 mt-1">{items.length} item{items.length !== 1 ? 's' : ''}</p>
@@ -119,7 +119,7 @@ const CartPage = () => {
           <ShoppingBag className="h-16 w-16 text-gray-200 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-400 mb-2">Your cart is empty</h2>
           <p className="text-gray-400 mb-6">Discover delicious recipes and add ingredients to your cart!</p>
-          <Link to="/recipes" className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-xl font-bold hover:bg-orange-700 transition-colors shadow-lg shadow-orange-600/20">
+          <Link to="/recipes" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-dark text-white rounded-xl font-bold hover:bg-brand-dark transition-colors shadow-lg shadow-brand-dark/20">
             Browse Recipes <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -134,7 +134,7 @@ const CartPage = () => {
                 {/* Recipe info */}
                 <div className="flex-1 min-w-0">
                   <Link to={`/recipes/${getRecipeLink(item)}`}
-                    className="text-lg font-bold text-gray-900 hover:text-orange-600 transition-colors truncate block">
+                    className="text-lg font-bold text-gray-900 hover:text-brand transition-colors truncate block">
                     {getRecipeTitle(item)}
                   </Link>
                   <div className="flex items-center gap-1 mt-1 text-sm text-gray-500">
@@ -221,17 +221,17 @@ const CartPage = () => {
           )})}
 
           {/* Checkout */}
-          <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-2xl p-6 border border-orange-100 mt-6">
+          <div className="bg-gradient-to-r from-brand-light/30 to-red-50 rounded-2xl p-6 border border-brand-light mt-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <p className="text-sm text-gray-500">Ready to order?</p>
                 <p className="text-lg font-bold text-gray-900">{items.length} recipe{items.length !== 1 ? 's' : ''} in your cart</p>
                 {cart?.totalPrice != null && cart.totalPrice > 0 && (
-                  <p className="text-sm text-orange-600 font-semibold mt-1">Estimated Total: Rs. {cart.totalPrice.toFixed(2)}</p>
+                  <p className="text-sm text-brand font-semibold mt-1">Estimated Total: Rs. {cart.totalPrice.toFixed(2)}</p>
                 )}
               </div>
               <button onClick={() => navigate('/checkout')}
-                className="flex items-center gap-2 px-8 py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-orange-600/20">
+                className="flex items-center gap-2 px-8 py-3 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-all shadow-lg shadow-brand-dark/20">
                 Proceed to Checkout <ArrowRight className="h-4 w-4" />
               </button>
             </div>

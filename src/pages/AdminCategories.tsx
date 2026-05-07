@@ -99,7 +99,7 @@ const AdminCategories = () => {
 
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
-      <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+      <Loader2 className="h-8 w-8 text-brand animate-spin" />
     </div>
   );
 
@@ -108,15 +108,15 @@ const AdminCategories = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <Link to="/admin/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-orange-600 transition-colors mb-2">
+          <Link to="/admin/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-brand transition-colors mb-2">
             <ArrowLeft className="h-3.5 w-3.5" /> Admin Dashboard
           </Link>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <FolderOpen className="h-8 w-8 text-orange-500" /> Manage Categories
+            <FolderOpen className="h-8 w-8 text-brand" /> Manage Categories
           </h1>
         </div>
         <button onClick={openCreate}
-          className="flex items-center gap-2 px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-colors shadow-lg shadow-orange-600/20">
+          className="flex items-center gap-2 px-5 py-2.5 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-colors shadow-lg shadow-brand-dark/20">
           <Plus className="h-4 w-4" /> New Category
         </button>
       </div>
@@ -135,25 +135,25 @@ const AdminCategories = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
               <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-orange-500 focus:border-orange-500 bg-gray-50 focus:bg-white transition-colors"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand focus:border-brand bg-gray-50 focus:bg-white transition-colors"
                 placeholder="e.g. Sri Lankan Curries" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
               <input type="url" value={form.imageUrl || ''} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-orange-500 focus:border-orange-500 bg-gray-50 focus:bg-white transition-colors"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand focus:border-brand bg-gray-50 focus:bg-white transition-colors"
                 placeholder="https://..." />
             </div>
             <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
               <textarea value={form.description || ''} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-orange-500 focus:border-orange-500 bg-gray-50 focus:bg-white transition-colors resize-none"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand focus:border-brand bg-gray-50 focus:bg-white transition-colors resize-none"
                 placeholder="Short description..." />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
               <input type="number" value={form.displayOrder ?? 0} onChange={(e) => setForm({ ...form, displayOrder: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-orange-500 focus:border-orange-500 bg-gray-50 focus:bg-white transition-colors" />
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand focus:border-brand bg-gray-50 focus:bg-white transition-colors" />
             </div>
             {editId && (
               <div className="flex items-center gap-3 pt-6">
@@ -161,14 +161,14 @@ const AdminCategories = () => {
                   <input type="checkbox" checked={form.isActive ?? true}
                     onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
                     className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
                   <span className="ml-3 text-sm font-medium text-gray-700">Active</span>
                 </label>
               </div>
             )}
           </div>
           <button type="submit" disabled={saving}
-            className="flex items-center gap-2 px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50">
+            className="flex items-center gap-2 px-6 py-2.5 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-colors disabled:opacity-50">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {editId ? 'Update' : 'Create'}
           </button>
@@ -198,7 +198,7 @@ const AdminCategories = () => {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {categories.map((cat, idx) => (
-                  <tr key={cat._id} className="hover:bg-orange-50/30 transition-colors">
+                  <tr key={cat._id} className="hover:bg-brand-light/30/30 transition-colors">
                     <td className="px-5 py-3 text-gray-400 font-mono text-xs">{idx + 1}</td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
