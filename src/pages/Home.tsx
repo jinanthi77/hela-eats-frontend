@@ -1,18 +1,81 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { getRecipes } from '../services/recipeService';
 import { getCategories } from '../services/categoryService';
 import type { Recipe, Category } from '../types';
-import {
-  Utensils, List, ShoppingCart, UserCheck, Clock, Flame,
-  UtensilsCrossed, ArrowRight, Loader2, ChefHat,
-  Mail
-} from 'lucide-react';
+import { UtensilsCrossed, ArrowRight, Loader2, ChefHat, Mail, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Home = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Carousel state and refs
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragMoved, setDragMoved] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Calculate the width of one card so exactly 4 fit in the viewport
+  const GAP = 24; // gap-6 = 24px
+  const getCardWidth = () => {
+    if (!scrollRef.current) return 300;
+    return (scrollRef.current.clientWidth - GAP * 3) / 4;
+  };
+
+  useEffect(() => {
+    if (isHovered || isDragging) return;
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const cardW = getCardWidth() + GAP;
+        const { scrollLeft: sl, scrollWidth, clientWidth } = scrollRef.current;
+        if (sl + clientWidth >= scrollWidth - 10) {
+          scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          scrollRef.current.scrollTo({ left: sl + cardW, behavior: 'smooth' });
+        }
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [isHovered, isDragging]);
+
+  const startDragging = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragMoved(false);
+    if (!scrollRef.current) return;
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const stopDragging = () => {
+    setIsDragging(false);
+    setTimeout(() => setDragMoved(false), 50);
+  };
+
+  const onDrag = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    setDragMoved(true);
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const scrollLeftBtn = () => {
+    if (scrollRef.current) {
+      const cardW = getCardWidth() + GAP;
+      scrollRef.current.scrollTo({ left: scrollRef.current.scrollLeft - cardW, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRightBtn = () => {
+    if (scrollRef.current) {
+      const cardW = getCardWidth() + GAP;
+      scrollRef.current.scrollTo({ left: scrollRef.current.scrollLeft + cardW, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,7 +84,7 @@ const Home = () => {
           getRecipes(),
           getCategories(),
         ]);
-        setRecipes((recipeData || []).slice(0, 8));
+        setRecipes((recipeData || []).slice(0, 9));
         setCategories((catData || []).slice(0, 6));
       } catch {
         // Silently fail — Home still usable without data
@@ -45,121 +108,123 @@ const Home = () => {
           </p>
         </div>
 
-        {/* ── Quick Actions ─────────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          <Link to="/recipes" className="group p-6 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-brand-light flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-brand-light text-brand-dark rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Utensils className="h-8 w-8" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Browse Recipes</h3>
-            <p className="text-gray-500 text-sm">Explore a wide variety of delicious meals curated just for you.</p>
-          </Link>
-
-          <Link to="/categories" className="group p-6 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-brand-light flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <List className="h-8 w-8" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Categories</h3>
-            <p className="text-gray-500 text-sm">Find exactly what you're craving by browsing through our categories.</p>
-          </Link>
-
-          <Link to="/cart" className="group p-6 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-brand-light flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-brand-light text-brand rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <ShoppingCart className="h-8 w-8" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Your Cart</h3>
-            <p className="text-gray-500 text-sm">Manage your selected ingredients and proceed to checkout easily.</p>
-          </Link>
-
-          <Link to="/login" className="group p-6 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-brand-light flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <UserCheck className="h-8 w-8" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">User Account</h3>
-            <p className="text-gray-500 text-sm">Sign in to save your favorite recipes and track your orders.</p>
-          </Link>
-        </div>
-
-        {/* ── Explore Categories ────────────────────────────────── */}
-        {categories.length > 0 && (
-          <div className="mb-16">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Browse by Category</h2>
-              <Link to="/categories" className="text-brand hover:text-brand-dark font-medium text-sm flex items-center gap-1 transition-colors">
-                View All <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              {categories.map((cat) => (
-                <Link key={cat._id} to={`/categories/${cat.slug}`}
-                  className="group bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-light transition-all text-center">
-                  {(cat as any).imageUrl ? (
-                    <img src={(cat as any).imageUrl} alt={cat.name} className="h-16 w-16 mx-auto rounded-xl object-cover mb-3 group-hover:scale-105 transition-transform" />
-                  ) : (
-                    <div className="h-16 w-16 mx-auto rounded-xl bg-brand-light/50 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
-                      <ChefHat className="h-8 w-8 text-brand" />
-                    </div>
-                  )}
-                  <p className="font-bold text-gray-900 text-sm group-hover:text-brand transition-colors">{cat.name}</p>
-                  {cat.recipeCount != null && (
-                    <p className="text-xs text-gray-400 mt-1">{cat.recipeCount} recipes</p>
-                  )}
-                </Link>
-              ))}
-            </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-32">
+            <Loader2 className="h-12 w-12 text-brand animate-spin" />
           </div>
-        )}
-
-        {/* ── Explore Recipes ──────────────────────────────────── */}
-        <div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Explore Recipes</h2>
-            <Link to="/recipes" className="text-brand hover:text-brand-dark font-medium text-sm flex items-center gap-1 transition-colors">
-              View All <ArrowRight className="h-4 w-4" />
-            </Link>
+        ) : recipes.length === 0 ? (
+          <div className="text-center py-32 bg-white rounded-2xl border border-gray-100 shadow-sm mb-16">
+            <UtensilsCrossed className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 text-xl font-medium">No recipes available yet.</p>
+            <p className="text-gray-400 mt-2">Check back soon for delicious meals!</p>
           </div>
-
-          {loading ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="h-8 w-8 text-brand animate-spin" />
-            </div>
-          ) : recipes.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-sm">
-              <UtensilsCrossed className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg">No recipes available yet.</p>
-              <p className="text-gray-400 text-sm mt-1">Check back soon for delicious meals!</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {recipes.map((recipe) => (
-                <Link key={recipe._id} to={`/recipes/${recipe._id}`}
-                  className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
-                  <div className="h-48 bg-gray-200 relative overflow-hidden">
-                    {recipe.imageUrl || recipe.image ? (
-                      <img src={recipe.imageUrl || recipe.image} alt={recipe.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400 bg-brand-light/30">
-                        <UtensilsCrossed className="h-12 w-12" />
+        ) : (
+          <>
+            {/* ── Trending Recipes ──────────────────────────────────── */}
+            <div className="mb-16">
+              <h2 className="text-[32px] font-bold text-brand-dark mb-6 font-heading">Trending Recipes</h2>
+              <div className="flex items-center gap-4 relative">
+                <button 
+                  onClick={scrollLeftBtn}
+                  className="hidden sm:flex w-10 h-10 rounded-full bg-[#e8f3ee] items-center justify-center text-brand-dark hover:bg-[#d1e8dd] transition-colors shrink-0"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <div 
+                  ref={scrollRef}
+                  onMouseDown={startDragging}
+                  onMouseLeave={() => { setIsHovered(false); stopDragging(); }}
+                  onMouseUp={stopDragging}
+                  onMouseMove={onDrag}
+                  onMouseEnter={() => setIsHovered(true)}
+                  className="flex gap-6 overflow-x-auto scrollbar-hide snap-x scroll-smooth flex-1 cursor-grab active:cursor-grabbing pb-4 pt-1"
+                  style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
+                >
+                  {recipes.map((recipe) => (
+                    <Link 
+                      key={recipe._id} 
+                      to={`/recipes/${recipe._id}`} 
+                      onClick={(e) => dragMoved && e.preventDefault()}
+                      className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col group snap-start shrink-0 pointer-events-auto"
+                      style={{ width: 'calc((100% - 72px) / 4)' }}
+                      draggable={false}
+                    >
+                      <div className="p-3 pb-0 pointer-events-none">
+                        {recipe.imageUrl || recipe.image ? (
+                          <img src={recipe.imageUrl || recipe.image} alt={recipe.title} className="w-full h-[220px] object-cover rounded-[14px] group-hover:scale-[1.02] transition-transform duration-300" />
+                        ) : (
+                          <div className="w-full h-[220px] flex items-center justify-center text-gray-400 bg-brand-light/30 rounded-[14px]">
+                            <UtensilsCrossed className="h-12 w-12" />
+                          </div>
+                        )}
                       </div>
-                    )}
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-brand-dark shadow-sm">
-                      {recipe.difficulty}
-                    </div>
-                  </div>
-                  <div className="p-5">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 truncate group-hover:text-brand transition-colors">{recipe.title}</h3>
-                    <p className="text-gray-500 text-sm line-clamp-2 mb-4">{recipe.description}</p>
-                    <div className="flex items-center justify-between text-sm text-gray-500 border-t border-gray-50 pt-4 mt-auto">
-                      <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Prep: {recipe.prepTime || 0}m</span>
-                      <span className="flex items-center gap-1"><Flame className="h-3.5 w-3.5" /> Cook: {recipe.cookTime || 0}m</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                      <div className="p-5 flex flex-col flex-1 pointer-events-none">
+                        <div className="flex items-center gap-1.5 mb-2.5">
+                          <span className="text-[15px] font-bold text-gray-800">{recipe.ratingSummary?.averageRating || 4.8}</span>
+                          <div className="flex text-brand-dark">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star key={star} className="w-4 h-4 fill-current" />
+                            ))}
+                          </div>
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-4 leading-snug group-hover:text-brand transition-colors line-clamp-2">
+                          {recipe.title}
+                        </h3>
+                        <div className="mt-auto flex flex-col items-start gap-2">
+                          <span className={`text-[11px] font-extrabold px-3 py-1 rounded-md uppercase tracking-wide ${(recipe.difficulty || 'EASY').toUpperCase() === 'EASY' ? 'bg-[#e8f3ee] text-brand-dark' :
+                              (recipe.difficulty || 'EASY').toUpperCase() === 'MEDIUM' ? 'bg-[#fff0e6] text-[#e67e22]' :
+                                'bg-red-50 text-red-700'
+                            }`}>
+                            {recipe.difficulty || 'EASY'}
+                          </span>
+                          <span className="text-[14px] font-bold text-gray-800">
+                            Cook Time: {recipe.cookTime || 20} min
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                <button 
+                  onClick={scrollRightBtn}
+                  className="hidden sm:flex w-10 h-10 rounded-full bg-[#e8f3ee] items-center justify-center text-brand-dark hover:bg-[#d1e8dd] transition-colors shrink-0"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </div>
             </div>
-          )}
-        </div>
+
+            {/* ── Explore Categories ────────────────────────────────── */}
+            {categories.length > 0 && (
+              <div className="mb-16">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-[32px] font-bold text-brand-dark font-heading">Explore Categories</h2>
+                  <Link to="/categories" className="text-brand hover:text-brand-dark font-bold text-[15px] flex items-center gap-1 transition-colors">
+                    View All <ArrowRight className="h-5 w-5" />
+                  </Link>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+                  {categories.map((cat) => (
+                    <Link key={cat._id} to={`/categories/${cat.slug}`}
+                      className="group bg-white rounded-[20px] p-5 border border-gray-100 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-xl hover:border-brand-light transition-all duration-300 flex flex-col items-center text-center">
+                      {(cat as any).imageUrl ? (
+                        <img src={(cat as any).imageUrl} alt={cat.name} className="h-[84px] w-[84px] rounded-[16px] object-cover mb-4 group-hover:scale-110 transition-transform duration-300 shadow-sm" />
+                      ) : (
+                        <div className="h-[84px] w-[84px] rounded-[16px] bg-[#e8f3ee] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                          <ChefHat className="h-10 w-10 text-brand-dark" />
+                        </div>
+                      )}
+                      <p className="font-bold text-gray-900 text-[15px] group-hover:text-brand transition-colors leading-tight">{cat.name}</p>
+                      {cat.recipeCount != null && (
+                        <p className="text-[13px] font-semibold text-gray-400 mt-2">{cat.recipeCount} recipes</p>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         {/* ── About Us ──────────────────────────────────── */}
         <div className="mt-32 mb-20 text-center px-4">

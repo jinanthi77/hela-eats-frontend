@@ -79,6 +79,7 @@ const ProfilePage = () => {
       const currentAddresses = profile?.addresses || [];
       const updated = await updateProfile({ addresses: [...currentAddresses, newAddress] });
       setProfile(updated);
+      await refreshUser();
       setShowAddressForm(false);
       setAddressLabel(''); setAddressFullName(''); setAddressZipcode('');
       setAddressLine1(''); setAddressLine2(''); setAddressCity('');

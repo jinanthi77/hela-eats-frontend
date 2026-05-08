@@ -127,6 +127,7 @@ const CartPage = () => {
         <div className="space-y-4">
           {items.map((item: CartItem) => {
             const ingredients = item.selectedIngredients || item.ingredients || [];
+            const ingPrice = (ing: any) => typeof ing.price === 'number' ? ing.price : 0;
 
             return (
             <div key={item._id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
@@ -139,9 +140,7 @@ const CartPage = () => {
                   </Link>
                   <div className="flex items-center gap-1 mt-1 text-sm text-gray-500">
                     <p>{ingredients.length} ingredients</p>
-                    {item.itemTotal > 0 && (
-                      <span className="ml-2 font-semibold text-gray-700">• Rs. {item.itemTotal.toFixed(2)}</span>
-                    )}
+                    <span className="ml-2 font-semibold text-brand-dark">• Rs. {(item.itemTotal ?? 0).toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -185,6 +184,7 @@ const CartPage = () => {
                           <th scope="col" className="px-4 py-3 font-semibold">Ingredient</th>
                           <th scope="col" className="px-4 py-3 font-semibold">Quantity</th>
                           <th scope="col" className="px-4 py-3 font-semibold">Unit</th>
+                          <th scope="col" className="px-4 py-3 font-semibold text-right">Price (Rs.)</th>
                           <th scope="col" className="px-4 py-3 font-semibold text-right">Action</th>
                         </tr>
                       </thead>
@@ -197,8 +197,9 @@ const CartPage = () => {
                           return (
                             <tr key={ingId} className="hover:bg-gray-50 transition-colors">
                               <td className="px-4 py-3 font-medium text-gray-900">{ingName}</td>
-                              <td className="px-4 py-3">{ing.quantity}</td>
+                              <td className="px-4 py-3">{typeof ing.quantity === 'number' ? ing.quantity.toFixed(1) : ing.quantity}</td>
                               <td className="px-4 py-3">{ing.unit}</td>
+                              <td className="px-4 py-3 text-right font-semibold text-gray-800">{ingPrice(ing).toFixed(2)}</td>
                               <td className="px-4 py-3 text-right">
                                 <button 
                                   onClick={() => handleRemoveIngredient(item._id, ingId)}
@@ -226,9 +227,7 @@ const CartPage = () => {
               <div>
                 <p className="text-sm text-gray-500">Ready to order?</p>
                 <p className="text-lg font-bold text-gray-900">{items.length} recipe{items.length !== 1 ? 's' : ''} in your cart</p>
-                {cart?.totalPrice != null && cart.totalPrice > 0 && (
-                  <p className="text-sm text-brand font-semibold mt-1">Estimated Total: Rs. {cart.totalPrice.toFixed(2)}</p>
-                )}
+                <p className="text-lg text-brand-dark font-bold mt-1">Estimated Total: Rs. {(cart?.totalPrice ?? 0).toFixed(2)}</p>
               </div>
               <button onClick={() => navigate('/checkout')}
                 className="flex items-center gap-2 px-8 py-3 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-all shadow-lg shadow-brand-dark/20">

@@ -112,6 +112,7 @@ export interface RecipeIngredient {
   quantity?: number;
   exactQuantity?: number;
   unit: string;
+  price?: number;
 }
 
 // ─── Category Types ──────────────────────────────────────────────────

@@ -18,6 +18,7 @@ import {
   Zap,
   Wheat,
   Droplets,
+  DollarSign,
 } from 'lucide-react';
 
 const RecipeDetail = () => {
@@ -86,7 +87,7 @@ const RecipeDetail = () => {
   //   { ingredientId: { _id, name, baseUnit }, exactQuantity, unit }
   // or the frontend type:
   //   { name, quantity, unit }
-  const getIngredients = (): { id: string; name: string; quantity: number; unit: string }[] => {
+  const getIngredients = (): { id: string; name: string; quantity: number; unit: string; price: number }[] => {
     if (!recipe) return [];
     // If the user manually adjusted quantities, use those
     if (recipe._customIngredients) return recipe._customIngredients;
@@ -96,6 +97,7 @@ const RecipeDetail = () => {
       name: ing.name || ing.ingredientId?.name || 'Unknown',
       quantity: ing.quantity ?? ing.exactQuantity ?? 0,
       unit: ing.unit || ing.ingredientId?.baseUnit || '',
+      price: ing.price ?? 0,
     }));
   };
 
@@ -156,6 +158,8 @@ const RecipeDetail = () => {
   const ingredients = getIngredients();
   const instructions = getInstructions();
   const nutrition = getNutrition();
+  const totalPrice = ingredients.reduce((sum, ing) => sum + (ing.price || 0), 0);
+  const hasAnyPrice = ingredients.some(ing => ing.price > 0);
 
 
   return (
@@ -186,11 +190,19 @@ const RecipeDetail = () => {
         </div>
 
         <div className="flex flex-col justify-center">
-          {categoryName && (
-            <span className="inline-block text-xs font-bold text-brand-dark bg-brand-light/50 px-3 py-1 rounded-full mb-3 w-fit uppercase tracking-wide">
-              {categoryName}
-            </span>
-          )}
+          <div className="flex flex-wrap items-center gap-3 mb-3">
+            {categoryName && (
+              <span className="inline-flex text-xs font-bold text-brand-dark bg-brand-light/50 px-3 py-1 rounded-full uppercase tracking-wide">
+                {categoryName}
+              </span>
+            )}
+            {hasAnyPrice && (
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full tracking-wide">
+                <ShoppingCart className="w-3.5 h-3.5" />
+                Total Cost: Rs. {ingredients.filter(ing => !excludedIngredients.includes(ing.id)).reduce((sum, ing) => sum + (ing.price || 0), 0).toFixed(2)}
+              </span>
+            )}
+          </div>
           <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-3 leading-tight">
             {recipe.title}
           </h1>
@@ -309,40 +321,75 @@ const RecipeDetail = () => {
             </div>
 
             {ingredients.length > 0 ? (
-              <ul className="space-y-3">
-                {ingredients.map((ing, i) => {
-                  const isExcluded = excludedIngredients.includes(ing.id);
-                  return (
-                    <li
-                      key={i}
-                      onClick={() => {
-                        if (!ing.id) return;
-                        setExcludedIngredients(prev =>
-                          prev.includes(ing.id)
-                            ? prev.filter(id => id !== ing.id)
-                            : [...prev, ing.id]
-                        );
-                      }}
-                      className={`flex items-center justify-between gap-3 text-sm p-3 rounded-xl border transition-all cursor-pointer ${isExcluded
-                        ? 'bg-gray-50 border-gray-100 opacity-60'
-                        : 'bg-brand-light/20 border-brand-light hover:bg-brand-light/30'
-                        }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`flex items-center justify-center w-5 h-5 rounded border ${isExcluded ? 'border-gray-300 bg-white' : 'border-brand bg-brand'} transition-colors`}>
-                          {!isExcluded && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+              <>
+                <ul className="space-y-3">
+                  {ingredients.map((ing, i) => {
+                    const isExcluded = excludedIngredients.includes(ing.id);
+                    return (
+                      <li
+                        key={i}
+                        onClick={() => {
+                          if (!ing.id) return;
+                          setExcludedIngredients(prev =>
+                            prev.includes(ing.id)
+                              ? prev.filter(id => id !== ing.id)
+                              : [...prev, ing.id]
+                          );
+                        }}
+                        className={`flex items-center justify-between gap-3 text-sm p-3 rounded-xl border transition-all cursor-pointer ${isExcluded
+                          ? 'bg-gray-50 border-gray-100 opacity-60'
+                          : 'bg-brand-light/20 border-brand-light hover:bg-brand-light/30'
+                          }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`flex items-center justify-center w-5 h-5 rounded border ${isExcluded ? 'border-gray-300 bg-white' : 'border-brand bg-brand'} transition-colors`}>
+                            {!isExcluded && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                          </div>
+                          <span className={`font-medium ${isExcluded ? 'text-gray-500 line-through' : 'text-gray-800'}`}>
+                            {ing.name}
+                          </span>
                         </div>
-                        <span className={`font-medium ${isExcluded ? 'text-gray-500 line-through' : 'text-gray-800'}`}>
-                          {ing.name}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className={`font-bold px-3 py-1 rounded-lg border shadow-sm text-xs ${isExcluded ? 'text-gray-400 bg-gray-50 border-gray-100' : 'text-brand-dark bg-white border-brand-light'}`}>
+                            {ing.quantity} {ing.unit}
+                          </span>
+                          {ing.price > 0 && (
+                            <span className={`font-bold px-2.5 py-1 rounded-lg text-xs ${isExcluded ? 'text-gray-400 bg-gray-50 border border-gray-100 line-through' : 'text-emerald-700 bg-emerald-50 border border-emerald-100'}`}>
+                              Rs.{ing.price.toFixed(2)}
+                            </span>
+                          )}
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+
+                {/* Total Price Summary */}
+                {hasAnyPrice && (
+                  <div className="mt-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="h-5 w-5 text-emerald-600" />
+                        <span className="text-sm font-bold text-emerald-800">Total Ingredient Cost</span>
                       </div>
-                      <span className={`font-bold px-3 py-1 rounded-lg border shadow-sm text-xs ${isExcluded ? 'text-gray-400 bg-gray-50 border-gray-100' : 'text-brand-dark bg-white border-brand-light'}`}>
-                        {ing.quantity} {ing.unit}
+                      <span className="text-xl font-extrabold text-emerald-700">
+                        Rs. {ingredients
+                          .filter(ing => !excludedIngredients.includes(ing.id))
+                          .reduce((sum, ing) => sum + (ing.price || 0), 0)
+                          .toFixed(2)}
                       </span>
-                    </li>
-                  )
-                })}
-              </ul>
+                    </div>
+                    {excludedIngredients.length > 0 && (
+                      <p className="text-xs text-emerald-600 mt-1">
+                        Excludes {excludedIngredients.length} deselected ingredient{excludedIngredients.length > 1 ? 's' : ''}
+                        {totalPrice > 0 && (
+                          <span className="text-gray-400 ml-1">(Full price: Rs. {totalPrice.toFixed(2)})</span>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </>
             ) : (
               <p className="text-sm text-gray-400">No ingredients listed</p>
             )}

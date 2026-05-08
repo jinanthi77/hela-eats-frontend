@@ -6,6 +6,11 @@ export const getInventory = async (): Promise<VendorInventoryItem[]> => {
   return data;
 };
 
+export const getVendors = async (): Promise<{ _id: string; name: string; email: string }[]> => {
+  const { data } = await apiClient.get<{ _id: string; name: string; email: string }[]>('/vendor/vendors');
+  return data;
+};
+
 export const getMyInventory = async (): Promise<VendorInventoryItem[]> => {
   const { data } = await apiClient.get<VendorInventoryItem[]>('/vendor/inventory/me');
   return data;
