@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useToast } from '../components/Toast';
 import { Link } from 'react-router-dom';
 import { Store, Loader2, RefreshCw, Plus, Clock, CheckCircle2, XCircle, ArrowLeft, Trash2 } from 'lucide-react';
-import { getInventory, getRestockRequests, createRestockRequest, updateRequestStatus } from '../services/vendorService';
+import { getRestockRequests, getVendors, createRestockRequest, updateRequestStatus } from '../services/vendorService';
 import { getIngredients } from '../services/ingredientService';
-import type { RestockRequest, VendorInventoryItem } from '../types';
+import type { RestockRequest } from '../types';
 
 const STATUSES = ['Pending', 'Accepted', 'Rejected', 'Fulfilled'] as const;
 
@@ -31,21 +31,15 @@ const AdminVendorRequests = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [reqData, invData, ingData] = await Promise.all([
+      const [reqData, vendorData, ingData] = await Promise.all([
         getRestockRequests(),
-        getInventory(),
+        getVendors(),
         getIngredients()
       ]);
 
       setRequests(reqData);
       setAllIngredients(ingData);
-
-      // Extract unique vendors from inventory
-      const uniqueVendors = Array.from(new Map(invData
-        .filter((item: VendorInventoryItem) => item.vendorId && item.vendorId._id)
-        .map((item: VendorInventoryItem) => [item.vendorId._id, item.vendorId])
-      )).values();
-      setVendors(uniqueVendors as any);
+      setVendors(vendorData);
 
     } catch (error) {
       showToast('Failed to load data', 'error');

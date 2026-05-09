@@ -10,7 +10,7 @@ import { Loader2, CreditCard, Banknote, MapPin, ShoppingBag, ArrowLeft, CheckCir
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const { showToast } = useToast();
 
   const [cart, setCart] = useState<Cart | null>(null);
@@ -22,7 +22,10 @@ const CheckoutPage = () => {
   const addresses: Address[] = user?.addresses || [];
 
   useEffect(() => {
-    const fetchCart = async () => {
+    const init = async () => {
+      // Refresh user profile to get latest addresses
+      try { await refreshUser(); } catch { /* ignore */ }
+
       try {
         const data = await getCart();
         setCart(data);
@@ -33,7 +36,7 @@ const CheckoutPage = () => {
       } catch { navigate('/cart'); }
       finally { setLoading(false); }
     };
-    fetchCart();
+    init();
   }, []);
 
   useEffect(() => {
@@ -111,23 +114,57 @@ const CheckoutPage = () => {
       {/* Order Summary */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
         <h2 className="text-lg font-bold text-gray-900 mb-4">Order Summary</h2>
-        <div className="space-y-2">
+        <div className="space-y-5">
           {items.map((item, i) => {
             const title = typeof item.recipeId === 'object' ? item.recipeId?.title : (typeof item.recipe === 'object' ? item.recipe?.title : 'Recipe');
+            const ingredients = item.selectedIngredients || item.ingredients || [];
             return (
-              <div key={i} className="flex justify-between items-center py-2 text-sm">
-                <span className="text-gray-700 font-medium">{title}</span>
-                <span className="text-gray-400">{item.servings} serving{item.servings !== 1 ? 's' : ''}</span>
+              <div key={i} className="border border-gray-100 rounded-xl overflow-hidden">
+                {/* Recipe header */}
+                <div className="flex justify-between items-center px-4 py-3 bg-gray-50">
+                  <span className="font-bold text-gray-900">{title}</span>
+                  <div className="flex items-center gap-3 text-sm">
+                    <span className="text-gray-500">{item.servings} serving{item.servings !== 1 ? 's' : ''}</span>
+                    <span className="font-bold text-brand-dark">Rs. {(item.itemTotal ?? 0).toFixed(2)}</span>
+                  </div>
+                </div>
+                {/* Ingredients table */}
+                {ingredients.length > 0 && (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm text-gray-600">
+                      <thead className="text-xs text-gray-400 uppercase border-b border-gray-100">
+                        <tr>
+                          <th scope="col" className="px-4 py-2 font-semibold">Ingredient</th>
+                          <th scope="col" className="px-4 py-2 font-semibold">Qty</th>
+                          <th scope="col" className="px-4 py-2 font-semibold">Unit</th>
+                          <th scope="col" className="px-4 py-2 font-semibold text-right">Price (Rs.)</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                        {ingredients.map((ing: any, idx: number) => {
+                          const ingName = ing.ingredientId?.name || ing.name || 'Ingredient';
+                          const ingPrice = typeof ing.price === 'number' ? ing.price : 0;
+                          return (
+                            <tr key={idx} className="hover:bg-gray-50/50">
+                              <td className="px-4 py-2 font-medium text-gray-800">{ingName}</td>
+                              <td className="px-4 py-2">{typeof ing.quantity === 'number' ? ing.quantity.toFixed(1) : ing.quantity}</td>
+                              <td className="px-4 py-2">{ing.unit}</td>
+                              <td className="px-4 py-2 text-right font-semibold text-gray-800">{ingPrice.toFixed(2)}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
-        {cart?.totalPrice != null && (
-          <div className="border-t border-gray-100 mt-4 pt-4 flex justify-between items-center">
-            <span className="font-bold text-gray-900">Estimated Total</span>
-            <span className="text-xl font-bold text-brand">Rs. {cart.totalPrice.toFixed(2)}</span>
-          </div>
-        )}
+        <div className="border-t border-gray-100 mt-5 pt-4 flex justify-between items-center">
+          <span className="font-bold text-gray-900 text-lg">Estimated Total</span>
+          <span className="text-2xl font-bold text-brand-dark">Rs. {(cart?.totalPrice ?? 0).toFixed(2)}</span>
+        </div>
       </div>
 
       {/* Delivery Address */}

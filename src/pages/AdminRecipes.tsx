@@ -6,10 +6,12 @@ import { adminCreateRecipe, adminUpdateRecipe, adminDeleteRecipe } from '../serv
 import type { RecipePayload } from '../services/adminService';
 import { getIngredients, createIngredient } from '../services/ingredientService';
 import type { Ingredient } from '../services/ingredientService';
+import { getInventory } from '../services/vendorService';
+import type { VendorInventoryItem } from '../types';
 import { useToast } from '../components/Toast';
 import type { Recipe, Category } from '../types';
 import {
-  UtensilsCrossed, Plus, Pencil, Trash2, Loader2, X, Save, ArrowLeft, Clock, Search,
+  UtensilsCrossed, Plus, Pencil, Trash2, Loader2, X, Save, ArrowLeft, Clock, Search, DollarSign,
 } from 'lucide-react';
 
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard'] as const;
@@ -47,7 +49,8 @@ const AdminRecipes = () => {
 
   // Ingredients state
   const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
-  const [recipeIngredients, setRecipeIngredients] = useState<{ ingredientId: string; exactQuantity: number; unit: string }[]>([]);
+  const [vendorInventory, setVendorInventory] = useState<VendorInventoryItem[]>([]);
+  const [recipeIngredients, setRecipeIngredients] = useState<{ ingredientId: string; exactQuantity: number; unit: string; price: number }[]>([]);
   const [ingSearch, setIngSearch] = useState('');
   const [showIngDropdown, setShowIngDropdown] = useState(false);
   const [newIngName, setNewIngName] = useState('');
@@ -56,10 +59,13 @@ const AdminRecipes = () => {
 
   const fetchData = async () => {
     try {
-      const [recipeData, categoryData, ingredientData] = await Promise.all([getRecipes(), getCategories(), getIngredients()]);
+      const [recipeData, categoryData, ingredientData, inventoryData] = await Promise.all([
+        getRecipes(), getCategories(), getIngredients(), getInventory()
+      ]);
       setRecipes(Array.isArray(recipeData) ? recipeData : []);
       setCategories(Array.isArray(categoryData) ? categoryData : []);
       setAllIngredients(Array.isArray(ingredientData) ? ingredientData : []);
+      setVendorInventory(Array.isArray(inventoryData) ? inventoryData : []);
     } catch {
       showToast('Failed to load data', 'error');
     } finally {
@@ -85,6 +91,7 @@ const AdminRecipes = () => {
       ingredientId: ing.ingredientId?._id || ing.ingredientId || '',
       exactQuantity: ing.exactQuantity || ing.quantity || 0,
       unit: ing.unit || '',
+      price: ing.price || 0,
     }));
     setForm({
       title: recipe.title,
@@ -107,10 +114,22 @@ const AdminRecipes = () => {
   };
 
   // Ingredient helpers
+  const getVendorPrice = (ingredientId: string): number => {
+    // Find cheapest vendor price for this ingredient
+    const stocks = vendorInventory.filter(v => {
+      const vIngId = typeof v.ingredientId === 'object' ? v.ingredientId._id : v.ingredientId;
+      return vIngId === ingredientId && v.stockQuantity > 0;
+    });
+    if (stocks.length === 0) return 0;
+    stocks.sort((a, b) => a.price - b.price);
+    return stocks[0].price;
+  };
+
   const addIngredientToRecipe = (ingId: string) => {
     if (recipeIngredients.find(r => r.ingredientId === ingId)) return;
     const ing = allIngredients.find(i => i._id === ingId);
-    setRecipeIngredients([...recipeIngredients, { ingredientId: ingId, exactQuantity: 0, unit: ing?.baseUnit || 'g' }]);
+    const vendorPrice = getVendorPrice(ingId);
+    setRecipeIngredients([...recipeIngredients, { ingredientId: ingId, exactQuantity: 0, unit: ing?.baseUnit || 'g', price: vendorPrice }]);
     setIngSearch('');
     setShowIngDropdown(false);
   };
@@ -118,6 +137,7 @@ const AdminRecipes = () => {
   const updateRecipeIngredient = (idx: number, field: string, value: any) => {
     setRecipeIngredients(recipeIngredients.map((ing, i) => i === idx ? { ...ing, [field]: value } : ing));
   };
+  const recipeTotalPrice = recipeIngredients.reduce((sum, ing) => sum + (ing.price || 0), 0);
   const getIngName = (id: string) => allIngredients.find(i => i._id === id)?.name || 'Unknown';
   const filteredIngredients = allIngredients.filter(i => i.name.toLowerCase().includes(ingSearch.toLowerCase()) && !recipeIngredients.find(r => r.ingredientId === i._id));
 
@@ -145,7 +165,12 @@ const AdminRecipes = () => {
         ...form,
         tags: tagsInput.split(',').map(t => t.trim().toLowerCase()).filter(Boolean),
         steps: steps.filter(s => s.instruction.trim()),
-        ingredients: recipeIngredients.filter(i => i.ingredientId && i.exactQuantity > 0),
+        ingredients: recipeIngredients.filter(i => i.ingredientId && i.exactQuantity > 0).map(i => ({
+          ingredientId: i.ingredientId,
+          exactQuantity: i.exactQuantity,
+          unit: i.unit,
+          price: i.price || 0
+        })),
       };
       if (editId) {
         await adminUpdateRecipe(editId, payload);
@@ -322,6 +347,12 @@ const AdminRecipes = () => {
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
               <label className="block text-sm font-bold text-gray-900">Ingredients ({recipeIngredients.length})</label>
+              {recipeIngredients.length > 0 && (
+                <span className="text-sm font-bold text-emerald-700 flex items-center gap-1">
+                  <DollarSign className="h-3.5 w-3.5" />
+                  Total: Rs. {recipeTotalPrice.toFixed(2)}
+                </span>
+              )}
             </div>
             {/* Search & Add */}
             <div className="relative mb-3">
@@ -335,13 +366,19 @@ const AdminRecipes = () => {
                     placeholder="Search ingredients..." />
                   {showIngDropdown && ingSearch && filteredIngredients.length > 0 && (
                     <div className="absolute z-20 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-40 overflow-y-auto">
-                      {filteredIngredients.slice(0, 15).map(ing => (
-                        <button key={ing._id} type="button" onClick={() => addIngredientToRecipe(ing._id)}
-                          className="w-full text-left px-4 py-2 text-sm hover:bg-brand-light/30 transition-colors flex justify-between">
-                          <span className="font-medium text-gray-800">{ing.name}</span>
-                          <span className="text-xs text-gray-400">{ing.baseUnit}</span>
-                        </button>
-                      ))}
+                      {filteredIngredients.slice(0, 15).map(ing => {
+                        const vPrice = getVendorPrice(ing._id);
+                        return (
+                          <button key={ing._id} type="button" onClick={() => addIngredientToRecipe(ing._id)}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-brand-light/30 transition-colors flex justify-between">
+                            <span className="font-medium text-gray-800">{ing.name}</span>
+                            <span className="text-xs text-gray-400 flex gap-2">
+                              <span>{ing.baseUnit}</span>
+                              {vPrice > 0 && <span className="text-emerald-600 font-bold">Rs.{vPrice}</span>}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -359,6 +396,16 @@ const AdminRecipes = () => {
                 </button>
               </div>
             </div>
+            {/* Column headers */}
+            {recipeIngredients.length > 0 && (
+              <div className="flex items-center gap-2 px-2 pb-1 mb-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                <span className="flex-1">Ingredient</span>
+                <span className="w-20 text-center">Qty</span>
+                <span className="w-16 text-center">Unit</span>
+                <span className="w-24 text-center">Price (Rs.)</span>
+                <span className="w-8"></span>
+              </div>
+            )}
             {/* Selected ingredients list */}
             {recipeIngredients.length > 0 && (
               <div className="space-y-2">
@@ -371,11 +418,22 @@ const AdminRecipes = () => {
                     <input type="text" value={ing.unit}
                       onChange={(e) => updateRecipeIngredient(idx, 'unit', e.target.value)}
                       className="w-16 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center focus:ring-brand focus:border-brand" placeholder="Unit" />
+                    <input type="number" min={0} step="0.01" value={ing.price}
+                      onChange={(e) => updateRecipeIngredient(idx, 'price', parseFloat(e.target.value) || 0)}
+                      className="w-24 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center focus:ring-brand focus:border-brand" placeholder="Price" />
                     <button type="button" onClick={() => removeIngredientFromRecipe(idx)} className="p-1.5 text-gray-400 hover:text-red-500 transition-colors">
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 ))}
+                {/* Total row */}
+                <div className="flex items-center gap-2 p-2 bg-emerald-50 rounded-lg border border-emerald-100">
+                  <span className="flex-1 text-sm font-bold text-emerald-800">Total Recipe Price</span>
+                  <span className="w-20"></span>
+                  <span className="w-16"></span>
+                  <span className="w-24 text-center text-sm font-extrabold text-emerald-700">Rs. {recipeTotalPrice.toFixed(2)}</span>
+                  <span className="w-8"></span>
+                </div>
               </div>
             )}
             {recipeIngredients.length === 0 && <p className="text-xs text-gray-400 italic">No ingredients added yet. Search above to add.</p>}

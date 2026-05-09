@@ -51,7 +51,7 @@ export interface RecipePayload {
   difficulty?: 'Easy' | 'Medium' | 'Hard';
   tags?: string[];
   standardServingSize?: number;
-  ingredients?: { ingredientId: string; exactQuantity: number; unit: string }[];
+  ingredients?: { ingredientId: string; exactQuantity: number; unit: string; price?: number }[];
   steps?: { stepNumber: number; instruction: string }[];
   nutritionPerStandardServing?: { calories: number; protein: number; carbohydrate: number; fiber: number; fat: number };
 }
