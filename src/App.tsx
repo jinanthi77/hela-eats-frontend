@@ -182,8 +182,7 @@ function App() {
                     alt="Hela Eats Logo"
                     className="h-22 w-22 object-contain mx-auto mb-3"
                   />
-                  &copy; {new Date().getFullYear()} Hela Eats. All rights
-                  reserved.
+                  &copy; {new Date().getFullYear()} Hela Eats. All rights reserved.
                   <p className="text-gray-700">
                     Developed by: Nilupul, Udara, Jinanthi, Dilshika
                   </p>

@@ -18,11 +18,26 @@ const Home = () => {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Calculate the width of one card so exactly 4 fit in the viewport
+  // Responsive cards-per-view: 4 on large, 3 on medium, 1 on small
+  const getCardsPerView = () => {
+    if (typeof window === 'undefined') return 4;
+    if (window.innerWidth >= 1024) return 4;
+    if (window.innerWidth >= 768) return 3;
+    return 1;
+  };
+  const [cardsPerView, setCardsPerView] = useState(getCardsPerView);
+
+  useEffect(() => {
+    const handleResize = () => setCardsPerView(getCardsPerView());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Calculate the width of one card so exactly cardsPerView fit in the viewport
   const GAP = 24; // gap-6 = 24px
   const getCardWidth = () => {
     if (!scrollRef.current) return 300;
-    return (scrollRef.current.clientWidth - GAP * 3) / 4;
+    return (scrollRef.current.clientWidth - GAP * (cardsPerView - 1)) / cardsPerView;
   };
 
   useEffect(() => {
@@ -146,7 +161,7 @@ const Home = () => {
                       to={`/recipes/${recipe._id}`} 
                       onClick={(e) => dragMoved && e.preventDefault()}
                       className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col group snap-start shrink-0 pointer-events-auto"
-                      style={{ width: 'calc((100% - 72px) / 4)' }}
+                      style={{ width: `calc((100% - ${GAP * (cardsPerView - 1)}px) / ${cardsPerView})` }}
                       draggable={false}
                     >
                       <div className="p-3 pb-0 pointer-events-none">
