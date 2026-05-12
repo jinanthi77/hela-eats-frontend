@@ -1,13 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useToast } from '../components/Toast';
-import { Store, PackageSearch, ClipboardList, Loader2, Plus, Clock, CheckCircle2, XCircle } from 'lucide-react';
-import { getMyInventory, createInventoryItem, getRestockRequests, updateRequestStatus } from '../services/vendorService';
+import { Store, PackageSearch, ClipboardList, Loader2, Plus, Clock, CheckCircle2, XCircle, Trash2, AlertTriangle } from 'lucide-react';
+import { getMyInventory, createInventoryItem, deleteInventoryItem, getRestockRequests, updateRequestStatus } from '../services/vendorService';
 import { getIngredients } from '../services/ingredientService';
 import type { VendorInventoryItem, RestockRequest } from '../types';
+import { Link } from 'react-router-dom';
 
 const STATUSES = ['Pending', 'Accepted', 'Rejected', 'Fulfilled'] as const;
 
-const statusConfig: Record<string, { icon: any; color: string; bg: string }> = {
+const inventoryStatusConfig: Record<string, { icon: any; color: string; bg: string; label: string }> = {
+  Pending:  { icon: Clock,        color: 'text-amber-600',   bg: 'bg-amber-50',   label: 'Pending Review' },
+  Approved: { icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50', label: 'Approved' },
+  Rejected: { icon: XCircle,      color: 'text-red-600',     bg: 'bg-red-50',     label: 'Rejected' },
+};
+
+const requestStatusConfig: Record<string, { icon: any; color: string; bg: string }> = {
   Pending: { icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
   Accepted: { icon: CheckCircle2, color: 'text-blue-600', bg: 'bg-blue-50' },
   Rejected: { icon: XCircle, color: 'text-red-600', bg: 'bg-red-50' },
@@ -76,6 +83,17 @@ const VendorDashboard = () => {
     }
   };
 
+  const handleDeleteItem = async (id: string, name: string) => {
+    if (!confirm(`Delete inventory item "${name}"? This cannot be undone.`)) return;
+    try {
+      await deleteInventoryItem(id);
+      showToast('Item deleted', 'info');
+      setInventory(prev => prev.filter(item => item._id !== id));
+    } catch (error: any) {
+      showToast(error.response?.data?.message || 'Failed to delete item', 'error');
+    }
+  };
+
   if (loading) return (
     <div className="min-h-[60vh] flex items-center justify-center">
       <Loader2 className="h-8 w-8 text-brand animate-spin" />
@@ -102,6 +120,12 @@ const VendorDashboard = () => {
         >
           <ClipboardList className="h-4 w-4" /> Admin Requests
         </button>
+        <Link
+          to="/vendor/orders"
+          className="pb-3 px-2 text-sm font-bold flex items-center gap-2 text-gray-500 hover:text-gray-700"
+        >
+          <Store className="h-4 w-4" /> My Orders
+        </Link>
       </div>
 
       {activeTab === 'inventory' && (
@@ -125,12 +149,25 @@ const VendorDashboard = () => {
                   <th className="px-5 py-3.5 font-semibold">Price</th>
                   <th className="px-5 py-3.5 font-semibold">Stock</th>
                   <th className="px-5 py-3.5 font-semibold">Type</th>
+                  <th className="px-5 py-3.5 font-semibold">Status</th>
+                  <th className="px-5 py-3.5 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {inventory.map(item => (
+                {inventory.map(item => {
+                  const invCfg = inventoryStatusConfig[item.status] || inventoryStatusConfig.Pending;
+                  const InvStatusIcon = invCfg.icon;
+                  return (
                   <tr key={item._id} className="hover:bg-brand-light/30/30">
-                    <td className="px-5 py-3 font-medium">{item.ingredientId?.name || 'Unknown'}</td>
+                    <td className="px-5 py-3">
+                      <span className="font-medium">{item.ingredientId?.name || 'Unknown'}</span>
+                      {item.status === 'Rejected' && item.adminNotes && (
+                        <div className="flex items-start gap-1 mt-1">
+                          <AlertTriangle className="h-3.5 w-3.5 text-red-500 shrink-0 mt-0.5" />
+                          <span className="text-xs text-red-500">{item.adminNotes}</span>
+                        </div>
+                      )}
+                    </td>
                     <td className="px-5 py-3 text-gray-600">{item.packageWeight} {item.unit}</td>
                     <td className="px-5 py-3 font-bold text-gray-900">Rs. {item.price?.toFixed(2) || '0.00'}</td>
                     <td className="px-5 py-3 font-bold">{item.stockQuantity}</td>
@@ -141,11 +178,27 @@ const VendorDashboard = () => {
                         <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs font-bold">Raw</span>
                       )}
                     </td>
+                    <td className="px-5 py-3">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${invCfg.bg} ${invCfg.color}`}>
+                        <InvStatusIcon className="h-3.5 w-3.5" />
+                        {invCfg.label}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <button
+                        onClick={() => handleDeleteItem(item._id, item.ingredientId?.name || 'item')}
+                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Delete item"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </td>
                   </tr>
-                ))}
+                  );
+                })}
                 {inventory.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-gray-400 font-medium">No inventory items found. Add some!</td>
+                    <td colSpan={7} className="text-center py-8 text-gray-400 font-medium">No inventory items found. Add some!</td>
                   </tr>
                 )}
               </tbody>
@@ -170,7 +223,7 @@ const VendorDashboard = () => {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {requests.map(req => {
-                  const cfg = statusConfig[req.status] || statusConfig.Pending;
+                  const cfg = requestStatusConfig[req.status] || requestStatusConfig.Pending;
                   const StatusIcon = cfg.icon;
                   return (
                     <tr key={req._id} className="hover:bg-brand-light/30/30">

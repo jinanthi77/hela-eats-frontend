@@ -6,12 +6,12 @@ import { adminCreateRecipe, adminUpdateRecipe, adminDeleteRecipe } from '../serv
 import type { RecipePayload } from '../services/adminService';
 import { getIngredients, createIngredient } from '../services/ingredientService';
 import type { Ingredient } from '../services/ingredientService';
-import { getInventory } from '../services/vendorService';
+import { getAllInventory, syncRecipePrices } from '../services/vendorService';
 import type { VendorInventoryItem } from '../types';
 import { useToast } from '../components/Toast';
 import type { Recipe, Category } from '../types';
 import {
-  UtensilsCrossed, Plus, Pencil, Trash2, Loader2, X, Save, ArrowLeft, Clock, Search, DollarSign,
+  UtensilsCrossed, Plus, Pencil, Trash2, Loader2, X, Save, ArrowLeft, Clock, Search, DollarSign, RefreshCw,
 } from 'lucide-react';
 
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard'] as const;
@@ -37,6 +37,7 @@ const AdminRecipes = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [syncingId, setSyncingId] = useState<string | null>(null);
 
   // Form state
   const [showForm, setShowForm] = useState(false);
@@ -60,7 +61,7 @@ const AdminRecipes = () => {
   const fetchData = async () => {
     try {
       const [recipeData, categoryData, ingredientData, inventoryData] = await Promise.all([
-        getRecipes(), getCategories(), getIngredients(), getInventory()
+        getRecipes(), getCategories(), getIngredients(), getAllInventory('Approved')
       ]);
       setRecipes(Array.isArray(recipeData) ? recipeData : []);
       setCategories(Array.isArray(categoryData) ? categoryData : []);
@@ -200,6 +201,19 @@ const AdminRecipes = () => {
       setRecipes((prev) => prev.filter((r) => r._id !== id));
     } catch (err: any) {
       showToast(err.response?.data?.message || 'Failed to delete', 'error');
+    }
+  };
+
+  const handleSyncPrices = async (recipeId: string, title: string) => {
+    setSyncingId(recipeId);
+    try {
+      const result = await syncRecipePrices(recipeId);
+      showToast(`"${title}" — ${result.synced} prices synced${result.failed > 0 ? `, ${result.failed} failed` : ''}`, 'success');
+      await fetchData();
+    } catch (err: any) {
+      showToast(err.response?.data?.message || 'Failed to sync prices', 'error');
+    } finally {
+      setSyncingId(null);
     }
   };
 
@@ -532,6 +546,12 @@ const AdminRecipes = () => {
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => handleSyncPrices(recipe._id, recipe.title)}
+                          disabled={syncingId === recipe._id}
+                          className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50"
+                          title="Sync vendor prices">
+                          <RefreshCw className={`h-4 w-4 ${syncingId === recipe._id ? 'animate-spin' : ''}`} />
+                        </button>
                         <button onClick={() => openEdit(recipe)}
                           className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                           <Pencil className="h-4 w-4" />

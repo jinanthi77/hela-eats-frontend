@@ -34,8 +34,6 @@ const ProfilePage = () => {
   const [addressLine2, setAddressLine2] = useState('');
   const [addressCity, setAddressCity] = useState('');
 
-  // Pantry
-  // const [pantryLoading, setPantryLoading] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -96,16 +94,6 @@ const ProfilePage = () => {
   //   }
   // };
 
-  // const handleRemovePantryItem = async (ingredientId: string) => {
-  //   setPantryLoading(true);
-  //   try {
-  //     await removeFromPantry(ingredientId);
-  //     setProfile((p) => p ? { ...p, pantry: p.pantry?.filter((i) => i.ingredientId._id !== ingredientId) } : p);
-  //     showToast('Removed from pantry', 'info');
-  //   } catch (err: any) {
-  //     showToast(err.response?.data?.message || 'Failed to remove', 'error');
-  //   } finally { setPantryLoading(false); }
-  // };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -320,29 +308,30 @@ const ProfilePage = () => {
       </div>
 
       {/* Pantry */}
-      {/* 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Leaf className="h-5 w-5 text-brand" /> My Pantry
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-brand" /> My Pantry
+          </h2>
+          <a href="/pantry" className="text-sm text-brand hover:text-brand-dark font-medium flex items-center gap-1">
+            Manage Pantry →
+          </a>
+        </div>
         {profile?.pantry && profile.pantry.length > 0 ? (
           <div className="flex flex-wrap gap-2">
-            {profile.pantry.map((item, i) => (
-              <span key={i} className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-light/30 text-brand-dark rounded-full text-sm font-medium border border-brand-light">
-                {item.ingredientId?.name || 'Unknown'}
-                <button onClick={() => handleRemovePantryItem(item.ingredientId?._id)}
-                  disabled={pantryLoading}
-                  className="hover:text-red-500 transition-colors disabled:opacity-30">
-                  <X className="h-3 w-3" />
-                </button>
-              </span>
-            ))}
+            {profile.pantry.map((item, i) => {
+              const ingName = typeof item.ingredientId === 'object' ? item.ingredientId.name : 'Unknown';
+              return (
+                <span key={i} className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-800 rounded-full text-sm font-medium border border-emerald-100">
+                  {ingName}
+                </span>
+              );
+            })}
           </div>
         ) : (
-          <p className="text-gray-400 text-sm">Your pantry is empty. Items you already have at home will be excluded from shopping lists.</p>
+          <p className="text-gray-400 text-sm">Your pantry is empty. Add ingredients you already have at home to save on your next order!</p>
         )}
       </div>
-      */}
     </div>
   );
 };

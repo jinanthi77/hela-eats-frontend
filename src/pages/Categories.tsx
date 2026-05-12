@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getCategories } from '../services/categoryService';
 import type { Category } from '../types';
-import { Loader2 } from 'lucide-react';
 import { CardGridSkeleton } from '../components/LoadingSkeleton';
 
 const Categories = () => {
@@ -50,8 +49,8 @@ const Categories = () => {
             <Link key={category._id} to={`/categories/${category.slug}`}
               className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col">
               <div className="h-40 bg-gray-100 relative overflow-hidden">
-                {category.image ? (
-                  <img src={category.image} alt={category.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                {category.imageUrl || category.image ? (
+                  <img src={category.imageUrl || category.image} alt={category.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-light to-red-50 text-brand group-hover:scale-105 transition-transform duration-500">
                     <span className="text-4xl font-bold opacity-50">{category.name.charAt(0)}</span>

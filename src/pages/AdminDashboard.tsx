@@ -5,7 +5,7 @@ import { useToast } from '../components/Toast';
 import {
   BarChart3, Users, ShoppingBag, DollarSign, UtensilsCrossed, Loader2,
   Clock, CheckCircle2, Package, Truck, XCircle, FolderOpen, ClipboardList,
-  ArrowRight, Store
+  ArrowRight, Store, CheckSquare
 } from 'lucide-react';
 
 const statusIcons: Record<string, any> = {
@@ -95,6 +95,15 @@ const AdminDashboard = () => {
       color: 'text-emerald-600',
       bg: 'bg-emerald-50',
       hoverBg: 'hover:border-emerald-200',
+    },
+    {
+      title: 'Inventory Approvals',
+      description: 'Review pending vendor inventory submissions',
+      to: '/admin/approvals',
+      icon: CheckSquare,
+      color: 'text-amber-600',
+      bg: 'bg-amber-50',
+      hoverBg: 'hover:border-amber-200',
     },
   ];
 
