@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { ShoppingBag, Menu, User, LogOut, X, ClipboardList, CalendarDays, BarChart3, Store } from 'lucide-react';
+import { ShoppingBag, Menu, User, LogOut, X, ClipboardList, CalendarDays, BarChart3, Store, Carrot, PackageSearch } from 'lucide-react';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2">
             <Link to="/" className="flex items-center space-x-2 hover:opacity-90 transition-opacity">
-              <img src="/logo.png" alt="Hela Eats Logo" className="h-22 w-22 object-contain" />
+              <img src="/logo22.png" alt="Hela Eats Logo" className="h-17 w-38 object-contain" />
             </Link>
           </div>
 
@@ -31,17 +31,25 @@ const Navbar = () => {
             <div className="flex items-center space-x-6">
               <Link to="/recipes" className="hover:text-brand transition-colors">Recipes</Link>
               <Link to="/categories" className="hover:text-brand transition-colors">Categories</Link>
+              <Link to="/contact" className="hover:text-brand transition-colors">Contact Us</Link>
               {isAuthenticated ? (
                 <>
                   <Link to="/cart" className="hover:text-brand transition-colors relative">
-                    <ShoppingBag className="h-5 w-5" />
+                    <ShoppingBag className="h-6 w-6" />
                   </Link>
                   <Link to="/orders" className="hover:text-brand transition-colors" title="Orders">
-                    <ClipboardList className="h-5 w-5" />
+                    <ClipboardList className="h-6 w-6" />
                   </Link>
-                  <Link to="/mealplans" className="hover:text-brand transition-colors" title="Meal Plans">
-                    <CalendarDays className="h-5 w-5" />
-                  </Link>
+                  {user?.role === 'user' && (
+                    <>
+                      <Link to="/mealplans" className="hover:text-brand transition-colors" title="Meal Plans">
+                        <CalendarDays className="h-6 w-6" />
+                      </Link>
+                      <Link to="/pantry" className="hover:text-brand transition-colors" title="My Pantry">
+                        <Carrot className="h-6 w-6" />
+                      </Link>
+                    </>
+                  )}
 
                   {/* Admin link */}
                   {user?.role === 'admin' && (
@@ -52,19 +60,31 @@ const Navbar = () => {
 
                   {/* Vendor link */}
                   {user?.role === 'vendor' && (
-                    <Link to="/vendor/dashboard" className="hover:text-brand transition-colors" title="Vendor Dashboard">
-                      <Store className="h-5 w-5" />
-                    </Link>
+                    <>
+                      <Link to="/vendor/dashboard" className="hover:text-brand transition-colors" title="Vendor Dashboard">
+                        <Store className="h-5 w-5" />
+                      </Link>
+                      <Link to="/vendor/orders" className="hover:text-brand transition-colors" title="Vendor Orders">
+                        <PackageSearch className="h-5 w-5" />
+                      </Link>
+                    </>
                   )}
 
                   {/* User dropdown area */}
                   <div className="flex items-center space-x-3 pl-2 border-l border-brand/50">
                     <Link
                       to="/profile"
-                      className="text-sm font-medium hover:text-brand transition-colors truncate max-w-[120px]"
+                      className="flex items-center gap-2 text-sm font-medium hover:text-brand transition-colors"
                       title={user?.name}
                     >
-                      {user?.name || 'Profile'}
+                      {user?.profilePicture?.url ? (
+                        <img src={user.profilePicture.url} alt={user.name} className="h-8 w-8 rounded-full object-cover border border-brand-light" />
+                      ) : (
+                        <div className="h-8 w-8 rounded-full bg-brand-light flex items-center justify-center">
+                          <User className="h-4 w-4 text-brand-dark" />
+                        </div>
+                      )}
+                      <span className="truncate max-w-[100px] hidden lg:block">{user?.name || 'Profile'}</span>
                     </Link>
                     <button
                       onClick={handleLogout}
@@ -116,11 +136,23 @@ const Navbar = () => {
                 <Link to="/orders" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
                   <ClipboardList className="h-4 w-4" /> Orders
                 </Link>
-                <Link to="/mealplans" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
-                  <CalendarDays className="h-4 w-4" /> Meal Plans
-                </Link>
+                {user?.role === 'user' && (
+                  <>
+                    <Link to="/mealplans" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
+                      <CalendarDays className="h-4 w-4" /> Meal Plans
+                    </Link>
+                    <Link to="/pantry" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
+                      <Carrot className="h-4 w-4" /> My Pantry
+                    </Link>
+                  </>
+                )}
                 <Link to="/profile" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
-                  <User className="h-4 w-4" /> {user?.name || 'Profile'}
+                  {user?.profilePicture?.url ? (
+                    <img src={user.profilePicture.url} alt={user.name} className="h-5 w-5 rounded-full object-cover" />
+                  ) : (
+                    <User className="h-4 w-4" />
+                  )}
+                  {user?.name || 'Profile'}
                 </Link>
                 {user?.role === 'admin' && (
                   <Link to="/admin/dashboard" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors text-brand-dark font-medium">
@@ -128,9 +160,14 @@ const Navbar = () => {
                   </Link>
                 )}
                 {user?.role === 'vendor' && (
-                  <Link to="/vendor/dashboard" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors text-brand-dark font-medium">
-                    <Store className="h-4 w-4" /> Vendor Dashboard
-                  </Link>
+                  <>
+                    <Link to="/vendor/dashboard" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors text-brand-dark font-medium">
+                      <Store className="h-4 w-4" /> Vendor Dashboard
+                    </Link>
+                    <Link to="/vendor/orders" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors text-brand-dark font-medium">
+                      <PackageSearch className="h-4 w-4" /> Vendor Orders
+                    </Link>
+                  </>
                 )}
                 <div className="border-t border-brand/30 pt-2 mt-2">
                   <button

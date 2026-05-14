@@ -45,6 +45,7 @@ export interface AuthResponse {
   name: string;
   email: string;
   role: 'user' | 'admin' | 'vendor';
+  profilePicture?: { url: string | null; publicId: string | null };
   token: string;
 }
 
@@ -107,12 +108,21 @@ export interface Recipe {
 }
 
 export interface RecipeIngredient {
-  ingredientId?: string | { _id: string; name: string; baseUnit: string; isStaple?: boolean };
+  ingredientId?: string | { _id: string; name: string; baseUnit: string; isStaple?: boolean; nutritionPer100Units?: NutritionPer100Units };
   name?: string;
   quantity?: number;
   exactQuantity?: number;
   unit: string;
   price?: number;
+  vendorInventoryId?: string | {
+    _id: string;
+    vendorId: string;
+    packageWeight: number;
+    unit: string;
+    price: number;
+    status: string;
+  } | null;
+  priceLastSyncedAt?: string | null;
 }
 
 // ─── Category Types ──────────────────────────────────────────────────
@@ -253,6 +263,15 @@ export interface MealPlan {
   updatedAt?: string;
 }
 
+// ─── Nutrition Types ─────────────────────────────────────────────────
+export interface NutritionPer100Units {
+  calories: number;
+  protein: number;
+  carbohydrate: number;
+  fiber: number;
+  fat: number;
+}
+
 // ─── Vendor Types ────────────────────────────────────────────────────
 export interface VendorInventoryItem {
   _id: string;
@@ -263,6 +282,10 @@ export interface VendorInventoryItem {
   packageWeight: number;
   unit: string;
   isReadyToCook: boolean;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  reviewedBy?: { _id: string; name: string; email: string } | null;
+  reviewedAt?: string | null;
+  adminNotes?: string;
 }
 
 export interface RestockRequestItem {
@@ -280,4 +303,40 @@ export interface RestockRequest {
   notes?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+// ─── Vendor Order Types (for vendor order fulfillment dashboard) ─────
+export interface VendorOrderIngredient {
+  ingredientName: string;
+  scaledQuantity: number;
+  unit: string;
+  priceCalculated: number;
+}
+
+export interface VendorOrderItem {
+  recipeId: string;
+  recipeTitle: string;
+  servings: number;
+  ingredients: VendorOrderIngredient[];
+  vendorItemTotal: number;
+}
+
+export interface VendorOrder {
+  _id: string;
+  orderNumber: string;
+  status: OrderStatus;
+  paymentStatus: PaymentStatusType;
+  customer: { name: string; email: string; phone: string };
+  deliveryAddress: {
+    fullName: string;
+    phone: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    district?: string;
+    postalCode?: string;
+  };
+  items: VendorOrderItem[];
+  vendorTotal: number;
+  createdAt: string;
 }

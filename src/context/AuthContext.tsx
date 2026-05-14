@@ -81,6 +81,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       name: response.name,
       email: response.email,
       role: response.role,
+      profilePicture: response.profilePicture as any,
     });
 
     // Then hydrate the full profile (addresses, pantry, etc.)

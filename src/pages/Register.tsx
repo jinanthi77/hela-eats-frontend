@@ -185,10 +185,12 @@ const Register = () => {
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={handleGoogleError}
-                  theme="outline"
-                  size="medium"
+                  theme="filled_blue"
+                  size="large"
                   text="signup_with"
-                  shape="rectangular"
+                  shape="pill"
+                  width="300"
+                  logo_alignment="left"
                 />
               </div>
 
@@ -202,7 +204,7 @@ const Register = () => {
               <button
                 type="button"
                 onClick={() => navigate('/login')}
-                className="text-[10px] text-gray-400 hover:text-brand-dark underline underline-offset-2 transition-colors mt-2"
+                className="text-[12px] text-gray-900 hover:text-brand-dark underline underline-offset-2 transition-colors mt-2"
               >
                 Already have an account? Log in here
               </button>

@@ -11,6 +11,7 @@ import Recipes from "./pages/Recipes";
 import RecipeDetail from "./pages/RecipeDetail";
 import Categories from "./pages/Categories";
 import CategoryDetail from "./pages/CategoryDetail";
+import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AuthSuccess from "./pages/AuthSuccess";
@@ -29,7 +30,10 @@ import AdminCategories from "./pages/AdminCategories";
 import AdminRecipes from "./pages/AdminRecipes";
 import AdminOrders from "./pages/AdminOrders";
 import AdminVendorRequests from "./pages/AdminVendorRequests";
+import AdminApprovals from "./pages/AdminApprovals";
 import VendorDashboard from "./pages/VendorDashboard";
+import VendorOrders from "./pages/VendorOrders";
+import PantryPage from "./pages/PantryPage";
 
 // Google Client ID
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -53,6 +57,7 @@ function App() {
                     path="/categories/:slug"
                     element={<CategoryDetail />}
                   />
+                  <Route path="/contact" element={<Contact />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -120,6 +125,14 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+                  <Route
+                    path="/pantry"
+                    element={
+                      <ProtectedRoute>
+                        <PantryPage />
+                      </ProtectedRoute>
+                    }
+                  />
 
                   {/* ── Admin Routes ──────────────────────────────── */}
                   <Route
@@ -162,6 +175,14 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+                  <Route
+                    path="/admin/approvals"
+                    element={
+                      <ProtectedRoute allowedRoles={["admin"]}>
+                        <AdminApprovals />
+                      </ProtectedRoute>
+                    }
+                  />
 
                   {/* ── Vendor Routes ──────────────────────────────── */}
                   <Route
@@ -172,13 +193,21 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+                  <Route
+                    path="/vendor/orders"
+                    element={
+                      <ProtectedRoute allowedRoles={["vendor"]}>
+                        <VendorOrders />
+                      </ProtectedRoute>
+                    }
+                  />
                 </Routes>
               </main>
 
               <footer className="bg-brand-light border-t border-brand/20 flex items-center py-8 mt-auto">
                 <div className="max-w-7xl mx-auto px-4 text-center text-gray-700 text-sm">
                   <img
-                    src="/logo.png"
+                    src="/logo22.png"
                     alt="Hela Eats Logo"
                     className="h-22 w-22 object-contain mx-auto mb-3"
                   />

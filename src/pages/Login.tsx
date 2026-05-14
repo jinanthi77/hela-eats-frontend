@@ -171,10 +171,12 @@ const Login = () => {
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={handleGoogleError}
-                  theme="outline"
-                  size="medium"
+                  theme="filled_blue"
+                  size="large"
                   text="signin_with"
-                  shape="rectangular"
+                  shape="pill"
+                  width="300"
+                  logo_alignment="left"
                 />
               </div>
 
@@ -188,7 +190,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => navigate('/register')}
-                className="text-[10px] text-gray-400 hover:text-brand-dark underline underline-offset-2 transition-colors mt-2"
+                className="text-[12px] text-gray-900 hover:text-brand-dark underline underline-offset-2 transition-colors mt-2"
               >
                 Don't have an account? Register here
               </button>

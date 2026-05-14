@@ -2,12 +2,14 @@ import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { getRecipes } from '../services/recipeService';
 import { getCategories } from '../services/categoryService';
+import { getTestimonials, type Testimonial } from '../services/ratingService';
 import type { Recipe, Category } from '../types';
-import { UtensilsCrossed, ArrowRight, Loader2, ChefHat, Mail, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { UtensilsCrossed, ArrowRight, Loader2, ChefHat, Mail, Star, ChevronLeft, ChevronRight, Quote, User } from 'lucide-react';
 
 const Home = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Carousel state and refs
@@ -95,12 +97,14 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [recipeData, catData] = await Promise.all([
+        const [recipeData, catData, reviewData] = await Promise.all([
           getRecipes(),
           getCategories(),
+          getTestimonials(6).catch(() => []),
         ]);
         setRecipes((recipeData || []).slice(0, 9));
         setCategories((catData || []).slice(0, 6));
+        setTestimonials(reviewData || []);
       } catch {
         // Silently fail — Home still usable without data
       } finally {
@@ -109,6 +113,23 @@ const Home = () => {
     };
     fetchData();
   }, []);
+
+  // Helper to format relative time
+  const getTimeAgo = (dateStr: string) => {
+    const now = new Date();
+    const date = new Date(dateStr);
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    if (seconds < 60) return 'just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days}d ago`;
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months}mo ago`;
+    return `${Math.floor(months / 12)}y ago`;
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -239,6 +260,79 @@ const Home = () => {
               </div>
             )}
           </>
+        )}
+
+        {/* ── What Our Customers Say ─────────────────────────── */}
+        {testimonials.length > 0 && (
+          <div className="mb-16 mt-8">
+            <div className="text-center mb-10">
+              <h2 className="text-[32px] font-bold text-brand-dark font-heading mb-2">What Our Customers Say</h2>
+              <p className="text-gray-500 text-lg">Real reviews from our happy customers</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {testimonials.map((t) => {
+                const timeAgo = getTimeAgo(t.createdAt);
+                return (
+                  <div
+                    key={t._id}
+                    className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 hover:shadow-lg transition-all duration-300 flex flex-col relative group"
+                  >
+                    {/* Quote icon */}
+                    <Quote className="h-8 w-8 text-brand-dark/10 absolute top-4 right-4 group-hover:text-brand-dark/20 transition-colors" />
+
+                    {/* Stars */}
+                    <div className="flex items-center gap-0.5 mb-3">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-4 w-4 ${
+                            star <= t.rating
+                              ? 'text-amber-400 fill-amber-400'
+                              : 'text-gray-200'
+                          }`}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Review text */}
+                    <p className="text-gray-700 text-[15px] leading-relaxed mb-4 flex-1 line-clamp-4">
+                      "{t.review}"
+                    </p>
+
+                    {/* Recipe tag */}
+                    {t.recipe?.title && (
+                      <Link
+                        to={`/recipes/${t.recipe._id}`}
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-dark bg-brand-light/50 px-3 py-1.5 rounded-lg mb-4 self-start hover:bg-brand-light transition-colors"
+                      >
+                        <UtensilsCrossed className="h-3 w-3" />
+                        {t.recipe.title}
+                      </Link>
+                    )}
+
+                    {/* User info */}
+                    <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+                      {t.user?.profilePicture?.url ? (
+                        <img
+                          src={t.user.profilePicture.url}
+                          alt={t.user.name}
+                          className="h-10 w-10 rounded-full object-cover border-2 border-brand-light"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-brand-light flex items-center justify-center">
+                          <User className="h-5 w-5 text-brand-dark" />
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-bold text-gray-900 text-sm">{t.user?.name || 'Customer'}</p>
+                        <p className="text-xs text-gray-400">{timeAgo}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         )}
 
         {/* ── About Us ──────────────────────────────────── */}
