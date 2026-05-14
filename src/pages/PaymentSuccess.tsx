@@ -144,7 +144,7 @@ const PaymentSuccess = () => {
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Payment Failed</h1>
         <p className="text-gray-500 mb-6">Something went wrong with your payment. Please try again or check your orders.</p>
-        <Link to="/orders" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-dark text-white rounded-xl font-bold hover:opacity-90 transition-colors">
+        <Link to="/orders" className="inline-flex items-center gap-2 px-5 py-2.5 hela-action hover:opacity-90 transition-colors">
           View Orders <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
@@ -158,7 +158,7 @@ const PaymentSuccess = () => {
       <div className="min-h-[60vh] flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-2xl mx-auto">
           {/* ── Main Card ────────────────────────────────────────── */}
-          <div className="bg-white rounded-3xl border-2 border-brand-dark/20 shadow-xl p-8 sm:p-10 relative overflow-hidden">
+          <div className="hela-card p-5 sm:p-7 relative overflow-hidden">
             {/* Decorative corner dots */}
             <div className="absolute top-4 left-4 w-2 h-2 rounded-full bg-brand-dark/20" />
             <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-brand-dark/20" />
@@ -169,7 +169,7 @@ const PaymentSuccess = () => {
             <div className="text-center mb-8">
               <div className="flex items-center justify-center gap-3 mb-3">
                 <Heart className="h-8 w-8 text-brand-dark fill-brand-dark" />
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-dark">
                   Thank You for Choosing Us!
                 </h1>
               </div>
@@ -178,7 +178,7 @@ const PaymentSuccess = () => {
 
             {/* ── Payment Details (collapsed) ────────────────── */}
             {paymentInfo && (
-              <div className="bg-gray-50 rounded-2xl p-5 mb-8 text-left">
+              <div className="bg-brand-light/20 rounded-2xl p-4 sm:p-5 mb-7 text-left">
                 <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                   <Receipt className="h-4 w-4" /> Payment Details
                 </h2>
@@ -311,7 +311,7 @@ const PaymentSuccess = () => {
             <div className="flex items-center justify-between pt-4 border-t border-gray-100">
               <div className="flex gap-3">
                 {paymentInfo?.orderId && (
-                  <Link to={`/orders/${paymentInfo.orderId}`} className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-dark text-white rounded-xl font-bold text-sm hover:opacity-90 transition-all">
+                <Link to={`/orders/${paymentInfo.orderId}`} className="inline-flex items-center gap-2 px-5 py-2.5 hela-action text-sm hover:opacity-90 transition-all">
                     View Order <ArrowRight className="h-4 w-4" />
                   </Link>
                 )}

@@ -139,13 +139,13 @@ const ProfilePage = () => {
   );
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-8">
-        <UserIcon className="h-8 w-8 text-brand" /> My Profile
+    <div className="hela-shell py-10 sm:py-14">
+      <h1 className="hela-display text-4xl sm:text-5xl font-bold flex items-center gap-3 mb-8">
+        <UserIcon className="h-9 w-9 text-brand" /> My Profile
       </h1>
 
       {/* Basic Info */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+      <div className="hela-card p-5 sm:p-6 mb-6">
         <div className="flex flex-col sm:flex-row gap-8 items-start mb-6">
           {/* Profile Picture */}
           <div className="flex flex-col items-center gap-3">
@@ -188,7 +188,7 @@ const ProfilePage = () => {
           </div>
 
           <div className="flex-1 w-full">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Personal Information</h2>
+            <h2 className="text-2xl font-heading font-bold text-brand-dark mb-4">Personal Information</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
@@ -214,7 +214,7 @@ const ProfilePage = () => {
               </div>
             </div>
             <button onClick={handleSave} disabled={saving}
-              className="flex items-center gap-2 px-6 py-2.5 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-colors disabled:opacity-50">
+              className="flex items-center gap-2 px-6 py-2.5 hela-action transition-colors disabled:opacity-50">
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Changes
             </button>
           </div>
@@ -223,7 +223,7 @@ const ProfilePage = () => {
 
       {/* Health Profile */}
       {/* 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+      <div className="hela-card p-6 mb-6">
         <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
           <Heart className="h-5 w-5 text-red-500" /> Health Profile
         </h2>
@@ -260,7 +260,7 @@ const ProfilePage = () => {
       */}
 
       {/* Addresses */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+      <div className="hela-card p-5 sm:p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             <MapPin className="h-5 w-5 text-brand" /> Addresses
@@ -274,7 +274,7 @@ const ProfilePage = () => {
         {profile?.addresses && profile.addresses.length > 0 ? (
           <div className="space-y-3">
             {profile.addresses.map((addr, i) => (
-              <div key={i} className="p-4 rounded-xl bg-gray-50 border border-gray-100">
+              <div key={i} className="p-4 rounded-xl bg-brand-light/15 border border-brand-dark/10">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs font-bold text-brand bg-brand-light/30 px-2 py-0.5 rounded-full">{addr.label}</span>
                   {addr.isDefault && <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Default</span>}
@@ -300,7 +300,7 @@ const ProfilePage = () => {
               <input type="text" value={addressLine2} onChange={(e) => setAddressLine2(e.target.value)} placeholder="Address Line 2 (optional)" className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white sm:col-span-2" />
             </div>
             <button onClick={handleAddAddress} disabled={saving}
-              className="px-5 py-2 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-lg transition-colors text-sm disabled:opacity-50">
+              className="px-5 py-2 hela-action transition-colors text-sm disabled:opacity-50">
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Add Address'}
             </button>
           </div>
@@ -308,7 +308,7 @@ const ProfilePage = () => {
       </div>
 
       {/* Pantry */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div className="hela-card p-5 sm:p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             <MapPin className="h-5 w-5 text-brand" /> My Pantry

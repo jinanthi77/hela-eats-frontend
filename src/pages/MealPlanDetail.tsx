@@ -101,9 +101,9 @@ const MealPlanDetail = () => {
         <span className="text-sm font-medium">All Plans</span>
       </button>
 
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-7">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3">
             <CalendarDays className="h-8 w-8 text-brand" /> {plan.name}
           </h1>
           <p className="text-sm text-gray-400 mt-1">
@@ -112,18 +112,18 @@ const MealPlanDetail = () => {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleAddToCart}
-            className="flex items-center gap-2 px-4 py-2 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl transition-colors text-sm">
+            className="flex items-center gap-2 px-4 py-2 bg-brand hover:bg-brand-dark text-white font-bold rounded-lg transition-colors text-sm">
             <ShoppingCart className="h-4 w-4" /> Add to Cart
           </button>
           <button onClick={handleSave} disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-colors text-sm disabled:opacity-50">
+            className="flex items-center gap-2 px-4 py-2 hela-action transition-colors text-sm disabled:opacity-50">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save
           </button>
         </div>
       </div>
 
       {/* Entries Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+      <div className="hela-card overflow-hidden mb-6">
         {entries.length === 0 ? (
           <div className="text-center py-12">
             <CalendarDays className="h-12 w-12 text-gray-200 mx-auto mb-3" />
@@ -164,7 +164,7 @@ const MealPlanDetail = () => {
 
       {/* Add Entry */}
       {showAddForm ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 animate-[fadeInUp_0.2s_ease]">
+        <div className="hela-card p-5 sm:p-6 animate-[fadeInUp_0.2s_ease]">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Add Meal Entry</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
             <select value={newDay} onChange={(e) => setNewDay(e.target.value)}
@@ -181,7 +181,7 @@ const MealPlanDetail = () => {
             </select>
           </div>
           <div className="flex gap-2">
-            <button onClick={handleAddEntry} className="px-5 py-2 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-colors text-sm">Add</button>
+            <button onClick={handleAddEntry} className="px-5 py-2 hela-action transition-colors text-sm">Add</button>
             <button onClick={() => setShowAddForm(false)} className="px-5 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 font-bold rounded-xl transition-colors text-sm">Cancel</button>
           </div>
         </div>

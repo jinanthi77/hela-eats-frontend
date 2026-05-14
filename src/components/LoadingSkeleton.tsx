@@ -5,9 +5,9 @@ const Shimmer = ({ className = '' }: { className?: string }) => (
 
 // ─── Card Skeleton (recipe / category cards) ─────────────────────────
 export const CardSkeleton = () => (
-  <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-    <Shimmer className="h-48 w-full rounded-none" />
-    <div className="p-5 space-y-3">
+  <div className="hela-recipe-card">
+    <Shimmer className="h-44 w-full rounded-none" />
+    <div className="p-4 space-y-3">
       <Shimmer className="h-5 w-3/4" />
       <Shimmer className="h-4 w-full" />
       <Shimmer className="h-4 w-5/6" />
@@ -21,7 +21,7 @@ export const CardSkeleton = () => (
 
 // ─── Card Grid Skeleton ──────────────────────────────────────────────
 export const CardGridSkeleton = ({ count = 8 }: { count?: number }) => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
     {Array.from({ length: count }).map((_, i) => (
       <CardSkeleton key={i} />
     ))}
@@ -32,7 +32,7 @@ export const CardGridSkeleton = ({ count = 8 }: { count?: number }) => (
 export const ListSkeleton = ({ rows = 5 }: { rows?: number }) => (
   <div className="space-y-4">
     {Array.from({ length: rows }).map((_, i) => (
-      <div key={i} className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100">
+      <div key={i} className="flex items-center gap-4 p-4 hela-card">
         <Shimmer className="h-12 w-12 rounded-full flex-shrink-0" />
         <div className="flex-1 space-y-2">
           <Shimmer className="h-4 w-1/3" />

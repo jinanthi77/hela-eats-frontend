@@ -31,24 +31,24 @@ const Categories = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center max-w-2xl mx-auto mb-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Recipe Categories</h1>
-        <p className="text-gray-500">Browse our collection of recipes by category to find exactly what you're in the mood for.</p>
+    <div className="hela-shell py-10 sm:py-14">
+      <div className="text-center max-w-3xl mx-auto mb-10">
+        <h1 className="hela-display text-4xl sm:text-5xl font-bold mb-4">Recipe Categories</h1>
+        <p className="text-gray-600 text-base sm:text-lg font-medium">Browse our collection of recipes by category to find exactly what you're in the mood for.</p>
       </div>
 
       {loading ? (
         <CardGridSkeleton count={6} />
       ) : categories.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div className="text-center py-16 hela-card">
           <p className="text-gray-500 text-lg">No categories available at the moment.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {categories.map((category) => (
             <Link key={category._id} to={`/categories/${category.slug}`}
-              className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col">
-              <div className="h-40 bg-gray-100 relative overflow-hidden">
+              className="group cursor-pointer hela-card overflow-hidden hover:-translate-y-1 transition-all duration-300 flex flex-col">
+              <div className="h-48 sm:h-52 bg-gray-100 relative overflow-hidden">
                 {category.imageUrl || category.image ? (
                   <img src={category.imageUrl || category.image} alt={category.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
@@ -61,7 +61,7 @@ const Categories = () => {
                 </div>
               </div>
               <div className="p-5 flex-1">
-                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-brand transition-colors">{category.name}</h3>
+                <h3 className="text-2xl font-heading font-bold text-gray-900 mb-2 group-hover:text-brand transition-colors">{category.name}</h3>
                 <p className="text-gray-500 text-sm line-clamp-2">{category.description}</p>
               </div>
             </Link>

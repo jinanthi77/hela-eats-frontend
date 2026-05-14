@@ -106,12 +106,12 @@ const AdminApprovals = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <Link to="/admin/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-brand transition-colors mb-2">
             <ArrowLeft className="h-3.5 w-3.5" /> Admin Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3">
             <CheckSquare className="h-8 w-8 text-brand" /> Inventory Approvals
           </h1>
         </div>

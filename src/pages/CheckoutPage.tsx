@@ -6,7 +6,7 @@ import { initiatePayment } from '../services/paymentService';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../components/Toast';
 import type { Cart, Address, PaymentMethodType } from '../types';
-import { Loader2, CreditCard, Banknote, MapPin, ShoppingBag, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Loader2, CreditCard, Banknote, MapPin, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -101,27 +101,27 @@ const CheckoutPage = () => {
   const items = cart?.items || [];
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="hela-shell py-10 sm:py-14">
       <button onClick={() => navigate('/cart')} className="inline-flex items-center gap-2 text-gray-500 hover:text-brand mb-6 transition-colors group">
         <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
         <span className="text-sm font-medium">Back to Cart</span>
       </button>
 
-      <h1 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-        <ShoppingBag className="h-8 w-8 text-brand" /> Checkout
+      <h1 className="hela-display text-5xl sm:text-7xl font-extrabold mb-10 text-center">
+        Purchase
       </h1>
 
       {/* Order Summary */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Order Summary</h2>
+      <div className="bg-white p-6 mb-8">
+        <h2 className="text-2xl font-bold text-black mb-6">Order Summary</h2>
         <div className="space-y-5">
           {items.map((item, i) => {
             const title = typeof item.recipeId === 'object' ? item.recipeId?.title : (typeof item.recipe === 'object' ? item.recipe?.title : 'Recipe');
             const ingredients = item.selectedIngredients || item.ingredients || [];
             return (
-              <div key={i} className="border border-gray-100 rounded-xl overflow-hidden">
+              <div key={i} className="overflow-hidden">
                 {/* Recipe header */}
-                <div className="flex justify-between items-center px-4 py-3 bg-gray-50">
+                <div className="flex justify-between items-center px-4 py-3">
                   <span className="font-bold text-gray-900">{title}</span>
                   <div className="flex items-center gap-3 text-sm">
                     <span className="text-gray-500">{item.servings} serving{item.servings !== 1 ? 's' : ''}</span>
@@ -131,12 +131,12 @@ const CheckoutPage = () => {
                 {/* Ingredients table */}
                 {ingredients.length > 0 && (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm text-gray-600">
-                      <thead className="text-xs text-gray-400 uppercase border-b border-gray-100">
+                    <table className="w-full text-center text-sm text-black hela-table">
+                      <thead className="text-base">
                         <tr>
-                          <th scope="col" className="px-4 py-2 font-semibold">Ingredient</th>
-                          <th scope="col" className="px-4 py-2 font-semibold">Qty</th>
-                          <th scope="col" className="px-4 py-2 font-semibold">Unit</th>
+                          <th scope="col" className="px-4 py-5 font-semibold">Ingredients</th>
+                          <th scope="col" className="px-4 py-5 font-semibold">Measurements</th>
+                          <th scope="col" className="px-4 py-5 font-semibold muted">Meal Kit</th>
                           <th scope="col" className="px-4 py-2 font-semibold text-right">Price (Rs.)</th>
                         </tr>
                       </thead>
@@ -146,10 +146,10 @@ const CheckoutPage = () => {
                           const ingPrice = typeof ing.price === 'number' ? ing.price : 0;
                           return (
                             <tr key={idx} className="hover:bg-gray-50/50">
-                              <td className="px-4 py-2 font-medium text-gray-800">{ingName}</td>
-                              <td className="px-4 py-2">{typeof ing.quantity === 'number' ? ing.quantity.toFixed(1) : ing.quantity}</td>
-                              <td className="px-4 py-2">{ing.unit}</td>
-                              <td className="px-4 py-2 text-right font-semibold text-gray-800">{ingPrice.toFixed(2)}</td>
+                              <td className="px-4 py-5 font-bold text-black">{ingName}</td>
+                              <td className="px-4 py-5 font-bold">{typeof ing.quantity === 'number' ? ing.quantity.toFixed(1) : ing.quantity} {ing.unit}</td>
+                              <td className="px-4 py-5"></td>
+                              <td className="px-4 py-5 text-right font-extrabold text-black">{ingPrice.toFixed(2)}</td>
                             </tr>
                           );
                         })}
@@ -194,7 +194,7 @@ const CheckoutPage = () => {
       )}
 
       {/* Payment Method */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+      <div className="hela-card p-6 mb-6">
         <h2 className="text-lg font-bold text-gray-900 mb-4">Payment Method</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <label className={`flex items-center gap-4 p-5 rounded-xl border-2 cursor-pointer transition-all ${paymentMethod === 'COD' ? 'border-brand bg-brand-light/30' : 'border-gray-100 hover:border-gray-200'}`}>
@@ -222,7 +222,7 @@ const CheckoutPage = () => {
 
       {/* Place Order */}
       <button onClick={handlePlaceOrder} disabled={placing || addresses.length === 0}
-        className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-brand-dark hover:bg-brand-dark text-white font-bold text-lg rounded-2xl transition-all shadow-lg shadow-brand-dark/20 disabled:opacity-70 disabled:cursor-not-allowed">
+        className="w-full max-w-xl mx-auto flex items-center justify-center gap-2 py-5 px-6 hela-action text-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed">
         {placing ? <Loader2 className="h-6 w-6 animate-spin" /> : <><CheckCircle2 className="h-6 w-6" /> Place Order</>}
       </button>
     </div>

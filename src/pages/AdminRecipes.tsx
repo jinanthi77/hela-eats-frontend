@@ -247,12 +247,12 @@ const AdminRecipes = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-7">
         <div>
           <Link to="/admin/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-brand transition-colors mb-2">
             <ArrowLeft className="h-3.5 w-3.5" /> Admin Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3">
             <UtensilsCrossed className="h-8 w-8 text-brand" /> Manage Recipes
           </h1>
         </div>
@@ -510,7 +510,7 @@ const AdminRecipes = () => {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {recipes.map((recipe, idx) => (
-                  <tr key={recipe._id} className="hover:bg-brand-light/30/30 transition-colors">
+                  <tr key={recipe._id} className="hover:bg-brand-light/30 transition-colors">
                     <td className="px-5 py-3 text-gray-400 font-mono text-xs">{idx + 1}</td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">

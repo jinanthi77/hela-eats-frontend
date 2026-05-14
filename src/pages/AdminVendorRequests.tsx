@@ -100,16 +100,16 @@ const AdminVendorRequests = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <Link to="/admin/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-brand transition-colors mb-2">
             <ArrowLeft className="h-3.5 w-3.5" /> Admin Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3">
             <Store className="h-8 w-8 text-brand" /> Vendor Requests
           </h1>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <button onClick={fetchData} className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition">
             <RefreshCw className="h-4 w-4" /> Refresh
           </button>
@@ -119,7 +119,7 @@ const AdminVendorRequests = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-gray-50/50">
             <tr className="text-left text-gray-500 border-b border-gray-100">
@@ -136,7 +136,7 @@ const AdminVendorRequests = () => {
               const cfg = statusConfig[req.status] || statusConfig.Pending;
               const StatusIcon = cfg.icon;
               return (
-                <tr key={req._id} className="hover:bg-brand-light/30/30">
+                <tr key={req._id} className="hover:bg-brand-light/30">
                   <td className="px-5 py-3 text-gray-500">{new Date(req.createdAt).toLocaleDateString()}</td>
                   <td className="px-5 py-3">
                     <p className="font-medium text-gray-900">{req.vendorId?.name || 'Unknown'}</p>
@@ -201,7 +201,7 @@ const AdminVendorRequests = () => {
 
                 <div className="space-y-3">
                   {requestItems.map((item, idx) => (
-                    <div key={idx} className="flex gap-3 items-center">
+                    <div key={idx} className="grid grid-cols-1 sm:grid-cols-[1fr_6rem_6rem_auto] gap-3 items-center">
                       <select required value={item.ingredientId} onChange={e => {
                         const newItems = [...requestItems];
                         newItems[idx].ingredientId = e.target.value;
@@ -215,13 +215,13 @@ const AdminVendorRequests = () => {
                         const newItems = [...requestItems];
                         newItems[idx].requestedQuantity = e.target.value;
                         setRequestItems(newItems);
-                      }} className="w-24 px-3 py-2 border rounded-xl bg-gray-50" />
+                      }} className="w-full sm:w-24 px-3 py-2 border rounded-xl bg-gray-50" />
 
                       <input type="text" required placeholder="Unit" value={item.unit} onChange={e => {
                         const newItems = [...requestItems];
                         newItems[idx].unit = e.target.value;
                         setRequestItems(newItems);
-                      }} className="w-24 px-3 py-2 border rounded-xl bg-gray-50" />
+                      }} className="w-full sm:w-24 px-3 py-2 border rounded-xl bg-gray-50" />
 
                       {requestItems.length > 1 && (
                         <button type="button" onClick={() => removeItemRow(idx)} className="p-2 text-red-500 hover:bg-red-50 rounded-xl">

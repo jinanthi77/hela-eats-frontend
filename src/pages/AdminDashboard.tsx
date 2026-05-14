@@ -109,16 +109,16 @@ const AdminDashboard = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-8">
+      <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3 mb-7">
         <BarChart3 className="h-8 w-8 text-brand" /> Admin Dashboard
       </h1>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div key={stat.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <div className="flex items-center gap-4">
                 <div className={`h-12 w-12 rounded-xl ${stat.bg} flex items-center justify-center`}>
                   <Icon className={`h-6 w-6 ${stat.color}`} />
@@ -134,12 +134,12 @@ const AdminDashboard = () => {
       </div>
 
       {/* Admin Quick-Access Links */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
         {adminLinks.map((link) => {
           const Icon = link.icon;
           return (
             <Link key={link.to} to={link.to}
-              className={`group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-all ${link.hoverBg}`}>
+              className={`group bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-all ${link.hoverBg}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className={`h-12 w-12 rounded-xl ${link.bg} flex items-center justify-center`}>

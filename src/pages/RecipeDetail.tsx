@@ -16,8 +16,6 @@ import {
   Minus,
   UtensilsCrossed,
   Zap,
-  Wheat,
-  Droplets,
   DollarSign,
 } from 'lucide-react';
 
@@ -163,7 +161,7 @@ const RecipeDetail = () => {
 
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="hela-shell py-10 sm:py-14">
       {/* ── Back Button ────────────────────────────────────────── */}
       <button
         onClick={() => navigate(-1)}
@@ -174,8 +172,8 @@ const RecipeDetail = () => {
       </button>
 
       {/* ── Hero Section ───────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-        <div className="rounded-3xl overflow-hidden bg-gray-100 shadow-lg h-72 lg:h-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12 items-start">
+        <div className="rounded-2xl overflow-hidden bg-gray-100 shadow-lg h-72 sm:h-[520px] relative">
           {recipe.imageUrl || recipe.image ? (
             <img
               src={recipe.imageUrl || recipe.image}
@@ -187,6 +185,10 @@ const RecipeDetail = () => {
               <UtensilsCrossed className="h-24 w-24" />
             </div>
           )}
+          <div className="absolute left-5 top-5 flex items-center gap-2 text-white font-extrabold drop-shadow">
+            <ChefHat className="h-5 w-5" />
+            {recipe.difficulty || 'Easy'}
+          </div>
         </div>
 
         <div className="flex flex-col justify-center">
@@ -203,24 +205,29 @@ const RecipeDetail = () => {
               </span>
             )}
           </div>
-          <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-3 leading-tight">
+          <h1 className="hela-display text-4xl sm:text-5xl lg:text-6xl font-bold mb-5 leading-tight">
             {recipe.title}
           </h1>
-          <p className="text-gray-500 text-base leading-relaxed mb-6">{recipe.description}</p>
+          {hasAnyPrice && (
+            <p className="text-4xl sm:text-5xl font-extrabold text-brand-dark mb-5">
+              Rs. {ingredients.filter(ing => !excludedIngredients.includes(ing.id)).reduce((sum, ing) => sum + (ing.price || 0), 0).toFixed(2)}/=
+            </p>
+          )}
+          <p className="text-black text-base sm:text-lg font-medium leading-relaxed mb-6">{recipe.description}</p>
 
           {/* ── Quick Stats ─────────────────────────────────────── */}
-          <div className="grid grid-cols-3 gap-3 mb-6">
-            <div className="bg-brand-light/30 rounded-2xl p-4 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div className="hela-card p-4 text-center">
               <Clock className="h-5 w-5 text-brand mx-auto mb-1" />
               <p className="text-xs text-gray-500">Prep</p>
               <p className="text-sm font-bold text-gray-900">{recipe.prepTime || 0}m</p>
             </div>
-            <div className="bg-red-50 rounded-2xl p-4 text-center">
+            <div className="hela-card p-4 text-center">
               <Flame className="h-5 w-5 text-red-500 mx-auto mb-1" />
               <p className="text-xs text-gray-500">Cook</p>
               <p className="text-sm font-bold text-gray-900">{recipe.cookTime || 0}m</p>
             </div>
-            <div className="bg-blue-50 rounded-2xl p-4 text-center">
+            <div className="hela-card p-4 text-center">
               <ChefHat className="h-5 w-5 text-blue-500 mx-auto mb-1" />
               <p className="text-xs text-gray-500">Difficulty</p>
               <p className="text-sm font-bold text-gray-900 capitalize">{recipe.difficulty}</p>
@@ -228,8 +235,8 @@ const RecipeDetail = () => {
           </div>
 
           {/* ── Servings + Add to Cart ─────────────────────────── */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center bg-gray-100 rounded-xl overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex items-center bg-brand-light rounded-full overflow-hidden">
               <button
                 onClick={() => { setServings((s) => Math.max(1, s - 1)); setRecipe((prev: any) => prev ? { ...prev, _customIngredients: undefined } : prev); }}
                 className="p-3 hover:bg-gray-200 transition-colors"
@@ -251,7 +258,7 @@ const RecipeDetail = () => {
             <button
               onClick={handleAddToCart}
               disabled={addingToCart}
-              className="flex-1 flex items-center justify-center gap-2 bg-brand-dark hover:bg-brand-dark/90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-brand-dark/20 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="flex-1 flex items-center justify-center gap-2 hela-action py-3 px-6 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {addingToCart ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -268,35 +275,26 @@ const RecipeDetail = () => {
 
       {/* ── Nutrition Info ──────────────────────────────────────── */}
       {nutrition && (
-        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-6 mb-10 border border-emerald-100">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="mb-14">
+          <h2 className="hela-card max-w-xl mx-auto text-3xl font-extrabold text-brand-dark mb-8 flex items-center justify-center gap-3 p-6 underline">
             <Zap className="h-5 w-5 text-emerald-600" />
-            Nutrition per serving
+            Your Nutrition Count
           </h2>
-          <div className="grid grid-cols-5 gap-4 text-center">
-            <div>
-              <p className="text-2xl font-extrabold text-emerald-700">{nutrition.calories || 0}</p>
-              <p className="text-xs text-gray-500 mt-1">Calories</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 text-center">
+            <div className="hela-card p-8">
+              <p className="text-2xl font-extrabold text-emerald-700">Calories: {nutrition.calories || 0} kcal</p>
             </div>
-            <div>
-              <p className="text-2xl font-extrabold text-blue-700">{nutrition.protein || 0}g</p>
-              <p className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
-                <Droplets className="h-3 w-3" /> Protein
-              </p>
+            <div className="hela-card p-8">
+              <p className="text-2xl font-extrabold text-emerald-700">Protein: {nutrition.protein || 0} g</p>
             </div>
-            <div>
-              <p className="text-2xl font-extrabold text-amber-700">{nutrition.carbohydrate || 0}g</p>
-              <p className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
-                <Wheat className="h-3 w-3" /> Carbohydrate
-              </p>
+            <div className="hela-card p-8">
+              <p className="text-2xl font-extrabold text-emerald-700">Fiber: {nutrition.fiber || 0} g</p>
             </div>
-            <div>
-              <p className="text-2xl font-extrabold text-lime-700">{nutrition.fiber || 0}g</p>
-              <p className="text-xs text-gray-500 mt-1">Fiber</p>
+            <div className="hela-card p-8">
+              <p className="text-2xl font-extrabold text-emerald-700">Carbs: {nutrition.carbohydrate || 0} g</p>
             </div>
-            <div>
-              <p className="text-2xl font-extrabold text-rose-700">{nutrition.fat || 0}g</p>
-              <p className="text-xs text-gray-500 mt-1">Fat</p>
+            <div className="hela-card p-8">
+              <p className="text-2xl font-extrabold text-emerald-700">Fat: {nutrition.fat || 0} g</p>
             </div>
           </div>
         </div>
@@ -306,8 +304,8 @@ const RecipeDetail = () => {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {/* Ingredients */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-24">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
+          <div className="bg-white p-6 sticky top-56">
+            <h2 className="text-xl font-bold text-brand-dark mb-4">
               Ingredients
               <span className="text-sm font-normal text-gray-400 ml-2">
                 ({ingredients.length} items)
@@ -336,12 +334,12 @@ const RecipeDetail = () => {
                               : [...prev, ing.id]
                           );
                         }}
-                        className={`flex items-center justify-between gap-3 text-sm p-3 rounded-xl border transition-all cursor-pointer ${isExcluded
+                        className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm px-4 py-2 rounded-full border transition-all cursor-pointer ${isExcluded
                           ? 'bg-gray-50 border-gray-100 opacity-60'
-                          : 'bg-brand-light/20 border-brand-light hover:bg-brand-light/30'
+                          : 'bg-white border-brand hover:bg-brand-light/30'
                           }`}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 w-full min-w-0">
                           <div className={`flex items-center justify-center w-5 h-5 rounded border ${isExcluded ? 'border-gray-300 bg-white' : 'border-brand bg-brand'} transition-colors`}>
                             {!isExcluded && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                           </div>
@@ -349,7 +347,7 @@ const RecipeDetail = () => {
                             {ing.name}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto sm:justify-end">
                           <span className={`font-bold px-3 py-1 rounded-lg border shadow-sm text-xs ${isExcluded ? 'text-gray-400 bg-gray-50 border-gray-100' : 'text-brand-dark bg-white border-brand-light'}`}>
                             {ing.quantity} {ing.unit}
                           </span>
@@ -398,7 +396,7 @@ const RecipeDetail = () => {
 
         {/* Instructions */}
         <div className="lg:col-span-3">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Instructions</h2>
+          <h2 className="text-xl font-bold text-brand-dark mb-4">Steps to Cook</h2>
           {instructions.length > 0 ? (
             <ol className="space-y-4">
               {instructions.map((step, i) => (
