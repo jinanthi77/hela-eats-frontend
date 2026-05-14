@@ -207,7 +207,7 @@ function App() {
               <footer className="bg-brand-light border-t border-brand/20 flex items-center py-8 mt-auto">
                 <div className="max-w-7xl mx-auto px-4 text-center text-gray-700 text-sm">
                   <img
-                    src="/logo.png"
+                    src="/logo22.png"
                     alt="Hela Eats Logo"
                     className="h-22 w-22 object-contain mx-auto mb-3"
                   />

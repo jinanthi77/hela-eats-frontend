@@ -22,7 +22,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2">
             <Link to="/" className="flex items-center space-x-2 hover:opacity-90 transition-opacity">
-              <img src="/logo.png" alt="Hela Eats Logo" className="h-17 w-38 object-contain" />
+              <img src="/logo22.png" alt="Hela Eats Logo" className="h-17 w-38 object-contain" />
             </Link>
           </div>
 

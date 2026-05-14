@@ -190,7 +190,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => navigate('/register')}
-                className="text-[10px] text-gray-900 hover:text-brand-dark underline underline-offset-2 transition-colors mt-2"
+                className="text-[12px] text-gray-900 hover:text-brand-dark underline underline-offset-2 transition-colors mt-2"
               >
                 Don't have an account? Register here
               </button>
