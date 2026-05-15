@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getCart, updateCartItem, removeCartItem, clearCart, removeIngredientFromCartItem } from '../services/cartService';
 import { useToast } from '../components/Toast';
 import type { Cart, CartItem } from '../types';
-import { ShoppingCart, Trash2, Minus, Plus, Loader2, ArrowRight, ShoppingBag, X } from 'lucide-react';
+import { Trash2, Minus, Plus, Loader2, ArrowRight, ShoppingBag, X } from 'lucide-react';
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -96,11 +96,10 @@ const CartPage = () => {
   const isEmpty = items.length === 0;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="hela-shell py-10 sm:py-14">
+      <div className="flex items-center justify-between mb-12">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <ShoppingCart className="h-8 w-8 text-brand" />
+          <h1 className="hela-display text-5xl sm:text-7xl font-extrabold flex items-center gap-3">
             Your Cart
           </h1>
           <p className="text-gray-500 mt-1">{items.length} item{items.length !== 1 ? 's' : ''}</p>
@@ -115,11 +114,11 @@ const CartPage = () => {
       </div>
 
       {isEmpty ? (
-        <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div className="text-center py-20 hela-card">
           <ShoppingBag className="h-16 w-16 text-gray-200 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-400 mb-2">Your cart is empty</h2>
           <p className="text-gray-400 mb-6">Discover delicious recipes and add ingredients to your cart!</p>
-          <Link to="/recipes" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-dark text-white rounded-xl font-bold hover:bg-brand-dark transition-colors shadow-lg shadow-brand-dark/20">
+          <Link to="/recipes" className="inline-flex items-center gap-2 px-6 py-3 hela-action transition-colors">
             Browse Recipes <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -130,12 +129,12 @@ const CartPage = () => {
             const ingPrice = (ing: any) => typeof ing.price === 'number' ? ing.price : 0;
 
             return (
-            <div key={item._id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
-              <div className="p-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <div key={item._id} className="bg-white overflow-hidden transition-all">
+              <div className="py-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                 {/* Recipe info */}
                 <div className="flex-1 min-w-0">
                   <Link to={`/recipes/${getRecipeLink(item)}`}
-                    className="text-lg font-bold text-gray-900 hover:text-brand transition-colors truncate block">
+                    className="text-2xl font-extrabold text-black hover:text-brand transition-colors truncate block">
                     {getRecipeTitle(item)}
                   </Link>
                   <div className="flex items-center gap-1 mt-1 text-sm text-gray-500">
@@ -146,7 +145,7 @@ const CartPage = () => {
 
                 {/* Servings control */}
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center bg-gray-100 rounded-xl overflow-hidden">
+                  <div className="flex items-center bg-brand-light rounded-full overflow-hidden">
                     <button onClick={() => handleUpdateServings(item._id, item.servings - 1)}
                       disabled={item.servings <= 1 || actionLoading === item._id}
                       className="p-2.5 hover:bg-gray-200 transition-colors disabled:opacity-30">
@@ -175,20 +174,19 @@ const CartPage = () => {
 
               {/* Ingredients Table */}
               {ingredients.length > 0 && (
-                <div className="px-5 pb-5 pt-3 border-t border-gray-50 bg-gray-50/50">
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">Ingredients:</h4>
-                  <div className="overflow-x-auto bg-white rounded-xl border border-gray-100 shadow-sm">
-                    <table className="w-full text-left text-sm text-gray-600">
-                      <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
+                <div className="pb-5 pt-3">
+                  <div className="overflow-x-auto bg-white">
+                    <table className="w-full text-center text-sm text-black hela-table">
+                      <thead className="text-base">
                         <tr>
-                          <th scope="col" className="px-4 py-3 font-semibold">Ingredient</th>
-                          <th scope="col" className="px-4 py-3 font-semibold">Quantity</th>
-                          <th scope="col" className="px-4 py-3 font-semibold">Unit</th>
+                          <th scope="col" className="px-4 py-5 font-semibold">Ingredients</th>
+                          <th scope="col" className="px-4 py-5 font-semibold">Measurements</th>
+                          <th scope="col" className="px-4 py-5 font-semibold muted">Meal Kit</th>
                           <th scope="col" className="px-4 py-3 font-semibold text-right">Price (Rs.)</th>
                           <th scope="col" className="px-4 py-3 font-semibold text-right">Action</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-100">
+                      <tbody>
                         {ingredients.map((ing: any, idx: number) => {
                           const ingId = ing.ingredientId?._id || ing.ingredientId || idx.toString();
                           const ingName = ing.ingredientId?.name || ing.name || 'Unknown ingredient';
@@ -196,10 +194,10 @@ const CartPage = () => {
 
                           return (
                             <tr key={ingId} className="hover:bg-gray-50 transition-colors">
-                              <td className="px-4 py-3 font-medium text-gray-900">{ingName}</td>
-                              <td className="px-4 py-3">{typeof ing.quantity === 'number' ? ing.quantity.toFixed(1) : ing.quantity}</td>
-                              <td className="px-4 py-3">{ing.unit}</td>
-                              <td className="px-4 py-3 text-right font-semibold text-gray-800">{ingPrice(ing).toFixed(2)}</td>
+                              <td className="px-4 py-5 font-bold text-black">{ingName}</td>
+                              <td className="px-4 py-5 font-bold">{typeof ing.quantity === 'number' ? ing.quantity.toFixed(1) : ing.quantity} {ing.unit}</td>
+                              <td className="px-4 py-5"></td>
+                              <td className="px-4 py-5 text-right font-extrabold text-black">{ingPrice(ing).toFixed(2)}</td>
                               <td className="px-4 py-3 text-right">
                                 <button 
                                   onClick={() => handleRemoveIngredient(item._id, ingId)}
@@ -222,7 +220,7 @@ const CartPage = () => {
           )})}
 
           {/* Checkout */}
-          <div className="bg-gradient-to-r from-brand-light/30 to-red-50 rounded-2xl p-6 border border-brand-light mt-6">
+          <div className="p-6 mt-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <p className="text-sm text-gray-500">Ready to order?</p>
@@ -230,8 +228,8 @@ const CartPage = () => {
                 <p className="text-lg text-brand-dark font-bold mt-1">Estimated Total: Rs. {(cart?.totalPrice ?? 0).toFixed(2)}</p>
               </div>
               <button onClick={() => navigate('/checkout')}
-                className="flex items-center gap-2 px-8 py-3 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-all shadow-lg shadow-brand-dark/20">
-                Proceed to Checkout <ArrowRight className="h-4 w-4" />
+                className="flex items-center gap-2 px-12 py-5 hela-action text-xl transition-all">
+                Confirm your Purchase <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </div>

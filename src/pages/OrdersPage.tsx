@@ -39,19 +39,19 @@ const OrdersPage = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+      <div className="mb-7">
+        <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3">
           <ClipboardList className="h-8 w-8 text-brand" /> My Orders
         </h1>
         <p className="text-gray-500 mt-1">Track and manage your orders</p>
       </div>
 
       {orders.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div className="text-center py-16 hela-card">
           <Package className="h-16 w-16 text-gray-200 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-400 mb-2">No orders yet</h2>
           <p className="text-gray-400 mb-6">Browse recipes and place your first order!</p>
-          <Link to="/recipes" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-dark text-white rounded-xl font-bold hover:bg-brand-dark transition-colors">Browse Recipes</Link>
+          <Link to="/recipes" className="inline-flex items-center gap-2 px-5 py-2.5 hela-action transition-colors">Browse Recipes</Link>
         </div>
       ) : (
         <div className="space-y-4">
@@ -60,7 +60,7 @@ const OrdersPage = () => {
             const StatusIcon = cfg.icon;
             return (
               <Link key={order._id} to={`/orders/${order._id}`}
-                className="block bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-all group">
+                className="block hela-card p-4 sm:p-5 hover:-translate-y-0.5 transition-all group">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-400 font-mono">{order.orderNumber || `#${order._id.slice(-8).toUpperCase()}`}</p>

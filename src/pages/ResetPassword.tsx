@@ -66,20 +66,20 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black flex w-full font-body overflow-hidden">
+    <div className="min-h-screen bg-black flex w-full font-body overflow-x-hidden">
 
       {/* ─── Left Column (Form) ─────────────────────────────────── */}
-      <div className="w-full lg:w-[50%] flex justify-center items-center lg:items-start flex-col px-8 lg:px-12 xl:px-24 relative z-10">
+      <div className="w-full lg:w-[50%] flex justify-center items-center lg:items-start flex-col px-4 sm:px-8 lg:px-12 xl:px-24 py-8 sm:py-10 relative z-10">
         <div className="max-w-[500px] w-full">
 
-          <h1 className="text-white text-5xl md:text-[64px] font-bold mb-4 tracking-tight">
+          <h1 className="text-white text-4xl sm:text-5xl md:text-[64px] font-bold mb-2 sm:mb-4 tracking-tight">
             Reset
           </h1>
-          <h1 className="text-white text-5xl md:text-[64px] font-bold mb-8 tracking-tight">
+          <h1 className="text-white text-4xl sm:text-5xl md:text-[64px] font-bold mb-6 sm:mb-8 tracking-tight">
             Password
           </h1>
 
-          <div className="bg-white rounded-2xl p-8 md:p-10 shadow-2xl relative">
+          <div className="bg-white rounded-2xl p-5 sm:p-8 md:p-10 shadow-2xl relative">
 
             {/* ── Success State ─────────────────────────────────── */}
             {success ? (

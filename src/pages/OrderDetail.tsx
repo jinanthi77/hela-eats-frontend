@@ -73,7 +73,7 @@ const OrderDetail = () => {
       </button>
 
       {/* Header */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+      <div className="hela-card p-5 sm:p-6 mb-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <p className="text-sm text-gray-400 font-mono">Order {order.orderNumber || `#${order._id.slice(-8).toUpperCase()}`}</p>
@@ -87,7 +87,7 @@ const OrderDetail = () => {
       </div>
 
       {/* Items */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+      <div className="hela-card p-5 sm:p-6 mb-6">
         <h2 className="text-lg font-bold text-gray-900 mb-4">Items</h2>
         <div className="space-y-3">
           {order.items?.map((item, i) => {
@@ -114,7 +114,7 @@ const OrderDetail = () => {
       </div>
 
       {/* Payment Info */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+      <div className="hela-card p-5 sm:p-6 mb-6">
         <h2 className="text-lg font-bold text-gray-900 mb-4">Payment</h2>
         <div className="flex items-center gap-3">
           {order.paymentMethod === 'Card' ? (
@@ -136,7 +136,7 @@ const OrderDetail = () => {
 
       {/* Delivery Address */}
       {order.deliveryAddress && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+        <div className="hela-card p-5 sm:p-6 mb-6">
           <h2 className="text-lg font-bold text-gray-900 mb-3">Delivery Address</h2>
           <p className="text-gray-700">{order.deliveryAddress.fullName}</p>
           <p className="text-sm text-gray-500">{order.deliveryAddress.addressLine1}</p>

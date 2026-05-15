@@ -46,7 +46,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
       {children}
 
       {/* ── Toast Container ───────────────────────────────────── */}
-      <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none">
+      <div className="fixed bottom-4 left-4 right-4 sm:bottom-6 sm:left-auto sm:right-6 z-[9999] flex flex-col gap-3 pointer-events-none">
         {toasts.map((toast) => (
           <ToastItem key={toast.id} toast={toast} onClose={() => removeToast(toast.id)} />
         ))}
@@ -73,7 +73,7 @@ const bgMap = {
 const ToastItem = ({ toast, onClose }: { toast: Toast; onClose: () => void }) => (
   <div
     className={`pointer-events-auto flex items-start gap-3 px-4 py-3 rounded-xl border shadow-lg backdrop-blur-sm 
-      min-w-[300px] max-w-[420px] animate-[slideInRight_0.3s_ease] ${bgMap[toast.type]}`}
+      w-full sm:min-w-[300px] sm:max-w-[420px] animate-[slideInRight_0.3s_ease] ${bgMap[toast.type]}`}
     role="alert"
   >
     {iconMap[toast.type]}

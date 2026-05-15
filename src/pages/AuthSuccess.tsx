@@ -42,8 +42,8 @@ const AuthSuccess = () => {
   }, [searchParams, navigate, refreshUser, showToast]);
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <div className="max-w-sm w-full text-center">
+    <div className="min-h-[70vh] flex items-center justify-center px-4">
+      <div className="hela-card max-w-sm w-full text-center p-6 sm:p-8">
         {/* Animated icon area */}
         <div className="mb-6 flex justify-center">
           {status === 'loading' && (
@@ -63,7 +63,7 @@ const AuthSuccess = () => {
           )}
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-brand-dark mb-2">
           {status === 'loading' && 'Signing you in…'}
           {status === 'success' && 'Welcome!'}
           {status === 'error' && 'Oops!'}
@@ -74,7 +74,7 @@ const AuthSuccess = () => {
         {status === 'error' && (
           <button
             onClick={() => navigate('/login')}
-            className="mt-6 inline-flex items-center px-5 py-2.5 rounded-xl bg-brand-dark text-white font-semibold hover:bg-brand-dark transition-colors"
+            className="mt-6 inline-flex items-center px-5 py-2.5 hela-action transition-colors"
           >
             Back to Login
           </button>

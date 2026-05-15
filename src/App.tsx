@@ -204,16 +204,15 @@ function App() {
                 </Routes>
               </main>
 
-              <footer className="bg-brand-light border-t border-brand/20 flex items-center py-8 mt-auto">
-                <div className="max-w-7xl mx-auto px-4 text-center text-gray-700 text-sm">
+              <footer className="bg-brand-light border-t border-brand/20 flex items-center py-8 sm:py-10 mt-auto">
+                <div className="max-w-7xl mx-auto px-4 text-center text-black text-sm font-medium">
                   <img
                     src="/logo22.png"
                     alt="Hela Eats Logo"
-                    className="h-22 w-22 object-contain mx-auto mb-3"
+                    className="h-16 w-32 object-contain mx-auto mb-3"
                   />
-                  &copy; {new Date().getFullYear()} Hela Eats. All rights reserved.
-                  <p className="text-gray-700">
-                    Developed by: Nilupul, Udara, Jinanthi, Dilshika
+                  <p className="text-black">
+                    Developed by Udara | Nilupul | Jinanthi | Dilshika
                   </p>
                 </div>
               </footer>

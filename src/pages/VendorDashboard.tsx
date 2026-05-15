@@ -102,12 +102,12 @@ const VendorDashboard = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-8">
+      <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3 mb-7">
         <Store className="h-8 w-8 text-brand" /> Vendor Dashboard
       </h1>
 
       {/* Tabs */}
-      <div className="flex gap-4 mb-6 border-b border-gray-200">
+      <div className="flex gap-4 mb-6 border-b border-gray-200 overflow-x-auto">
         <button
           className={`pb-3 px-2 text-sm font-bold flex items-center gap-2 ${activeTab === 'inventory' ? 'text-brand border-b-2 border-brand' : 'text-gray-500 hover:text-gray-700'}`}
           onClick={() => setActiveTab('inventory')}
@@ -130,7 +130,7 @@ const VendorDashboard = () => {
 
       {activeTab === 'inventory' && (
         <div>
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
             <h2 className="text-xl font-bold">Inventory Items</h2>
             <button
               onClick={() => setShowAddModal(true)}
@@ -140,7 +140,7 @@ const VendorDashboard = () => {
             </button>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50/50">
                 <tr className="text-left text-gray-500 border-b border-gray-100">
@@ -158,7 +158,7 @@ const VendorDashboard = () => {
                   const invCfg = inventoryStatusConfig[item.status] || inventoryStatusConfig.Pending;
                   const InvStatusIcon = invCfg.icon;
                   return (
-                  <tr key={item._id} className="hover:bg-brand-light/30/30">
+                  <tr key={item._id} className="hover:bg-brand-light/30">
                     <td className="px-5 py-3">
                       <span className="font-medium">{item.ingredientId?.name || 'Unknown'}</span>
                       {item.status === 'Rejected' && item.adminNotes && (
@@ -210,7 +210,7 @@ const VendorDashboard = () => {
       {activeTab === 'requests' && (
         <div>
           <h2 className="text-xl font-bold mb-4">Requests from Admins</h2>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50/50">
                 <tr className="text-left text-gray-500 border-b border-gray-100">
@@ -226,7 +226,7 @@ const VendorDashboard = () => {
                   const cfg = requestStatusConfig[req.status] || requestStatusConfig.Pending;
                   const StatusIcon = cfg.icon;
                   return (
-                    <tr key={req._id} className="hover:bg-brand-light/30/30">
+                    <tr key={req._id} className="hover:bg-brand-light/30">
                       <td className="px-5 py-3 text-gray-500">{new Date(req.createdAt).toLocaleDateString()}</td>
                       <td className="px-5 py-3">
                         <ul className="list-disc list-inside text-gray-700">
@@ -267,7 +267,7 @@ const VendorDashboard = () => {
       {/* Add Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl">
+          <div className="bg-white rounded-2xl w-full max-w-md p-5 sm:p-6 shadow-xl max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Add Inventory Item</h2>
             <form onSubmit={handleAddItem} className="space-y-4">
               <div>
@@ -277,7 +277,7 @@ const VendorDashboard = () => {
                   {ingredients.map(ing => <option key={ing._id} value={ing._id}>{ing.name} ({ing.baseUnit})</option>)}
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Package Weight/Qty</label>
                   <input type="number" step="0.01" required value={newItem.packageWeight} onChange={e => setNewItem({ ...newItem, packageWeight: e.target.value })} className="w-full px-3 py-2 border rounded-xl bg-gray-50" />
@@ -287,7 +287,7 @@ const VendorDashboard = () => {
                   <input type="text" required value={newItem.unit} onChange={e => setNewItem({ ...newItem, unit: e.target.value })} placeholder="e.g. g, kg, ml" className="w-full px-3 py-2 border rounded-xl bg-gray-50" />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Price (Rs)</label>
                   <input type="number" required value={newItem.price} onChange={e => setNewItem({ ...newItem, price: e.target.value })} className="w-full px-3 py-2 border rounded-xl bg-gray-50" />

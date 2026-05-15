@@ -75,15 +75,15 @@ const MealPlansPage = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-7">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3">
             <CalendarDays className="h-8 w-8 text-brand" /> Meal Plans
           </h1>
           <p className="text-gray-500 mt-1">Plan your weekly meals and shop smarter</p>
         </div>
         <button onClick={() => setShowCreate(!showCreate)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-colors shadow-lg shadow-brand-dark/20">
+          className="flex items-center justify-center gap-2 px-5 py-2.5 hela-action transition-colors">
           {showCreate ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
           {showCreate ? 'Cancel' : 'New Plan'}
         </button>
@@ -91,7 +91,7 @@ const MealPlansPage = () => {
 
       {/* Create Form */}
       {showCreate && (
-        <form onSubmit={handleCreate} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6 animate-[fadeInUp_0.2s_ease]">
+        <form onSubmit={handleCreate} className="hela-card p-5 sm:p-6 mb-6 animate-[fadeInUp_0.2s_ease]">
           <h2 className="text-lg font-bold text-gray-900 mb-4">Create Meal Plan</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
             <div>
@@ -112,7 +112,7 @@ const MealPlansPage = () => {
             </div>
           </div>
           <button type="submit" disabled={creating}
-            className="flex items-center gap-2 px-6 py-2.5 bg-brand-dark hover:bg-brand-dark text-white font-bold rounded-xl transition-colors disabled:opacity-50">
+            className="flex items-center gap-2 px-5 py-2.5 hela-action transition-colors disabled:opacity-50">
             {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
             Create Plan
           </button>
@@ -121,7 +121,7 @@ const MealPlansPage = () => {
 
       {/* Plans List */}
       {plans.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div className="text-center py-16 hela-card">
           <CalendarDays className="h-16 w-16 text-gray-200 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-400 mb-2">No meal plans yet</h2>
           <p className="text-gray-400">Create your first meal plan to get started!</p>
@@ -129,7 +129,7 @@ const MealPlansPage = () => {
       ) : (
         <div className="space-y-4">
           {plans.map((plan) => (
-            <div key={plan._id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-all">
+            <div key={plan._id} className="hela-card p-4 sm:p-5 hover:-translate-y-0.5 transition-all">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-bold text-gray-900">{plan.name}</h3>

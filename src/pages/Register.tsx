@@ -70,17 +70,17 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black flex w-full font-body overflow-hidden">
+    <div className="min-h-screen bg-black flex w-full font-body overflow-x-hidden">
 
       {/* ─── Left Column (Form) ─────────────────────────────────── */}
-      <div className="w-full lg:w-[50%] flex justify-center items-center lg:items-start flex-col px-8 lg:px-12 xl:px-24 relative z-10">
+      <div className="w-full lg:w-[50%] flex justify-center items-center lg:items-start flex-col px-4 sm:px-8 lg:px-12 xl:px-24 py-8 sm:py-10 relative z-10">
         <div className="max-w-[500px] w-full">
 
-          <h1 className="text-white text-5xl md:text-[64px] font-bold mb-8 tracking-tight">
+          <h1 className="text-white text-4xl sm:text-5xl md:text-[64px] font-bold mb-6 sm:mb-8 tracking-tight">
             Sign Up
           </h1>
 
-          <div className="bg-white rounded-2xl p-8 md:p-10 shadow-2xl relative">
+          <div className="bg-white rounded-2xl p-5 sm:p-8 md:p-10 shadow-2xl relative">
 
             {error && (
               <div className="mb-6 p-3 rounded-lg bg-red-50 text-red-600 text-xs font-medium border border-red-100">
@@ -189,7 +189,7 @@ const Register = () => {
                   size="large"
                   text="signup_with"
                   shape="pill"
-                  width="300"
+                  width="260"
                   logo_alignment="left"
                 />
               </div>
