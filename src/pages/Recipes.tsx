@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getRecipes } from "../services/recipeService";
-import { getCategories } from "../services/categoryService";
-import type { Recipe, Category } from "../types";
-import { Clock, UtensilsCrossed, X, Star } from "lucide-react";
+import type { Recipe } from "../types";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  UtensilsCrossed,
+  Star,
+} from "lucide-react";
 import { CardGridSkeleton } from "../components/LoadingSkeleton";
 
 const RECIPES_PER_PAGE = 9;
@@ -11,40 +16,38 @@ const RECIPES_PER_PAGE = 9;
 const Recipes = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [searchTerm, setSearchTerm] = useState(
-    searchParams.get("search") || "",
-  );
-  const [selectedCategory, setSelectedCategory] = useState(
-    searchParams.get("category") || "",
-  );
-  const [currentPage, setCurrentPage] = useState(
-    Math.max(1, Number(searchParams.get("page")) || 1),
-  );
+  const [activeRecipePage, setActiveRecipePage] = useState(0);
+  const [isRecipeSliderHovered, setIsRecipeSliderHovered] = useState(false);
+  const searchTerm = searchParams.get("search") || "";
+  const selectedCategory = searchParams.get("category") || "";
 
-  useEffect(() => {
-    setSearchTerm(searchParams.get("search") || "");
-    setSelectedCategory(searchParams.get("category") || "");
-    setCurrentPage(Math.max(1, Number(searchParams.get("page")) || 1));
-  }, [searchParams]);
+  const getCardsPerView = () => {
+    if (typeof window === "undefined") return 3;
+    if (window.innerWidth >= 1024) return 3;
+    if (window.innerWidth >= 768) return 2;
+    return 1;
+  };
+
+  const [cardsPerView, setCardsPerView] = useState(getCardsPerView);
+  const currentPage = Math.max(1, Number(searchParams.get("page")) || 1);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [recipeData, catData] = await Promise.all([
-          getRecipes({
-            search: searchTerm || undefined,
-            category: selectedCategory || undefined,
-          }),
-          getCategories(),
-        ]);
+        const recipeData = await getRecipes({
+          search: searchTerm || undefined,
+          category: selectedCategory || undefined,
+        });
         setRecipes(recipeData);
-        setCategories(catData);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to fetch recipes");
+        setActiveRecipePage(0);
+      } catch (err) {
+        const apiError = err as {
+          response?: { data?: { message?: string } };
+        };
+        setError(apiError.response?.data?.message || "Failed to fetch recipes");
       } finally {
         setLoading(false);
       }
@@ -52,16 +55,26 @@ const Recipes = () => {
     fetchData();
   }, [searchTerm, selectedCategory]);
 
-  const handleCategoryFilter = (catId: string) => {
-    const newCat = selectedCategory === catId ? "" : catId;
-    setSelectedCategory(newCat);
-    const params = new URLSearchParams(searchParams);
-    if (newCat) params.set("category", newCat);
-    else params.delete("category");
-    params.delete("page");
-    setSearchParams(params, { replace: true });
-  };
+  useEffect(() => {
+    const handleResize = () => setCardsPerView(getCardsPerView());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
+  const trendingRecipes = recipes.slice(0, 9);
+  const recipeSliderPages = Array.from(
+    { length: Math.ceil(trendingRecipes.length / cardsPerView) },
+    (_, index) =>
+      trendingRecipes.slice(
+        index * cardsPerView,
+        index * cardsPerView + cardsPerView,
+      ),
+  );
+  const recipePageCount = Math.max(recipeSliderPages.length, 1);
+  const safeActiveRecipePage = Math.min(
+    activeRecipePage,
+    Math.max(recipePageCount - 1, 0),
+  );
   const totalPages = Math.max(1, Math.ceil(recipes.length / RECIPES_PER_PAGE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const paginatedRecipes = recipes.slice(
@@ -70,13 +83,22 @@ const Recipes = () => {
   );
 
   useEffect(() => {
-    if (currentPage > totalPages) {
-      const params = new URLSearchParams(searchParams);
-      if (totalPages > 1) params.set("page", String(totalPages));
-      else params.delete("page");
-      setSearchParams(params, { replace: true });
-    }
-  }, [currentPage, totalPages, searchParams, setSearchParams]);
+    if (loading || recipes.length === 0 || isRecipeSliderHovered) return;
+    const interval = setInterval(() => {
+      setActiveRecipePage((page) => (page + 1) % recipePageCount);
+    }, 3600);
+    return () => clearInterval(interval);
+  }, [loading, recipes.length, recipePageCount, isRecipeSliderHovered]);
+
+  const scrollLeftBtn = () => {
+    setActiveRecipePage(
+      (page) => (page - 1 + recipePageCount) % recipePageCount,
+    );
+  };
+
+  const scrollRightBtn = () => {
+    setActiveRecipePage((page) => (page + 1) % recipePageCount);
+  };
 
   const handlePageChange = (page: number) => {
     const nextPage = Math.min(Math.max(page, 1), totalPages);
@@ -92,7 +114,7 @@ const Recipes = () => {
       return Array.from({ length: totalPages }, (_, index) => index + 1);
     }
 
-    const pages = [1, 2, 3, "...", totalPages];
+    const pages: Array<number | "..."> = [1, 2, 3, "...", totalPages];
     if (safeCurrentPage > 3 && safeCurrentPage < totalPages) {
       pages.splice(3, 0, safeCurrentPage);
     }
@@ -114,7 +136,7 @@ const Recipes = () => {
 
   return (
     <div className="hela-shell py-10 sm:py-14">
-        <div className="mb-10">
+        <div className="mb-10 px-0 sm:px-3 lg:px-10 xl:px-14">
           <div>
             <h1 className="hela-display text-4xl sm:text-5xl font-bold">
               Trending Recipes
@@ -124,33 +146,6 @@ const Recipes = () => {
             </p>
           </div>
         </div>
-
-        {/* Category Filters */}
-        {categories.length > 0 && (
-          <div className="flex flex-wrap gap-2.5 mb-8">
-            {categories.map((cat) => (
-              <button
-                key={cat._id}
-                onClick={() => handleCategoryFilter(cat._id)}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all border-2 ${
-                  selectedCategory === cat._id
-                    ? "bg-brand-dark text-white border-brand-dark shadow-md"
-                    : "bg-white text-brand-dark border-brand-dark/30 hover:border-brand-dark hover:bg-brand-light/60"
-                }`}
-              >
-                {cat.name}
-              </button>
-            ))}
-            {selectedCategory && (
-              <button
-                onClick={() => handleCategoryFilter("")}
-                className="px-4 py-1.5 rounded-full text-sm font-medium text-red-500 bg-red-50 border border-red-200 hover:bg-red-100 transition-all flex items-center gap-1"
-              >
-                <X className="h-3 w-3" /> Clear
-              </button>
-            )}
-          </div>
-        )}
 
         {loading ? (
           <CardGridSkeleton count={8} />
@@ -163,6 +158,148 @@ const Recipes = () => {
           </div>
         ) : (
           <>
+            <section className="mb-12">
+              <div
+                className="relative"
+                onMouseEnter={() => setIsRecipeSliderHovered(true)}
+                onMouseLeave={() => setIsRecipeSliderHovered(false)}
+              >
+                {recipePageCount > 1 && (
+                  <button
+                    onClick={scrollLeftBtn}
+                    className="absolute left-2 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white shadow-lg transition-colors hover:bg-black/65 sm:flex lg:left-8 xl:left-10"
+                    aria-label="Previous recipes"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                )}
+
+                <div className="overflow-hidden px-0 sm:px-3">
+                  <div
+                    className="flex transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                    style={{
+                      transform: `translateX(-${safeActiveRecipePage * 100}%)`,
+                    }}
+                  >
+                    {recipeSliderPages.map((page, pageIndex) => (
+                      <div
+                        key={pageIndex}
+                        className={`grid min-w-full gap-5 sm:gap-7 lg:gap-10 lg:px-10 xl:px-14 ${
+                          cardsPerView === 1
+                            ? "grid-cols-1"
+                            : cardsPerView === 2
+                              ? "grid-cols-2"
+                              : "grid-cols-3"
+                        }`}
+                      >
+                        {page.map((recipe) => (
+                          <Link
+                            key={recipe._id}
+                            to={`/recipes/${recipe._id}`}
+                            className="group relative h-[330px] overflow-hidden rounded-[14px] border-2 border-brand-dark bg-gray-100 shadow-[0_12px_24px_rgba(5,72,2,0.12)] transition-transform duration-300 hover:-translate-y-1 sm:h-[395px] lg:h-[430px] xl:h-[460px]"
+                          >
+                            {recipe.imageUrl || recipe.image ? (
+                              <img
+                                src={recipe.imageUrl || recipe.image}
+                                alt={recipe.title}
+                                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center bg-brand-light/30 text-gray-400">
+                                <UtensilsCrossed className="h-12 w-12" />
+                              </div>
+                            )}
+
+                            <div className="absolute inset-x-0 bottom-0 bg-black/68 px-4 py-4 text-white backdrop-blur-[1px] sm:px-5">
+                              <div className="mb-1.5 flex items-center gap-1">
+                                <div className="flex text-yellow-300">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star
+                                      key={star}
+                                      className="h-3.5 w-3.5 fill-current"
+                                    />
+                                  ))}
+                                </div>
+                                <span className="text-xs font-extrabold">
+                                  {recipe.ratingSummary?.averageRating || 4.9}
+                                </span>
+                              </div>
+                              <h3 className="font-heading text-xl font-bold leading-tight line-clamp-2 sm:text-2xl">
+                                {recipe.title}
+                              </h3>
+                              <div className="mt-3 flex flex-col gap-2 text-xs font-extrabold min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between sm:text-sm">
+                                <span className="flex min-w-0 items-center gap-1.5 truncate">
+                                  <Clock className="h-3.5 w-3.5 shrink-0" />
+                                  {recipe.cookTime || recipe.prepTime || 20} min
+                                  Cook Time
+                                </span>
+                                <span
+                                  className={`min-w-24 rounded-full px-4 py-1.5 text-center text-xs font-extrabold ${
+                                    (
+                                      recipe.difficulty || "EASY"
+                                    ).toUpperCase() === "EASY"
+                                      ? "bg-brand-light text-brand-dark"
+                                      : (
+                                            recipe.difficulty || "EASY"
+                                          ).toUpperCase() === "MEDIUM"
+                                        ? "bg-brand text-black"
+                                        : "bg-red-50 text-red-700"
+                                  }`}
+                                >
+                                  {recipe.difficulty || "Easy"}
+                                </span>
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                        {page.length < cardsPerView &&
+                          Array.from({
+                            length: cardsPerView - page.length,
+                          }).map((_, index) => (
+                            <div
+                              key={`empty-${index}`}
+                              className="hidden sm:block"
+                              aria-hidden="true"
+                            />
+                          ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {recipePageCount > 1 && (
+                  <button
+                    onClick={scrollRightBtn}
+                    className="absolute right-2 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white shadow-lg transition-colors hover:bg-black/65 sm:flex lg:right-8 xl:right-10"
+                    aria-label="Next recipes"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                )}
+              </div>
+
+              {recipePageCount > 1 && (
+                <div className="mt-7 flex items-center justify-center gap-2">
+                  {recipeSliderPages.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setActiveRecipePage(index)}
+                      className={`h-2.5 rounded-full border border-brand-dark transition-all ${
+                        safeActiveRecipePage === index
+                          ? "w-6 bg-brand-light"
+                          : "w-2.5 bg-white"
+                      }`}
+                      aria-label={`Go to recipe slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+
+            <h2 className="hela-display mb-6 px-0 sm:px-3 lg:px-10 xl:px-14 text-4xl sm:text-5xl font-bold">
+              Recipes Chart
+            </h2>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 xl:gap-6">
               {paginatedRecipes.map((recipe) => (
                 <Link
@@ -232,7 +369,7 @@ const Recipes = () => {
                   ) : (
                     <button
                       key={page}
-                      onClick={() => handlePageChange(page as number)}
+                      onClick={() => handlePageChange(page)}
                       className={`h-12 min-w-12 rounded-md border-2 border-brand-dark px-3 text-base font-extrabold transition-colors ${
                         safeCurrentPage === page
                           ? "bg-brand-light text-black"
