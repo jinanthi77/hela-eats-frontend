@@ -1,6 +1,8 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { getCategories } from '../services/categoryService';
+import type { Category } from '../types';
 import {
   BarChart3,
   CalendarDays,
@@ -16,14 +18,27 @@ import {
   X,
 } from 'lucide-react';
 
-const categoryLinks = ['Rice', 'Curry', 'Rotti', 'Sambol & Salad', 'Congee', 'Sweets', 'Diet Meal Plans'];
-
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
+  const selectedCategory = new URLSearchParams(location.search).get('category');
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch {
+        setCategories([]);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -213,9 +228,17 @@ const Navbar = () => {
 
       <div className="hidden lg:block bg-brand shadow-[0_12px_26px_rgba(5,72,2,0.25)] rounded-b-[18px]">
         <div className="hela-shell flex items-center gap-8 overflow-x-auto py-3.5">
-          {categoryLinks.map((name) => (
-            <Link key={name} to="/categories" className="shrink-0 text-white font-heading text-lg font-bold hover:text-brand-light transition-colors">
-              {name}
+          {categories.map((category) => (
+            <Link
+              key={category._id}
+              to={`/recipes?category=${encodeURIComponent(category._id)}`}
+              className={`shrink-0 font-heading text-lg font-bold transition-colors ${
+                selectedCategory === category._id
+                  ? 'text-brand-light underline decoration-4 underline-offset-8'
+                  : 'text-white hover:text-brand-light'
+              }`}
+            >
+              {category.name}
             </Link>
           ))}
         </div>
