@@ -311,7 +311,10 @@ const PaymentSuccess = () => {
             <div className="flex items-center justify-between pt-4 border-t border-gray-100">
               <div className="flex gap-3">
                 {paymentInfo?.orderId && (
-                <Link to={`/orders/${paymentInfo.orderId}`} className="inline-flex items-center gap-2 px-5 py-2.5 hela-action text-sm hover:opacity-90 transition-all">
+                  <Link
+                    to={`/purchase?order=${encodeURIComponent(paymentInfo.orderId)}`}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 hela-action text-sm hover:opacity-90 transition-all"
+                  >
                     View Order <ArrowRight className="h-4 w-4" />
                   </Link>
                 )}

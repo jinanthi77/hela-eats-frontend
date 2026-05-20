@@ -33,3 +33,8 @@ export const cancelOrder = async (id: string, reason?: string) => {
   const { data } = await apiClient.put(`/orders/${id}/cancel`, { reason });
   return data;
 };
+
+export const deleteOrderFromHistory = async (id: string): Promise<{ message: string; orderId: string }> => {
+  const { data } = await apiClient.delete<{ message: string; orderId: string }>(`/orders/${id}`);
+  return data;
+};

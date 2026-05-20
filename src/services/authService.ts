@@ -7,7 +7,11 @@ import type {
   User,
 } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://127.0.0.1:5000';
+
+type MessageResponse = {
+  message: string;
+};
 
 // ─── Email / Password ────────────────────────────────────────────────
 export const loginUser = async (payload: LoginPayload): Promise<AuthResponse> => {
@@ -17,6 +21,20 @@ export const loginUser = async (payload: LoginPayload): Promise<AuthResponse> =>
 
 export const registerUser = async (payload: RegisterPayload): Promise<AuthResponse> => {
   const { data } = await apiClient.post<AuthResponse>('/users/register', payload);
+  return data;
+};
+
+export const requestPasswordReset = async (email: string): Promise<MessageResponse> => {
+  const { data } = await apiClient.post<MessageResponse>('/users/forgot-password', {
+    email: email.trim().toLowerCase(),
+  });
+  return data;
+};
+
+export const resetPassword = async (token: string, password: string): Promise<MessageResponse> => {
+  const { data } = await apiClient.put<MessageResponse>(`/users/reset-password/${encodeURIComponent(token)}`, {
+    password,
+  });
   return data;
 };
 

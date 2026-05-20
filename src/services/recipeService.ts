@@ -9,12 +9,16 @@ interface RecipeListResponse {
 interface RecipeFilters {
   search?: string;
   category?: string;
+  page?: number;
+  limit?: number;
 }
 
 export const getRecipes = async (filters?: RecipeFilters): Promise<Recipe[]> => {
   const params = new URLSearchParams();
   if (filters?.search) params.append('search', filters.search);
   if (filters?.category) params.append('category', filters.category);
+  if (filters?.page) params.append('page', String(filters.page));
+  if (filters?.limit) params.append('limit', String(filters.limit));
 
   const query = params.toString();
   const { data } = await apiClient.get<RecipeListResponse | Recipe[]>(`/recipes${query ? `?${query}` : ''}`);

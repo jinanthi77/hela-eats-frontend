@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getMealPlans, createMealPlan, deleteMealPlan, addMealPlanToCart } from '../services/mealPlanService';
 import { useToast } from '../components/Toast';
-import type { MealPlan, Recipe } from '../types';
+import type { MealPlan } from '../types';
 import { CalendarDays, Plus, Trash2, Loader2, ShoppingCart, Eye, X } from 'lucide-react';
 
 const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack'] as const;
@@ -132,7 +132,7 @@ const MealPlansPage = () => {
             <div key={plan._id} className="hela-card p-4 sm:p-5 hover:-translate-y-0.5 transition-all">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-bold text-gray-900">{plan.name}</h3>
+                  <h3 className="text-lg font-bold text-gray-900">{plan.name || plan.title}</h3>
                   <p className="text-sm text-gray-400 mt-1">
                     {new Date(plan.startDate).toLocaleDateString()} — {new Date(plan.endDate).toLocaleDateString()}
                   </p>
@@ -143,7 +143,7 @@ const MealPlansPage = () => {
                 {plan.entries && plan.entries.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {MEAL_TYPES.map((type) => {
-                      const count = plan.entries.filter((e) => e.mealType === type).length;
+                      const count = (plan.entries || []).filter((e) => e.mealType === type).length;
                       if (count === 0) return null;
                       return (
                         <span key={type} className="text-xs px-2 py-1 rounded-full bg-brand-light/30 text-brand font-medium">

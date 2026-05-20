@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthContext";
 import { ToastProvider } from "./components/Toast";
@@ -19,7 +19,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
-import OrdersPage from "./pages/OrdersPage";
+import PurchasePage from "./pages/PurchasePage";
 import OrderDetail from "./pages/OrderDetail";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import MealPlansPage from "./pages/MealPlansPage";
@@ -89,7 +89,15 @@ function App() {
                     path="/orders"
                     element={
                       <ProtectedRoute>
-                        <OrdersPage />
+                        <Navigate to="/purchase" replace />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/purchase"
+                    element={
+                      <ProtectedRoute>
+                        <PurchasePage />
                       </ProtectedRoute>
                     }
                   />

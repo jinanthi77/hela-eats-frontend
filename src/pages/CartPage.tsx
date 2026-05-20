@@ -1,9 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getCart, updateCartItem, removeCartItem, clearCart, removeIngredientFromCartItem } from '../services/cartService';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Banknote,
+  CreditCard,
+  Loader2,
+  Minus,
+  Plus,
+  ShoppingBag,
+  Trash2,
+} from 'lucide-react';
+import {
+  clearCart,
+  getCart,
+  removeCartItem,
+  removeIngredientFromCartItem,
+  updateCartItem,
+} from '../services/cartService';
 import { useToast } from '../components/Toast';
-import type { Cart, CartItem } from '../types';
-import { Trash2, Minus, Plus, Loader2, ArrowRight, ShoppingBag, X } from 'lucide-react';
+import type { Cart, CartItem, PaymentMethodType, SelectedIngredient } from '../types';
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -11,232 +27,366 @@ const CartPage = () => {
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>('COD');
 
-  const fetchCart = async () => {
+  const fetchCart = async (withSpinner = true) => {
     try {
-      setLoading(true);
+      if (withSpinner) setLoading(true);
       const data = await getCart();
       setCart(data);
-    } catch { setCart(null); }
-    finally { setLoading(false); }
+    } catch {
+      setCart(null);
+    } finally {
+      if (withSpinner) setLoading(false);
+    }
   };
 
-  useEffect(() => { fetchCart(); }, []);
+  useEffect(() => {
+    fetchCart();
+  }, []);
 
-  const handleUpdateServings = async (itemId: string, servings: number) => {
-    if (servings < 1) return;
+  const items = cart?.items || [];
+  const isEmpty = items.length === 0;
+  const totalIngredients = useMemo(
+    () => items.reduce((sum, item) => sum + (item.selectedIngredients || item.ingredients || []).length, 0),
+    [items]
+  );
+
+  const handleUpdateServings = async (itemId: string, nextServings: number) => {
+    if (nextServings < 1) return;
     setActionLoading(itemId);
     try {
-      await updateCartItem(itemId, servings);
-      await fetchCart();
+      const updatedCart = await updateCartItem(itemId, nextServings);
+      setCart(updatedCart);
     } catch (err: any) {
-      showToast(err.response?.data?.message || 'Failed to update', 'error');
-    } finally { setActionLoading(null); }
+      showToast(err.response?.data?.message || 'Failed to update servings', 'error');
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   const handleRemove = async (itemId: string) => {
     setActionLoading(itemId);
     try {
       await removeCartItem(itemId);
+      await fetchCart(false);
       showToast('Item removed from cart', 'info');
-      await fetchCart();
     } catch (err: any) {
-      showToast(err.response?.data?.message || 'Failed to remove', 'error');
-    } finally { setActionLoading(null); }
+      showToast(err.response?.data?.message || 'Failed to remove item', 'error');
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   const handleRemoveIngredient = async (itemId: string, ingredientId: string) => {
     setActionLoading(`${itemId}-${ingredientId}`);
     try {
-      await removeIngredientFromCartItem(itemId, ingredientId);
-      showToast('Ingredient removed', 'info');
-      await fetchCart();
+      const updatedCart = await removeIngredientFromCartItem(itemId, ingredientId);
+      setCart(updatedCart);
+      showToast('Ingredient removed from meal kit', 'info');
     } catch (err: any) {
       showToast(err.response?.data?.message || 'Failed to remove ingredient', 'error');
-    } finally { setActionLoading(null); }
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   const handleClearCart = async () => {
     setActionLoading('clear');
     try {
       await clearCart();
+      setCart((current) => (current ? { ...current, items: [], totalPrice: 0 } : current));
       showToast('Cart cleared', 'info');
-      setCart(null);
     } catch (err: any) {
       showToast(err.response?.data?.message || 'Failed to clear cart', 'error');
-    } finally { setActionLoading(null); }
+    } finally {
+      setActionLoading(null);
+    }
   };
 
-  // Helper to extract recipe info from a cart item
-  const getRecipeTitle = (item: CartItem): string => {
-    if (typeof item.recipeId === 'object' && item.recipeId?.title) return item.recipeId.title;
-    if (item.recipe && typeof item.recipe === 'object' && item.recipe?.title) return item.recipe.title;
-    return 'Recipe';
+  const handleConfirmPurchase = () => {
+    sessionStorage.setItem('helaPreferredPaymentMethod', paymentMethod);
+    navigate('/checkout', { state: { paymentMethod } });
   };
 
-  const getRecipeLink = (item: CartItem): string => {
-    if (typeof item.recipeId === 'string') return item.recipeId;
-    if (typeof item.recipeId === 'object' && item.recipeId?._id) return item.recipeId._id;
-    if (item.recipe && typeof item.recipe === 'object' && item.recipe?._id) return item.recipe._id;
-    return '';
-  };
-
-  if (loading) return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <div className="h-14 w-14 rounded-full bg-brand-light flex items-center justify-center animate-pulse">
-          <Loader2 className="h-7 w-7 text-brand animate-spin" />
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-10 w-10 animate-spin text-brand-dark" />
+          <p className="text-sm font-semibold text-gray-500">Loading your cart...</p>
         </div>
-        <p className="text-sm text-gray-400 font-medium">Loading your cart…</p>
       </div>
-    </div>
-  );
-
-  const items = cart?.items || [];
-  const isEmpty = items.length === 0;
+    );
+  }
 
   return (
-    <div className="hela-shell py-10 sm:py-14">
-      <div className="flex items-center justify-between mb-12">
-        <div>
-          <h1 className="hela-display text-5xl sm:text-7xl font-extrabold flex items-center gap-3">
-            Your Cart
-          </h1>
-          <p className="text-gray-500 mt-1">{items.length} item{items.length !== 1 ? 's' : ''}</p>
-        </div>
-        {!isEmpty && (
-          <button onClick={handleClearCart} disabled={actionLoading === 'clear'}
-            className="text-sm text-red-500 hover:text-red-700 flex items-center gap-1 transition-colors disabled:opacity-50">
-            {actionLoading === 'clear' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-            Clear All
-          </button>
-        )}
-      </div>
+    <div className="hela-shell py-7 sm:py-10">
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-5 inline-flex items-center gap-2 text-sm font-extrabold text-black hover:text-brand-dark"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </button>
+
+      <h1 className="hela-display mb-8 text-center text-5xl font-black sm:text-7xl">Your Cart</h1>
 
       {isEmpty ? (
-        <div className="text-center py-20 hela-card">
-          <ShoppingBag className="h-16 w-16 text-gray-200 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-400 mb-2">Your cart is empty</h2>
-          <p className="text-gray-400 mb-6">Discover delicious recipes and add ingredients to your cart!</p>
-          <Link to="/recipes" className="inline-flex items-center gap-2 px-6 py-3 hela-action transition-colors">
+        <div className="mx-auto max-w-2xl rounded-xl border border-brand-dark/30 bg-white px-6 py-16 text-center shadow-[0_8px_22px_rgba(5,72,2,0.08)]">
+          <ShoppingBag className="mx-auto mb-4 h-14 w-14 text-brand-dark" />
+          <h2 className="text-2xl font-black text-brand-dark">Your cart is empty</h2>
+          <p className="mt-2 text-sm font-semibold text-gray-500">Add a recipe or meal kit before confirming your purchase.</p>
+          <Link to="/recipes" className="hela-action mt-6 inline-flex items-center gap-2 px-6 py-3">
             Browse Recipes <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       ) : (
-        <div className="space-y-4">
-          {items.map((item: CartItem) => {
-            const ingredients = item.selectedIngredients || item.ingredients || [];
-            const ingPrice = (ing: any) => typeof ing.price === 'number' ? ing.price : 0;
-
-            return (
-            <div key={item._id} className="bg-white overflow-hidden transition-all">
-              <div className="py-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                {/* Recipe info */}
-                <div className="flex-1 min-w-0">
-                  <Link to={`/recipes/${getRecipeLink(item)}`}
-                    className="text-2xl font-extrabold text-black hover:text-brand transition-colors truncate block">
-                    {getRecipeTitle(item)}
-                  </Link>
-                  <div className="flex items-center gap-1 mt-1 text-sm text-gray-500">
-                    <p>{ingredients.length} ingredients</p>
-                    <span className="ml-2 font-semibold text-brand-dark">• Rs. {(item.itemTotal ?? 0).toFixed(2)}</span>
-                  </div>
-                </div>
-
-                {/* Servings control */}
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center bg-brand-light rounded-full overflow-hidden">
-                    <button onClick={() => handleUpdateServings(item._id, item.servings - 1)}
-                      disabled={item.servings <= 1 || actionLoading === item._id}
-                      className="p-2.5 hover:bg-gray-200 transition-colors disabled:opacity-30">
-                      <Minus className="h-3.5 w-3.5 text-gray-600" />
-                    </button>
-                    <span className="px-3 font-bold text-gray-900 text-sm min-w-[2rem] text-center">
-                      {actionLoading === item._id ? <Loader2 className="h-3.5 w-3.5 animate-spin mx-auto" /> : item.servings}
-                    </span>
-                    <button onClick={() => handleUpdateServings(item._id, item.servings + 1)}
-                      disabled={actionLoading === item._id}
-                      className="p-2.5 hover:bg-gray-200 transition-colors disabled:opacity-30">
-                      <Plus className="h-3.5 w-3.5 text-gray-600" />
-                    </button>
-                  </div>
-                  <span className="text-xs text-gray-400">servings</span>
-                </div>
-
-                {/* Remove */}
-                <button onClick={() => handleRemove(item._id)}
-                  disabled={actionLoading === item._id}
-                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30"
-                  title="Remove recipe from cart">
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              {/* Ingredients Table */}
-              {ingredients.length > 0 && (
-                <div className="pb-5 pt-3">
-                  <div className="overflow-x-auto bg-white">
-                    <table className="w-full text-center text-sm text-black hela-table">
-                      <thead className="text-base">
-                        <tr>
-                          <th scope="col" className="px-4 py-5 font-semibold">Ingredients</th>
-                          <th scope="col" className="px-4 py-5 font-semibold">Measurements</th>
-                          <th scope="col" className="px-4 py-5 font-semibold muted">Meal Kit</th>
-                          <th scope="col" className="px-4 py-3 font-semibold text-right">Price (Rs.)</th>
-                          <th scope="col" className="px-4 py-3 font-semibold text-right">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {ingredients.map((ing: any, idx: number) => {
-                          const ingId = ing.ingredientId?._id || ing.ingredientId || idx.toString();
-                          const ingName = ing.ingredientId?.name || ing.name || 'Unknown ingredient';
-                          const isLoadingIng = actionLoading === `${item._id}-${ingId}`;
-
-                          return (
-                            <tr key={ingId} className="hover:bg-gray-50 transition-colors">
-                              <td className="px-4 py-5 font-bold text-black">{ingName}</td>
-                              <td className="px-4 py-5 font-bold">{typeof ing.quantity === 'number' ? ing.quantity.toFixed(1) : ing.quantity} {ing.unit}</td>
-                              <td className="px-4 py-5"></td>
-                              <td className="px-4 py-5 text-right font-extrabold text-black">{ingPrice(ing).toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">
-                                <button 
-                                  onClick={() => handleRemoveIngredient(item._id, ingId)}
-                                  disabled={isLoadingIng}
-                                  className="text-gray-400 hover:text-red-500 p-1.5 rounded-md hover:bg-red-50 transition-colors disabled:opacity-50 inline-flex items-center justify-center"
-                                  title="Remove ingredient"
-                                >
-                                  {isLoadingIng ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
+        <div className="space-y-8">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xl font-black text-black">
+                {items.length} recipe{items.length !== 1 ? 's' : ''} in your cart
+              </p>
+              <p className="text-sm font-semibold text-gray-500">{totalIngredients} selected ingredient lines</p>
             </div>
-          )})}
+            <button
+              onClick={handleClearCart}
+              disabled={actionLoading === 'clear'}
+              className="inline-flex items-center gap-2 rounded-full border border-red-200 px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 disabled:opacity-60"
+            >
+              {actionLoading === 'clear' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              Clear Cart
+            </button>
+          </div>
 
-          {/* Checkout */}
-          <div className="p-6 mt-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <p className="text-sm text-gray-500">Ready to order?</p>
-                <p className="text-lg font-bold text-gray-900">{items.length} recipe{items.length !== 1 ? 's' : ''} in your cart</p>
-                <p className="text-lg text-brand-dark font-bold mt-1">Estimated Total: Rs. {(cart?.totalPrice ?? 0).toFixed(2)}</p>
+          {items.map((item) => (
+            <CartRecipeTable
+              key={item._id}
+              item={item}
+              actionLoading={actionLoading}
+              onUpdateServings={handleUpdateServings}
+              onRemove={handleRemove}
+              onRemoveIngredient={handleRemoveIngredient}
+            />
+          ))}
+
+          <section className="grid gap-8 lg:grid-cols-[1fr_340px] lg:items-start">
+            <PurchaseProgress />
+
+            <div className="rounded-xl border border-brand-dark/30 bg-white p-5 shadow-[0_8px_22px_rgba(5,72,2,0.08)]">
+              <div className="flex items-center justify-between border-b border-brand-light pb-4">
+                <span className="text-sm font-black text-black">Total</span>
+                <span className="text-2xl font-black text-brand-dark">Rs {(cart?.totalPrice ?? 0).toFixed(2)}/=</span>
               </div>
-              <button onClick={() => navigate('/checkout')}
-                className="flex items-center gap-2 px-12 py-5 hela-action text-xl transition-all">
-                Confirm your Purchase <ArrowRight className="h-4 w-4" />
+
+              <div className="mt-5 space-y-3">
+                <p className="text-sm font-black text-black">Purchase Type</p>
+                <PaymentChoice
+                  selected={paymentMethod === 'COD'}
+                  icon={<Banknote className="h-5 w-5" />}
+                  title="Cash on Delivery"
+                  subtitle="Payment stays pending until delivery collection"
+                  onClick={() => setPaymentMethod('COD')}
+                />
+                <PaymentChoice
+                  selected={paymentMethod === 'Card'}
+                  icon={<CreditCard className="h-5 w-5" />}
+                  title="Online Card Payment"
+                  subtitle="Stripe checkout opens after review"
+                  onClick={() => setPaymentMethod('Card')}
+                />
+              </div>
+
+              <button onClick={handleConfirmPurchase} className="hela-action mt-6 w-full px-5 py-4">
+                Confirm your Purchase
               </button>
             </div>
-          </div>
+          </section>
         </div>
       )}
     </div>
   );
+};
+
+const CartRecipeTable = ({
+  item,
+  actionLoading,
+  onUpdateServings,
+  onRemove,
+  onRemoveIngredient,
+}: {
+  item: CartItem;
+  actionLoading: string | null;
+  onUpdateServings: (itemId: string, servings: number) => void;
+  onRemove: (itemId: string) => void;
+  onRemoveIngredient: (itemId: string, ingredientId: string) => void;
+}) => {
+  const title = getRecipeTitle(item);
+  const recipeId = getRecipeId(item);
+  const ingredients = (item.selectedIngredients || item.ingredients || []) as SelectedIngredient[];
+
+  return (
+    <section>
+      <div className="mb-3 flex flex-wrap items-center gap-4">
+        <Link to={recipeId ? `/recipes/${recipeId}` : '/recipes'} className="text-lg font-black text-black hover:text-brand-dark">
+          {title}
+        </Link>
+        <span className="rounded-full bg-brand-light px-6 py-1 text-xs font-black text-brand-dark">
+          {item.servings.toString().padStart(2, '0')} Serving{item.servings !== 1 ? 's' : ''}
+        </span>
+        {item.isMealKit && <span className="rounded-full bg-brand-dark px-4 py-1 text-xs font-black text-white">Meal Kit</span>}
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="hela-table w-full min-w-[760px] text-center text-sm">
+          <thead>
+            <tr>
+              <th className="w-32 px-4 py-4"></th>
+              <th className="px-4 py-4">Ingredients</th>
+              <th className="px-4 py-4">Measurements</th>
+              <th className="px-4 py-4 muted">Meal Kit</th>
+              <th className="px-4 py-4">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ingredients.map((ingredient: any, index) => {
+              const ingredientId = ingredient.ingredientId?._id || ingredient.ingredientId || `${index}`;
+              const loadingKey = `${item._id}-${ingredientId}`;
+              return (
+                <tr key={ingredientId}>
+                  <td className="px-4 py-4">
+                    <button
+                      onClick={() => onRemoveIngredient(item._id, ingredientId)}
+                      disabled={actionLoading === loadingKey}
+                      className="rounded-full border border-brand-light px-5 py-1 text-xs font-bold text-brand-dark hover:bg-brand-light disabled:opacity-60"
+                    >
+                      {actionLoading === loadingKey ? '...' : 'Delete'}
+                    </button>
+                  </td>
+                  <td className="px-4 py-4 font-black text-black">{ingredient.ingredientId?.name || ingredient.name || 'Ingredient'}</td>
+                  <td className="px-4 py-4 font-bold text-black">
+                    {formatQuantity(ingredient.quantity)} {ingredient.unit}
+                  </td>
+                  <td className="px-4 py-4 font-bold text-black">{ingredient.isReadyToCook ? 'Ready-to-cook' : ''}</td>
+                  <td className="px-4 py-4 font-black text-black">Rs {Number(ingredient.price || 0).toFixed(2)}/=</td>
+                </tr>
+              );
+            })}
+            <tr>
+              <td className="px-4 py-4" colSpan={3}></td>
+              <td className="px-4 py-4 font-black text-black">Delivery Charges</td>
+              <td className="px-4 py-4 font-black text-black">Included</td>
+            </tr>
+            <tr>
+              <td className="px-4 py-4" colSpan={3}></td>
+              <td className="px-4 py-4 font-black text-black">Total</td>
+              <td className="px-4 py-4 font-black text-black">Rs {(item.itemTotal || 0).toFixed(2)}/=</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="inline-flex items-center rounded-full bg-brand-light">
+          <button
+            onClick={() => onUpdateServings(item._id, item.servings - 1)}
+            disabled={item.servings <= 1 || actionLoading === item._id}
+            className="grid h-9 w-9 place-items-center rounded-full hover:bg-brand disabled:opacity-40"
+            aria-label="Decrease servings"
+          >
+            <Minus className="h-4 w-4" />
+          </button>
+          <span className="min-w-10 text-center text-sm font-black">
+            {actionLoading === item._id ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : item.servings}
+          </span>
+          <button
+            onClick={() => onUpdateServings(item._id, item.servings + 1)}
+            disabled={actionLoading === item._id}
+            className="grid h-9 w-9 place-items-center rounded-full hover:bg-brand disabled:opacity-40"
+            aria-label="Increase servings"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+        </div>
+        <button
+          onClick={() => onRemove(item._id)}
+          disabled={actionLoading === item._id}
+          className="inline-flex items-center gap-2 rounded-full border border-red-200 px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 disabled:opacity-60"
+        >
+          {actionLoading === item._id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+          Remove recipe
+        </button>
+      </div>
+    </section>
+  );
+};
+
+const PaymentChoice = ({
+  selected,
+  icon,
+  title,
+  subtitle,
+  onClick,
+}: {
+  selected: boolean;
+  icon: ReactNode;
+  title: string;
+  subtitle: string;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${
+      selected ? 'border-brand-dark bg-brand-light/60' : 'border-brand-light hover:border-brand-dark/50'
+    }`}
+  >
+    <span className={`grid h-4 w-4 place-items-center rounded-full border ${selected ? 'border-brand-dark bg-brand-dark' : 'border-brand-dark'}`}>
+      {selected && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
+    </span>
+    <span className="text-brand-dark">{icon}</span>
+    <span>
+      <span className="block text-sm font-black text-black">{title}</span>
+      <span className="block text-xs font-semibold text-gray-500">{subtitle}</span>
+    </span>
+  </button>
+);
+
+const PurchaseProgress = () => {
+  const steps = ['Purchase Confirmation', 'Vendor Stock Reduced', 'Payment Handling', 'Admin Processing', 'Delivered by HelaEats'];
+
+  return (
+    <div className="hidden lg:block pt-10">
+      <div className="relative grid grid-cols-5 gap-4">
+        <div className="absolute left-8 right-8 top-2 h-1 bg-yellow-400" />
+        {steps.map((step) => (
+          <div key={step} className="relative text-center">
+            <span className="relative z-10 mx-auto block h-5 w-5 rounded-full bg-yellow-400 ring-4 ring-white" />
+            <p className="mt-3 text-[10px] font-bold text-gray-600">{step}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const getRecipeTitle = (item: CartItem) => {
+  if (typeof item.recipeId === 'object' && item.recipeId?.title) return item.recipeId.title;
+  if (item.recipe?.title) return item.recipe.title;
+  return 'Recipe';
+};
+
+const getRecipeId = (item: CartItem) => {
+  if (typeof item.recipeId === 'string') return item.recipeId;
+  if (typeof item.recipeId === 'object' && item.recipeId?._id) return item.recipeId._id;
+  return item.recipe?._id || '';
+};
+
+const formatQuantity = (value: number | string) => {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return value || '0';
+  return Number.isInteger(numeric) ? `${numeric}` : numeric.toFixed(numeric < 10 ? 1 : 0);
 };
 
 export default CartPage;

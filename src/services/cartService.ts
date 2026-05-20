@@ -6,13 +6,18 @@ export const getCart = async (): Promise<Cart> => {
   return data;
 };
 
-export const addToCart = async (recipeId: string, servings: number = 1, excludedIngredients: string[] = []) => {
-  const { data } = await apiClient.post('/cart/add', { recipeId, servings, excludedIngredients });
+export const addToCart = async (
+  recipeId: string,
+  servings: number = 1,
+  excludedIngredients: string[] = [],
+  isMealKit: boolean = false
+) => {
+  const { data } = await apiClient.post('/cart/add', { recipeId, servings, excludedIngredients, isMealKit });
   return data;
 };
 
-export const calculateScale = async (recipeId: string, servings: number) => {
-  const { data } = await apiClient.post('/cart/calculate-scale', { recipeId, servings });
+export const calculateScale = async (recipeId: string, servings: number, isMealKit: boolean = false) => {
+  const { data } = await apiClient.post('/cart/calculate-scale', { recipeId, targetServings: servings, isMealKit });
   return data;
 };
 

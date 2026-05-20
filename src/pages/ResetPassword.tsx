@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Loader2, Eye, EyeOff, ShieldCheck, CheckCircle2, AlertCircle, Lock } from 'lucide-react';
-import apiClient from '../api/client';
+import { resetPassword } from '../services/authService';
+import { getApiErrorMessage } from '../utils/apiError';
 
 const ResetPassword = () => {
   const { token } = useParams<{ token: string }>();
@@ -13,6 +14,7 @@ const ResetPassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [success, setSuccess] = useState(false);
 
   // ─── Password strength indicators ──────────────────────────────
@@ -38,6 +40,11 @@ const ResetPassword = () => {
     e.preventDefault();
     setError('');
 
+    if (!token) {
+      setError('Password reset token is missing. Please request a new reset link.');
+      return;
+    }
+
     // Client-side validation
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
@@ -52,14 +59,11 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      await apiClient.put(`/users/reset-password/${token}`, { password });
+      const response = await resetPassword(token, password);
+      setSuccessMessage(response.message);
       setSuccess(true);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message ||
-        err.message ||
-        'Failed to reset password. The link may have expired.'
-      );
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Failed to reset password. The link may have expired.'));
     } finally {
       setLoading(false);
     }
@@ -96,7 +100,7 @@ const ResetPassword = () => {
                   Password Reset Successful!
                 </h2>
                 <p className="text-sm text-gray-500 mb-8 leading-relaxed">
-                  Your password has been updated. You can now log in with your new password.
+                  {successMessage || 'Your password has been updated. You can now log in with your new password.'}
                 </p>
 
                 <button

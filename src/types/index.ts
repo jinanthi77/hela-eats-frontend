@@ -181,9 +181,10 @@ export interface OrderIngredient {
 }
 
 export interface OrderItem {
-  recipeId?: string | { _id: string; title: string; category?: string };
+  recipeId?: string | { _id: string; title: string; category?: string; imageUrl?: string };
   recipeTitle?: string;
   servings: number;
+  isMealKit?: boolean;
   ingredients: OrderIngredient[];
   itemTotal: number;
 }
@@ -239,6 +240,12 @@ export interface MealPlanRecipe {
   servings: number;
 }
 
+export interface MealPlanEntry {
+  recipe: string | Recipe;
+  day: string;
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+}
+
 export interface MealPlanDay {
   _id?: string;
   date: string;
@@ -256,9 +263,11 @@ export interface MealPlan {
   _id: string;
   userId: string;
   title: string;
+  name?: string;
   startDate: string;
   endDate: string;
   days: MealPlanDay[];
+  entries?: MealPlanEntry[];
   createdAt?: string;
   updatedAt?: string;
 }
