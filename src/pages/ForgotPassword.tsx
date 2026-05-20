@@ -1,30 +1,37 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, Mail, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
-import apiClient from '../api/client';
+import { requestPasswordReset } from '../services/authService';
+import { getApiErrorMessage } from '../utils/apiError';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      setError('Please enter your email address.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await apiClient.post('/users/forgot-password', { email });
+      const response = await requestPasswordReset(normalizedEmail);
+      setEmail(normalizedEmail);
+      setSuccessMessage(response.message);
       setSubmitted(true);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message ||
-        err.message ||
-        'Something went wrong. Please try again.'
-      );
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Something went wrong. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -61,8 +68,8 @@ const ForgotPassword = () => {
                   Check Your Email
                 </h2>
                 <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-                  If an account with <strong className="text-gray-700">{email}</strong> exists,
-                  we've sent a password reset link. Please check your inbox and spam folder.
+                  {successMessage || 'If an account with that email exists, a password reset link has been sent.'}
+                  {' '}Please check your inbox and spam folder.
                 </p>
                 <p className="text-xs text-gray-400 mb-6">
                   The link will expire in <strong>1 hour</strong>.

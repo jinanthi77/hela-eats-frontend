@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getCategories } from '../services/categoryService';
 import type { Category } from '../types';
+import NotificationsMenu from './NotificationsMenu';
 import {
   BarChart3,
   CalendarDays,
@@ -12,7 +13,6 @@ import {
   Menu,
   PackageSearch,
   Search,
-  ShoppingBag,
   Store,
   User,
   X,
@@ -26,6 +26,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const selectedCategory = new URLSearchParams(location.search).get('category');
+  const showCategoryBar = location.pathname !== '/profile';
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -98,38 +99,6 @@ const Navbar = () => {
             <div className="hidden lg:flex items-center gap-3">
               {isAuthenticated ? (
                 <>
-                  <Link
-                    to="/cart"
-                    className="h-10 w-10 rounded-full border-2 border-brand-dark flex items-center justify-center hover:bg-brand-light transition-colors"
-                    title="Cart"
-                  >
-                    <ShoppingBag className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    to="/orders"
-                    className="h-10 w-10 rounded-full border-2 border-brand-dark flex items-center justify-center hover:bg-brand-light transition-colors"
-                    title="Orders"
-                  >
-                    <ClipboardList className="h-4 w-4" />
-                  </Link>
-                  {user?.role === 'user' && (
-                    <>
-                      <Link
-                        to="/mealplans"
-                        className="h-10 w-10 rounded-full border-2 border-brand-dark flex items-center justify-center hover:bg-brand-light transition-colors"
-                        title="Meal Plans"
-                      >
-                        <CalendarDays className="h-4 w-4" />
-                      </Link>
-                      <Link
-                        to="/pantry"
-                        className="h-10 w-10 rounded-full border-2 border-brand-dark flex items-center justify-center hover:bg-brand-light transition-colors"
-                        title="My Pantry"
-                      >
-                        <Carrot className="h-4 w-4" />
-                      </Link>
-                    </>
-                  )}
                   {user?.role === 'admin' && (
                     <Link
                       to="/admin/dashboard"
@@ -157,6 +126,7 @@ const Navbar = () => {
                       </Link>
                     </>
                   )}
+                  <NotificationsMenu />
                   <Link to="/profile" title={user?.name} className="shrink-0">
                     {user?.profilePicture?.url ? (
                       <img
@@ -222,10 +192,12 @@ const Navbar = () => {
           <Link to="/" className={navLinkClass('/')}>Home</Link>
           <Link to="/recipes" className={navLinkClass('/recipes')}>Recipes</Link>
           <Link to="/cart" className={navLinkClass('/cart')}>Cart</Link>
+          <Link to="/purchase" className={navLinkClass('/purchase')}>Purchase</Link>
           <Link to="/contact" className={navLinkClass('/contact')}>Contact Us</Link>
         </div>
       </div>
 
+      {showCategoryBar && (
       <div className="hidden lg:block bg-brand shadow-[0_12px_26px_rgba(5,72,2,0.25)] rounded-b-[18px]">
         <div className="hela-shell flex items-center gap-8 overflow-x-auto py-3.5">
           {categories.map((category) => (
@@ -243,6 +215,7 @@ const Navbar = () => {
           ))}
         </div>
       </div>
+      )}
 
       {mobileOpen && (
         <div className="lg:hidden bg-brand-light border-t border-brand/30 animate-[slideDown_0.2s_ease] max-h-[calc(100vh-8rem)] overflow-y-auto shadow-lg">
@@ -259,14 +232,17 @@ const Navbar = () => {
             <Link to="/cart" onClick={closeMobile} className="block px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
               Cart
             </Link>
+            <Link to="/purchase" onClick={closeMobile} className="block px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
+              Purchase
+            </Link>
             <Link to="/contact" onClick={closeMobile} className="block px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
               Contact Us
             </Link>
 
             {isAuthenticated ? (
               <>
-                <Link to="/orders" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
-                  <ClipboardList className="h-4 w-4" /> Orders
+                <Link to="/purchase" onClick={closeMobile} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand/20 transition-colors">
+                  <ClipboardList className="h-4 w-4" /> Purchase
                 </Link>
                 {user?.role === 'user' && (
                   <>

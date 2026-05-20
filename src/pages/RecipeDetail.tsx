@@ -1,23 +1,61 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getRecipeById, getRecipeMealKit } from '../services/recipeService';
-import { addToCart } from '../services/cartService';
-import { useAuth } from '../hooks/useAuth';
-import { useToast } from '../components/Toast';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
+  Apple,
   ArrowLeft,
-  Clock,
+  Check,
   ChefHat,
-  Users,
+  Clock,
+  Droplets,
   Flame,
-  ShoppingCart,
+  Heart,
+  Leaf,
   Loader2,
-  Plus,
   Minus,
+  Plus,
+  ShoppingCart,
+  Sprout,
   UtensilsCrossed,
-  Zap,
-  DollarSign,
+  Wheat,
 } from 'lucide-react';
+import { addToCart, calculateScale } from '../services/cartService';
+import { getRecipeById } from '../services/recipeService';
+import { useToast } from '../components/Toast';
+import { useAuth } from '../hooks/useAuth';
+import { getApiErrorMessage } from '../utils/apiError';
+import type { Recipe, RecipeIngredient } from '../types';
+
+type IngredientRow = {
+  id: string;
+  name: string;
+  quantity: number;
+  unit: string;
+  price: number;
+  available: boolean;
+  calories?: number;
+};
+
+type RecipeIngredientWithId = RecipeIngredient & {
+  _id?: string;
+};
+
+type PricePreviewRow = {
+  ingredientId?: string;
+  quantity?: number;
+  unit?: string;
+  price?: number;
+  error?: unknown;
+};
+
+const formatAmount = (value: number) => {
+  if (!Number.isFinite(value)) return '0';
+  return Number.isInteger(value) ? `${value}` : value.toFixed(value < 10 ? 1 : 0);
+};
+
+const getIngredientId = (ingredient: RecipeIngredientWithId) => {
+  if (typeof ingredient.ingredientId === 'object' && ingredient.ingredientId?._id) return ingredient.ingredientId._id;
+  return String(ingredient.ingredientId || ingredient._id || ingredient.name || '');
+};
 
 const RecipeDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,12 +63,15 @@ const RecipeDetail = () => {
   const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
 
-  const [recipe, setRecipe] = useState<any>(null);
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [servings, setServings] = useState(1);
-  const [addingToCart, setAddingToCart] = useState(false);
   const [excludedIngredients, setExcludedIngredients] = useState<string[]>([]);
+  const [addingMode, setAddingMode] = useState<'cart' | 'kit' | null>(null);
+  const [caloriesOpen, setCaloriesOpen] = useState(false);
+  const [pricePreview, setPricePreview] = useState<PricePreviewRow[]>([]);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -38,20 +79,13 @@ const RecipeDetail = () => {
     const fetchRecipe = async () => {
       try {
         setLoading(true);
-        const [recipeData] = await Promise.allSettled([
-          getRecipeById(id),
-          getRecipeMealKit(id),
-        ]);
-
-        if (recipeData.status === 'fulfilled') {
-          setRecipe(recipeData.value);
-          setServings(recipeData.value.standardServingSize || recipeData.value.servings || 1);
-        } else {
-          setError('Failed to load recipe');
-        }
-
-      } catch {
-        setError('Failed to load recipe');
+        setError('');
+        const data = await getRecipeById(id);
+        setRecipe(data);
+        setServings(data.standardServingSize || data.servings || 1);
+        setExcludedIngredients([]);
+      } catch (err) {
+        setError(getApiErrorMessage(err, 'Failed to load recipe'));
       } finally {
         setLoading(false);
       }
@@ -60,7 +94,96 @@ const RecipeDetail = () => {
     fetchRecipe();
   }, [id]);
 
-  const handleAddToCart = async () => {
+  useEffect(() => {
+    if (!id || !isAuthenticated) return;
+
+    let ignore = false;
+    const fetchPricePreview = async () => {
+      try {
+        setPreviewLoading(true);
+        const data = await calculateScale(id, servings, false);
+        if (!ignore) {
+          setPricePreview(Array.isArray(data.mappedIngredients) ? data.mappedIngredients : []);
+        }
+      } catch {
+        if (!ignore) setPricePreview([]);
+      } finally {
+        if (!ignore) setPreviewLoading(false);
+      }
+    };
+
+    fetchPricePreview();
+    return () => {
+      ignore = true;
+    };
+  }, [id, servings, isAuthenticated]);
+
+  const baseServings = recipe?.standardServingSize || recipe?.servings || 1;
+  const servingRatio = servings / baseServings;
+
+  const ingredients: IngredientRow[] = useMemo(() => {
+    if (!recipe) return [];
+
+    return (recipe.ingredients || []).map((ingredient) => {
+      const ingredientId = getIngredientId(ingredient);
+      const preview = pricePreview.find((item) => String(item.ingredientId || '') === String(ingredientId));
+      const usingBackendPreview = pricePreview.length > 0;
+      const quantity = Number(ingredient.quantity ?? ingredient.exactQuantity ?? 0) * servingRatio;
+      const ingredientInfo = typeof ingredient.ingredientId === 'object' ? ingredient.ingredientId : undefined;
+      const nutrition = ingredientInfo?.nutritionPer100Units;
+      const calories =
+        nutrition?.calories && quantity
+          ? Math.round((Number(nutrition.calories) * quantity) / 100)
+          : undefined;
+
+      return {
+        id: ingredientId,
+        name: ingredient.name || ingredientInfo?.name || 'Ingredient',
+        quantity: Number(preview?.quantity ?? quantity),
+        unit: preview?.unit || ingredient.unit || ingredientInfo?.baseUnit || '',
+        price: preview?.error ? 0 : Number(preview?.price ?? (usingBackendPreview ? 0 : ingredient.price ?? 0)) * (preview ? 1 : servingRatio),
+        available: usingBackendPreview ? !!preview && !preview.error : true,
+        calories,
+      };
+    });
+  }, [recipe, servingRatio, pricePreview]);
+
+  const instructions = useMemo(() => {
+    if (!recipe) return [];
+    if (Array.isArray(recipe.steps) && recipe.steps.length > 0) {
+      return [...recipe.steps]
+        .sort((a, b) => (a.stepNumber || 0) - (b.stepNumber || 0))
+        .map((step) => step.instruction)
+        .filter(Boolean);
+    }
+    return recipe.instructions || [];
+  }, [recipe]);
+
+  const nutrition = recipe?.nutritionPerStandardServing || recipe?.nutrition;
+  const selectedIngredients = ingredients.filter((ingredient) => ingredient.available && !excludedIngredients.includes(ingredient.id));
+  const unavailableIngredients = ingredients.filter((ingredient) => !ingredient.available);
+  const selectedTotal = selectedIngredients.reduce((sum, ingredient) => sum + ingredient.price, 0);
+  const hasPrices = ingredients.some((ingredient) => ingredient.price > 0) || pricePreview.length > 0;
+  const estimatedCalories = nutrition?.calories || selectedIngredients.reduce((sum, ingredient) => sum + (ingredient.calories || 0), 0);
+  const caloriesRows = selectedIngredients.map((ingredient) => ({
+    ...ingredient,
+    calories:
+      ingredient.calories ??
+      Math.max(1, Math.round((estimatedCalories || 0) / Math.max(selectedIngredients.length, 1))),
+  }));
+
+  const toggleIngredient = (ingredientId: string) => {
+    if (!ingredientId) return;
+    const ingredient = ingredients.find((item) => item.id === ingredientId);
+    if (ingredient && !ingredient.available) return;
+    setExcludedIngredients((current) =>
+      current.includes(ingredientId)
+        ? current.filter((idValue) => idValue !== ingredientId)
+        : [...current, ingredientId]
+    );
+  };
+
+  const handleAddToCart = async (isMealKit: boolean) => {
     if (!isAuthenticated) {
       showToast('Please sign in to add items to your cart', 'warning');
       navigate('/login', { state: { from: `/recipes/${id}` } });
@@ -68,67 +191,24 @@ const RecipeDetail = () => {
     }
 
     if (!id) return;
-    setAddingToCart(true);
+    setAddingMode(isMealKit ? 'kit' : 'cart');
     try {
-      await addToCart(id, servings, excludedIngredients);
-      showToast('Recipe added to cart!', 'success');
+      await addToCart(id, servings, excludedIngredients, isMealKit);
+      showToast(isMealKit ? 'Ready-to-cook meal kit added to cart' : 'Recipe ingredients added to cart', 'success');
       navigate('/cart');
-    } catch (err: any) {
-      showToast(err.response?.data?.message || 'Failed to add to cart', 'error');
+    } catch (err) {
+      showToast(getApiErrorMessage(err, 'Failed to add to cart'), 'error');
     } finally {
-      setAddingToCart(false);
+      setAddingMode(null);
     }
-  };
-
-  // ── Helpers to normalize API response ──────────────────────────────
-  // Backend can return ingredients as:
-  //   { ingredientId: { _id, name, baseUnit }, exactQuantity, unit }
-  // or the frontend type:
-  //   { name, quantity, unit }
-  const getIngredients = (): { id: string; name: string; quantity: number; unit: string; price: number }[] => {
-    if (!recipe) return [];
-    // If the user manually adjusted quantities, use those
-    if (recipe._customIngredients) return recipe._customIngredients;
-    const raw = recipe.ingredients || [];
-    return raw.map((ing: any) => ({
-      id: ing.ingredientId?._id || ing.ingredientId || '',
-      name: ing.name || ing.ingredientId?.name || 'Unknown',
-      quantity: ing.quantity ?? ing.exactQuantity ?? 0,
-      unit: ing.unit || ing.ingredientId?.baseUnit || '',
-      price: ing.price ?? 0,
-    }));
-  };
-
-  // Backend returns steps: [{ stepNumber, instruction }]
-  // Frontend type expects instructions: string[]
-  const getInstructions = (): string[] => {
-    if (!recipe) return [];
-    // Handle backend "steps" format
-    if (recipe.steps && Array.isArray(recipe.steps) && recipe.steps.length > 0) {
-      return recipe.steps
-        .sort((a: any, b: any) => (a.stepNumber || 0) - (b.stepNumber || 0))
-        .map((s: any) => (typeof s === 'string' ? s : s.instruction || ''));
-    }
-    // Handle frontend "instructions" format
-    if (recipe.instructions && Array.isArray(recipe.instructions)) {
-      return recipe.instructions;
-    }
-    return [];
-  };
-
-  // Nutrition can be recipe.nutrition or recipe.nutritionPerStandardServing
-  const getNutrition = () => {
-    return recipe?.nutrition || recipe?.nutritionPerStandardServing || null;
   };
 
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-14 w-14 rounded-full bg-brand-light flex items-center justify-center animate-pulse">
-            <Loader2 className="h-7 w-7 text-brand animate-spin" />
-          </div>
-          <p className="text-sm text-gray-400 font-medium">Loading recipe…</p>
+          <Loader2 className="h-10 w-10 animate-spin text-brand-dark" />
+          <p className="text-sm font-semibold text-gray-500">Loading recipe...</p>
         </div>
       </div>
     );
@@ -136,287 +216,235 @@ const RecipeDetail = () => {
 
   if (error || !recipe) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center flex-col space-y-4">
-        <p className="text-red-500 font-medium text-lg">{error || 'Recipe not found'}</p>
-        <button
-          onClick={() => navigate('/recipes')}
-          className="px-6 py-2 bg-brand-light text-brand-dark rounded-lg hover:bg-brand-light/70 transition-colors font-medium"
-        >
+      <div className="hela-shell min-h-[60vh] flex flex-col items-center justify-center gap-4 text-center">
+        <p className="text-lg font-bold text-red-600">{error || 'Recipe not found'}</p>
+        <button onClick={() => navigate('/recipes')} className="hela-action px-6 py-3">
           Back to Recipes
         </button>
       </div>
     );
   }
 
-  const categoryName =
-    typeof recipe.category === 'object' && recipe.category
-      ? recipe.category.name
-      : undefined;
-
-  const ingredients = getIngredients();
-  const instructions = getInstructions();
-  const nutrition = getNutrition();
-  const totalPrice = ingredients.reduce((sum, ing) => sum + (ing.price || 0), 0);
-  const hasAnyPrice = ingredients.some(ing => ing.price > 0);
-
+  const categoryName = typeof recipe.category === 'object' && recipe.category ? recipe.category.name : undefined;
+  const imageSrc = recipe.imageUrl || recipe.image;
 
   return (
-    <div className="hela-shell py-10 sm:py-14">
-      {/* ── Back Button ────────────────────────────────────────── */}
+    <div className="hela-shell py-6 sm:py-8">
       <button
         onClick={() => navigate(-1)}
-        className="inline-flex items-center gap-2 text-gray-500 hover:text-brand mb-6 transition-colors group"
+        className="mb-5 inline-flex items-center gap-2 text-sm font-extrabold text-black hover:text-brand-dark"
       >
-        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-        <span className="text-sm font-medium">Back</span>
+        <ArrowLeft className="h-4 w-4" />
+        Back
       </button>
 
-      {/* ── Hero Section ───────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12 items-start">
-        <div className="rounded-2xl overflow-hidden bg-gray-100 shadow-lg h-72 sm:h-[520px] relative">
-          {recipe.imageUrl || recipe.image ? (
-            <img
-              src={recipe.imageUrl || recipe.image}
-              alt={recipe.title}
-              className="w-full h-full object-cover"
-            />
+      <section className="grid gap-6 lg:grid-cols-[1.02fr_1fr] lg:items-start">
+        <div className="relative overflow-hidden rounded-[14px] border-2 border-brand-dark bg-gray-100 aspect-[1.45/1]">
+          {imageSrc ? (
+            <img src={imageSrc} alt={recipe.title} className="h-full w-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-light to-brand-light/30 text-brand">
-              <UtensilsCrossed className="h-24 w-24" />
+            <div className="h-full w-full flex items-center justify-center bg-brand-light">
+              <UtensilsCrossed className="h-20 w-20 text-brand-dark" />
             </div>
           )}
-          <div className="absolute left-5 top-5 flex items-center gap-2 text-white font-extrabold drop-shadow">
-            <ChefHat className="h-5 w-5" />
+          <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-black/35 px-3 py-1.5 text-sm font-bold text-white">
+            <ChefHat className="h-4 w-4" />
             {recipe.difficulty || 'Easy'}
           </div>
+          <div className="absolute bottom-3 right-3 rounded-full bg-black/65 px-3 py-1 text-sm font-extrabold text-white">
+            {recipe.ratingSummary?.averageRating?.toFixed(1) || '4.9'} ★★★★★
+          </div>
         </div>
 
-        <div className="flex flex-col justify-center">
-          <div className="flex flex-wrap items-center gap-3 mb-3">
-            {categoryName && (
-              <span className="inline-flex text-xs font-bold text-brand-dark bg-brand-light/50 px-3 py-1 rounded-full uppercase tracking-wide">
-                {categoryName}
-              </span>
-            )}
-            {hasAnyPrice && (
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full tracking-wide">
-                <ShoppingCart className="w-3.5 h-3.5" />
-                Total Cost: Rs. {ingredients.filter(ing => !excludedIngredients.includes(ing.id)).reduce((sum, ing) => sum + (ing.price || 0), 0).toFixed(2)}
-              </span>
-            )}
-          </div>
-          <h1 className="hela-display text-4xl sm:text-5xl lg:text-6xl font-bold mb-5 leading-tight">
+        <div>
+          <p className="text-sm font-extrabold uppercase tracking-wide text-brand-dark">{categoryName || 'Hela Eats'}</p>
+          <h1 className="hela-display mt-2 text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
             {recipe.title}
           </h1>
-          {hasAnyPrice && (
-            <p className="text-4xl sm:text-5xl font-extrabold text-brand-dark mb-5">
-              Rs. {ingredients.filter(ing => !excludedIngredients.includes(ing.id)).reduce((sum, ing) => sum + (ing.price || 0), 0).toFixed(2)}/=
-            </p>
-          )}
-          <p className="text-black text-base sm:text-lg font-medium leading-relaxed mb-6">{recipe.description}</p>
+          <p className="mt-2 text-4xl font-black text-brand-dark">
+            Rs {hasPrices ? selectedTotal.toFixed(2) : '0.00'}/=
+            {previewLoading && <span className="ml-3 align-middle text-sm font-bold text-gray-400">updating...</span>}
+          </p>
+          <p className="mt-3 max-w-3xl text-sm font-semibold leading-relaxed text-black">
+            {recipe.description || 'Fresh ingredients measured for your kitchen and ready for checkout.'}
+          </p>
 
-          {/* ── Quick Stats ─────────────────────────────────────── */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div className="hela-card p-4 text-center">
-              <Clock className="h-5 w-5 text-brand mx-auto mb-1" />
-              <p className="text-xs text-gray-500">Prep</p>
-              <p className="text-sm font-bold text-gray-900">{recipe.prepTime || 0}m</p>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-xl border border-brand-dark/35 px-5 py-4 text-center">
+              <Clock className="mx-auto mb-2 h-5 w-5 text-brand-dark" />
+              <p className="text-xs font-extrabold underline">Per {baseServings} Serving</p>
+              <p className="mt-2 text-xs font-bold">Meal Prep Time: {recipe.prepTime || 0} Minutes</p>
+              <p className="text-xs font-bold">Meal Cook Time: {recipe.cookTime || 0} Minutes</p>
             </div>
-            <div className="hela-card p-4 text-center">
-              <Flame className="h-5 w-5 text-red-500 mx-auto mb-1" />
-              <p className="text-xs text-gray-500">Cook</p>
-              <p className="text-sm font-bold text-gray-900">{recipe.cookTime || 0}m</p>
-            </div>
-            <div className="hela-card p-4 text-center">
-              <ChefHat className="h-5 w-5 text-blue-500 mx-auto mb-1" />
-              <p className="text-xs text-gray-500">Difficulty</p>
-              <p className="text-sm font-bold text-gray-900 capitalize">{recipe.difficulty}</p>
-            </div>
-          </div>
 
-          {/* ── Servings + Add to Cart ─────────────────────────── */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <div className="flex items-center bg-brand-light rounded-full overflow-hidden">
-              <button
-                onClick={() => { setServings((s) => Math.max(1, s - 1)); setRecipe((prev: any) => prev ? { ...prev, _customIngredients: undefined } : prev); }}
-                className="p-3 hover:bg-gray-200 transition-colors"
-              >
-                <Minus className="h-4 w-4 text-gray-600" />
-              </button>
-              <div className="px-4 flex items-center gap-2">
-                <Users className="h-4 w-4 text-gray-500" />
-                <span className="font-bold text-gray-900">{servings}</span>
+            <div className="rounded-xl border border-brand-dark/35 px-5 py-4 text-center">
+              <UsersIcon />
+              <p className="text-xs font-extrabold underline">Servings</p>
+              <p className="mt-1 text-[10px] text-gray-500">Select the amount of servings here</p>
+              <div className="mt-3 flex items-center justify-center gap-3">
+                <button
+                  onClick={() => setServings((value) => Math.max(1, value - 1))}
+                  className="grid h-7 w-7 place-items-center rounded-full bg-brand-light text-brand-dark hover:bg-brand"
+                  aria-label="Decrease servings"
+                >
+                  <Minus className="h-3.5 w-3.5" />
+                </button>
+                <span className="min-w-8 text-center text-lg font-black">{servings}</span>
+                <button
+                  onClick={() => setServings((value) => value + 1)}
+                  className="grid h-7 w-7 place-items-center rounded-full bg-brand-light text-brand-dark hover:bg-brand"
+                  aria-label="Increase servings"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </button>
               </div>
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-xl border border-brand-dark/50 p-4">
+            <p className="mb-3 text-center text-xs font-black text-brand-dark underline">Review Your Ingredients</p>
+            <div className="grid gap-3 sm:grid-cols-2">
               <button
-                onClick={() => { setServings((s) => s + 1); setRecipe((prev: any) => prev ? { ...prev, _customIngredients: undefined } : prev); }}
-                className="p-3 hover:bg-gray-200 transition-colors"
+                onClick={() => handleAddToCart(false)}
+                disabled={addingMode !== null}
+                className="hela-action flex items-center justify-center gap-2 px-4 py-3 text-sm disabled:opacity-60"
               >
-                <Plus className="h-4 w-4 text-gray-600" />
+                {addingMode === 'cart' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
+                Add to Cart
+              </button>
+              <button
+                onClick={() => handleAddToCart(true)}
+                disabled={addingMode !== null}
+                className="hela-action flex items-center justify-center gap-2 px-4 py-3 text-sm disabled:opacity-60"
+              >
+                {addingMode === 'kit' ? <Loader2 className="h-4 w-4 animate-spin" /> : <UtensilsCrossed className="h-4 w-4" />}
+                Add Ready-to-Cook Meal Kit
               </button>
             </div>
-
-            <button
-              onClick={handleAddToCart}
-              disabled={addingToCart}
-              className="flex-1 flex items-center justify-center gap-2 hela-action py-3 px-6 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {addingToCart ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <>
-                  <ShoppingCart className="h-5 w-5" />
-                  Add to Cart
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Nutrition Info ──────────────────────────────────────── */}
-      {nutrition && (
-        <div className="mb-14">
-          <h2 className="hela-card max-w-xl mx-auto text-3xl font-extrabold text-brand-dark mb-8 flex items-center justify-center gap-3 p-6 underline">
-            <Zap className="h-5 w-5 text-emerald-600" />
-            Your Nutrition Count
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 text-center">
-            <div className="hela-card p-8">
-              <p className="text-2xl font-extrabold text-emerald-700">Calories: {nutrition.calories || 0} kcal</p>
-            </div>
-            <div className="hela-card p-8">
-              <p className="text-2xl font-extrabold text-emerald-700">Protein: {nutrition.protein || 0} g</p>
-            </div>
-            <div className="hela-card p-8">
-              <p className="text-2xl font-extrabold text-emerald-700">Fiber: {nutrition.fiber || 0} g</p>
-            </div>
-            <div className="hela-card p-8">
-              <p className="text-2xl font-extrabold text-emerald-700">Carbs: {nutrition.carbohydrate || 0} g</p>
-            </div>
-            <div className="hela-card p-8">
-              <p className="text-2xl font-extrabold text-emerald-700">Fat: {nutrition.fat || 0} g</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Ingredients & Instructions ─────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        {/* Ingredients */}
-        <div className="lg:col-span-2">
-          <div className="bg-white p-6 sticky top-56">
-            <h2 className="text-xl font-bold text-brand-dark mb-4">
-              Ingredients
-              <span className="text-sm font-normal text-gray-400 ml-2">
-                ({ingredients.length} items)
-              </span>
-            </h2>
-
-            <div className="mb-4 p-3.5 bg-brand-light/30 border border-brand-light rounded-xl">
-              <p className="text-sm text-gray-600 leading-relaxed">
-                <span className="font-semibold text-brand-dark">Smart Deselect:</span> If you already have any of the following ingredients at home, you can purchase the others through us instead of selecting them here.
-              </p>
-            </div>
-
-            {ingredients.length > 0 ? (
-              <>
-                <ul className="space-y-3">
-                  {ingredients.map((ing, i) => {
-                    const isExcluded = excludedIngredients.includes(ing.id);
-                    return (
-                      <li
-                        key={i}
-                        onClick={() => {
-                          if (!ing.id) return;
-                          setExcludedIngredients(prev =>
-                            prev.includes(ing.id)
-                              ? prev.filter(id => id !== ing.id)
-                              : [...prev, ing.id]
-                          );
-                        }}
-                        className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm px-4 py-2 rounded-full border transition-all cursor-pointer ${isExcluded
-                          ? 'bg-gray-50 border-gray-100 opacity-60'
-                          : 'bg-white border-brand hover:bg-brand-light/30'
-                          }`}
-                      >
-                        <div className="flex items-center gap-3 w-full min-w-0">
-                          <div className={`flex items-center justify-center w-5 h-5 rounded border ${isExcluded ? 'border-gray-300 bg-white' : 'border-brand bg-brand'} transition-colors`}>
-                            {!isExcluded && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
-                          </div>
-                          <span className={`font-medium ${isExcluded ? 'text-gray-500 line-through' : 'text-gray-800'}`}>
-                            {ing.name}
-                          </span>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto sm:justify-end">
-                          <span className={`font-bold px-3 py-1 rounded-lg border shadow-sm text-xs ${isExcluded ? 'text-gray-400 bg-gray-50 border-gray-100' : 'text-brand-dark bg-white border-brand-light'}`}>
-                            {ing.quantity} {ing.unit}
-                          </span>
-                          {ing.price > 0 && (
-                            <span className={`font-bold px-2.5 py-1 rounded-lg text-xs ${isExcluded ? 'text-gray-400 bg-gray-50 border border-gray-100 line-through' : 'text-emerald-700 bg-emerald-50 border border-emerald-100'}`}>
-                              Rs.{ing.price.toFixed(2)}
-                            </span>
-                          )}
-                        </div>
-                      </li>
-                    )
-                  })}
-                </ul>
-
-                {/* Total Price Summary */}
-                {hasAnyPrice && (
-                  <div className="mt-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="h-5 w-5 text-emerald-600" />
-                        <span className="text-sm font-bold text-emerald-800">Total Ingredient Cost</span>
-                      </div>
-                      <span className="text-xl font-extrabold text-emerald-700">
-                        Rs. {ingredients
-                          .filter(ing => !excludedIngredients.includes(ing.id))
-                          .reduce((sum, ing) => sum + (ing.price || 0), 0)
-                          .toFixed(2)}
-                      </span>
-                    </div>
-                    {excludedIngredients.length > 0 && (
-                      <p className="text-xs text-emerald-600 mt-1">
-                        Excludes {excludedIngredients.length} deselected ingredient{excludedIngredients.length > 1 ? 's' : ''}
-                        {totalPrice > 0 && (
-                          <span className="text-gray-400 ml-1">(Full price: Rs. {totalPrice.toFixed(2)})</span>
-                        )}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </>
-            ) : (
-              <p className="text-sm text-gray-400">No ingredients listed</p>
+            <p className="mt-2 text-center text-[10px] font-medium text-gray-400">
+              Untick ingredients you already have at home. Items marked out of stock are unavailable from approved vendors right now.
+            </p>
+            {unavailableIngredients.length > 0 && (
+              <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center">
+                <p className="text-[11px] font-black text-amber-700">
+                  Some ingredients are not available from approved vendors right now.
+                </p>
+                <p className="mt-1 text-[10px] font-bold text-amber-700">
+                  {unavailableIngredients.map((ingredient) => ingredient.name).join(', ')}
+                </p>
+                <p className="mt-1 text-[10px] font-semibold text-amber-600">
+                  We will add the available ingredients to your cart and skip {unavailableIngredients.length > 1 ? 'these items' : 'this item'} for now.
+                </p>
+              </div>
             )}
           </div>
         </div>
+      </section>
 
-        {/* Instructions */}
-        <div className="lg:col-span-3">
-          <h2 className="text-xl font-bold text-brand-dark mb-4">Steps to Cook</h2>
-          {instructions.length > 0 ? (
-            <ol className="space-y-4">
-              {instructions.map((step, i) => (
-                <li key={i} className="flex gap-4 group">
-                  <div className="flex-shrink-0 h-8 w-8 rounded-full bg-brand-light text-brand-dark font-bold text-sm flex items-center justify-center group-hover:bg-brand-dark group-hover:text-white transition-colors">
-                    {i + 1}
-                  </div>
-                  <div className="flex-1 pt-1">
-                    <p className="text-gray-700 leading-relaxed">{step}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p className="text-sm text-gray-400">No instructions available</p>
-          )}
+      <section className="mt-8 grid gap-6 lg:grid-cols-[0.86fr_1fr]">
+        <div>
+          <h2 className="mb-3 text-lg font-black text-brand-dark">Ingredients</h2>
+          <div className="space-y-2">
+            {ingredients.map((ingredient) => {
+              const unavailable = !ingredient.available;
+              const excluded = unavailable || excludedIngredients.includes(ingredient.id);
+              return (
+                <button
+                  key={`${ingredient.id}-${ingredient.name}`}
+                  onClick={() => toggleIngredient(ingredient.id)}
+                  disabled={unavailable}
+                  className={`grid w-full grid-cols-[1.4rem_1fr_auto_auto] items-center gap-2 rounded-full border px-3 py-1.5 text-left text-xs font-bold transition ${
+                    unavailable
+                      ? 'cursor-not-allowed border-red-100 bg-red-50/60 text-red-400'
+                      : excluded
+                        ? 'border-gray-200 bg-gray-50 text-gray-400 line-through'
+                        : 'border-brand bg-white hover:bg-brand-light/40'
+                  }`}
+                >
+                  <span className={`grid h-4 w-4 place-items-center rounded-full border ${unavailable ? 'border-red-200 bg-white' : excluded ? 'border-gray-300' : 'border-brand-dark bg-brand-light'}`}>
+                    {!excluded && <Check className="h-3 w-3 text-brand-dark" />}
+                  </span>
+                  <span className="min-w-0 truncate">{ingredient.name}</span>
+                  <span>{formatAmount(ingredient.quantity)}{ingredient.unit ? ` ${ingredient.unit}` : ''}</span>
+                  <span className="min-w-20 text-right">
+                    {unavailable ? 'Out of stock' : hasPrices ? `${ingredient.price.toFixed(2)}/=` : '-'}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+
+        <div>
+          <h2 className="mb-3 text-lg font-black text-brand-dark">Steps to Cook</h2>
+          <ol className="space-y-2 text-sm font-semibold leading-relaxed text-black">
+            {instructions.map((step, index) => (
+              <li key={`${step}-${index}`} className="grid grid-cols-[1.7rem_1fr] gap-2">
+                <span className="font-black text-brand-dark">{index + 1}.</span>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {nutrition && (
+        <section className="mt-12">
+          <h2 className="mx-auto flex max-w-xl items-center justify-center gap-3 rounded-xl border border-brand-dark/60 bg-white px-5 py-4 text-2xl font-black text-brand-dark underline shadow-[0_8px_20px_rgba(5,72,2,0.09)]">
+            <Heart className="h-5 w-5 fill-brand-dark text-brand-dark" />
+            Your Nutrition Count
+          </h2>
+
+          <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <NutritionCard icon={<Flame />} label="Calories" value={`${Math.round(nutrition.calories || 0)} kcal`} />
+            <NutritionCard icon={<Apple />} label="Protein" value={`${formatAmount(nutrition.protein || 0)} g`} />
+            <NutritionCard icon={<Leaf />} label="Fiber" value={`${formatAmount(nutrition.fiber || 0)} g`} />
+            <NutritionCard icon={<Wheat />} label="Carbs" value={`${formatAmount(nutrition.carbohydrate || 0)} g`} />
+            <NutritionCard icon={<Droplets />} label="Fat" value={`${formatAmount(nutrition.fat || 0)} g`} />
+          </div>
+
+          <div className="mt-8 text-center">
+            <button
+              onClick={() => setCaloriesOpen((open) => !open)}
+              className="hela-action-soft px-8 py-3 underline transition hover:scale-[1.02]"
+              aria-expanded={caloriesOpen}
+            >
+              Check Your Calories &gt;&gt;&gt;
+            </button>
+          </div>
+
+          <div className={`overflow-hidden transition-[max-height,opacity,margin] duration-500 ease-in-out ${caloriesOpen ? 'mt-8 max-h-[900px] opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="mx-auto grid max-w-4xl gap-3 sm:grid-cols-3">
+              {caloriesRows.map((ingredient) => (
+                <div key={`cal-${ingredient.id}-${ingredient.name}`} className="contents">
+                  <div className="bg-brand-light border border-brand px-3 py-2 text-center text-xs font-bold">{ingredient.name}</div>
+                  <div className="bg-brand-light border border-brand px-3 py-2 text-center text-xs font-bold">
+                    {formatAmount(ingredient.quantity)} {ingredient.unit}
+                  </div>
+                  <div className="bg-brand-light border border-brand px-3 py-2 text-center text-xs font-bold">{ingredient.calories} kcal</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 };
+
+const UsersIcon = () => (
+  <div className="mx-auto mb-2 grid h-5 w-5 place-items-center text-brand-dark">
+    <Sprout className="h-5 w-5" />
+  </div>
+);
+
+const NutritionCard = ({ icon, label, value }: { icon: ReactNode; label: string; value: string }) => (
+  <div className="rounded-xl border border-brand-dark/70 bg-white px-5 py-7 text-center shadow-[0_8px_18px_rgba(5,72,2,0.08)]">
+    <div className="mx-auto mb-3 h-7 w-7 text-brand-dark [&>svg]:h-7 [&>svg]:w-7">{icon}</div>
+    <p className="text-sm font-black text-brand-dark">
+      {label}: <span className="text-black">{value}</span>
+    </p>
+  </div>
+);
 
 export default RecipeDetail;

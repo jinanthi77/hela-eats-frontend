@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getOrderById, cancelOrder } from '../services/orderService';
 import { getPaymentForOrder } from '../services/paymentService';
 import { useToast } from '../components/Toast';
@@ -126,12 +126,15 @@ const OrderDetail = () => {
               <Banknote className="h-5 w-5" /><span className="font-medium">Cash on Delivery</span>
             </div>
           )}
-          {order.paymentStatus && (
+        {order.paymentStatus && (
             <span className={`ml-auto text-xs font-bold px-3 py-1 rounded-full ${order.paymentStatus === 'Paid' ? 'bg-emerald-50 text-emerald-600' : order.paymentStatus === 'Failed' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'}`}>
               {order.paymentStatus}
             </span>
           )}
         </div>
+        {payment?.transactionId && (
+          <p className="mt-3 text-xs font-medium text-gray-400">Transaction: {payment.transactionId}</p>
+        )}
       </div>
 
       {/* Delivery Address */}

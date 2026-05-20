@@ -41,7 +41,7 @@ const AdminOrders = () => {
     setLoading(true);
     try {
       const data = await adminGetAllOrders();
-      setOrders(Array.isArray(data) ? data : []);
+      setOrders(Array.isArray(data) ? data as unknown as OrderSummary[] : []);
     } catch {
       showToast('Failed to load orders', 'error');
     } finally {

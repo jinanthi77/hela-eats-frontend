@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getMealPlanById, updateMealPlan, addMealPlanToCart } from '../services/mealPlanService';
 import { getRecipes } from '../services/recipeService';
 import { useToast } from '../components/Toast';
@@ -104,7 +104,7 @@ const MealPlanDetail = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-7">
         <div>
           <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3">
-            <CalendarDays className="h-8 w-8 text-brand" /> {plan.name}
+            <CalendarDays className="h-8 w-8 text-brand" /> {plan.name || plan.title}
           </h1>
           <p className="text-sm text-gray-400 mt-1">
             {new Date(plan.startDate).toLocaleDateString()} — {new Date(plan.endDate).toLocaleDateString()}
