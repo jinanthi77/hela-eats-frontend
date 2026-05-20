@@ -1,6 +1,22 @@
+import { useState } from 'react';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 
 const Contact = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const bodyText = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=helaeats@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+    
+    // Redirect / open Gmail compose in a new tab
+    window.open(gmailUrl, '_blank');
+  };
+
   return (
     <div className="hela-shell py-10 sm:py-14">
       <div className="text-center max-w-2xl mx-auto mb-10">
@@ -17,7 +33,7 @@ const Contact = () => {
           </div>
           <h3 className="text-lg font-bold text-gray-900 mb-2">Email</h3>
           <p className="text-gray-500 text-sm">Drop us a line anytime at</p>
-          <a href="mailto:support@helaeats.com" className="text-brand font-medium mt-2 inline-block hover:underline">support@helaeats.com</a>
+          <a href="mailto:helaeats@gmail.com" className="text-brand font-medium mt-2 inline-block hover:underline">helaeats@gmail.com</a>
         </div>
 
         <div className="hela-card p-5 text-center hover:-translate-y-1 transition-all duration-300">
@@ -50,26 +66,58 @@ const Contact = () => {
 
       <div className="mt-12 hela-card p-5 sm:p-7 max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold text-brand-dark mb-6 text-center">Send us a Message</h2>
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-              <input type="text" id="name" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand outline-none transition-colors" placeholder="Your name" />
+              <input 
+                type="text" 
+                id="name" 
+                required 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand outline-none transition-colors" 
+                placeholder="Your name" 
+              />
             </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input type="email" id="email" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand outline-none transition-colors" placeholder="your@email.com" />
+              <input 
+                type="email" 
+                id="email" 
+                required 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand outline-none transition-colors" 
+                placeholder="your@email.com" 
+              />
             </div>
           </div>
           <div>
             <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-            <input type="text" id="subject" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand outline-none transition-colors" placeholder="How can we help you?" />
+            <input 
+              type="text" 
+              id="subject" 
+              required 
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand outline-none transition-colors" 
+              placeholder="How can we help you?" 
+            />
           </div>
           <div>
             <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-            <textarea id="message" rows={4} required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand outline-none transition-colors" placeholder="Your message here..."></textarea>
+            <textarea 
+              id="message" 
+              rows={4} 
+              required 
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand outline-none transition-colors" 
+              placeholder="Your message here..."
+            ></textarea>
           </div>
-          <button onClick={() => alert('Message sent successfully!')} type="submit" className="w-full hela-action py-3 transition-colors">
+          <button type="submit" className="w-full hela-action py-3 transition-colors">
             Send Message
           </button>
         </form>

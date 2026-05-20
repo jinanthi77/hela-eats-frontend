@@ -222,7 +222,7 @@ const Navbar = () => {
           <Link to="/" className={navLinkClass('/')}>Home</Link>
           <Link to="/recipes" className={navLinkClass('/recipes')}>Recipes</Link>
           <Link to="/cart" className={navLinkClass('/cart')}>Cart</Link>
-          <Link to="/checkout" className={navLinkClass('/checkout')}>Purchase</Link>
+          <Link to="/contact" className={navLinkClass('/contact')}>Contact Us</Link>
         </div>
       </div>
 

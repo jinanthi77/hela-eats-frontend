@@ -253,7 +253,7 @@ const Home = () => {
               <span className="hero-word-viewport" aria-live="polite">
                 <span
                   key={heroStep}
-                  className={`hero-word-slide ${activeHeroPhrase === "CART" ? "hero-word-strong" : "hero-word-soft"}`}
+                  className="hero-word-slide hero-word-soft"
                 >
                   {activeHeroPhrase}
                 </span>
@@ -319,13 +319,12 @@ const Home = () => {
                     {recipePages.map((page, pageIndex) => (
                       <div
                         key={pageIndex}
-                        className={`grid min-w-full gap-5 sm:gap-7 lg:gap-10 lg:px-10 xl:px-14 ${
-                          cardsPerView === 1
-                            ? "grid-cols-1"
-                            : cardsPerView === 2
-                              ? "grid-cols-2"
-                              : "grid-cols-3"
-                        }`}
+                        className={`grid min-w-full gap-5 sm:gap-7 lg:gap-10 lg:px-10 xl:px-14 ${cardsPerView === 1
+                          ? "grid-cols-1"
+                          : cardsPerView === 2
+                            ? "grid-cols-2"
+                            : "grid-cols-3"
+                          }`}
                       >
                         {page.map((recipe) => (
                           <Link
@@ -369,17 +368,16 @@ const Home = () => {
                                   Cook Time
                                 </span>
                                 <span
-                                  className={`min-w-24 rounded-full px-4 py-1.5 text-center text-xs font-extrabold ${
-                                    (
+                                  className={`min-w-24 rounded-full px-4 py-1.5 text-center text-xs font-extrabold ${(
+                                    recipe.difficulty || "EASY"
+                                  ).toUpperCase() === "EASY"
+                                    ? "bg-brand-light text-brand-dark"
+                                    : (
                                       recipe.difficulty || "EASY"
-                                    ).toUpperCase() === "EASY"
-                                      ? "bg-brand-light text-brand-dark"
-                                      : (
-                                            recipe.difficulty || "EASY"
-                                          ).toUpperCase() === "MEDIUM"
-                                        ? "bg-brand text-black"
-                                        : "bg-red-50 text-red-700"
-                                  }`}
+                                    ).toUpperCase() === "MEDIUM"
+                                      ? "bg-brand text-black"
+                                      : "bg-red-50 text-red-700"
+                                    }`}
                                 >
                                   {recipe.difficulty || "Easy"}
                                 </span>
@@ -419,11 +417,10 @@ const Home = () => {
                     <button
                       key={index}
                       onClick={() => setActiveRecipePage(index)}
-                      className={`h-2.5 rounded-full border border-brand-dark transition-all ${
-                        activeRecipePage === index
-                          ? "w-6 bg-brand-light"
-                          : "w-2.5 bg-white"
-                      }`}
+                      className={`h-2.5 rounded-full border border-brand-dark transition-all ${activeRecipePage === index
+                        ? "w-6 bg-brand-light"
+                        : "w-2.5 bg-white"
+                        }`}
                       aria-label={`Go to recipe slide ${index + 1}`}
                     />
                   ))}
@@ -437,9 +434,8 @@ const Home = () => {
         <div className="home-about-section mt-14 mb-14 px-0 text-center sm:mt-20 sm:mb-20 sm:px-4">
           <div
             ref={aboutHeadingRef}
-            className={`about-heading-rise mb-8 ${
-              aboutHeadingVisible ? "is-visible" : ""
-            }`}
+            className={`about-heading-rise mb-8 ${aboutHeadingVisible ? "is-visible" : ""
+              }`}
           >
             <h2 className="hela-display home-mega-heading mb-5 font-bold">
               HelaEats
@@ -463,7 +459,7 @@ const Home = () => {
             </p>
             <p className="pt-2">
               We are here to help you with your day to day life in a tasty and
-              healthy way :)
+              healthy way!!!
             </p>
           </div>
         </div>
@@ -471,9 +467,8 @@ const Home = () => {
         <div className="mb-20 px-0 text-center sm:mb-24 sm:px-4">
           <div
             ref={communityHeadingRef}
-            className={`about-heading-rise mb-12 ${
-              communityHeadingVisible ? "is-visible" : ""
-            }`}
+            className={`about-heading-rise mb-12 ${communityHeadingVisible ? "is-visible" : ""
+              }`}
           >
             <h2 className="hela-display text-4xl font-bold sm:text-5xl">
               Be a part of the Our Community
@@ -498,7 +493,7 @@ const Home = () => {
                   <Mail className="h-5 w-5" />
                 </div>
                 <span className="font-bold text-[15px] text-black break-all">
-                  Email: helaeatsvendor@gmail.com
+                  Email: helaeats@gmail.com
                 </span>
               </div>
             </div>
@@ -538,11 +533,10 @@ const Home = () => {
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                           key={star}
-                          className={`h-3.5 w-3.5 ${
-                            star <= Math.round(feedback.rating)
-                              ? "fill-current text-yellow-300"
-                              : "text-gray-200"
-                          }`}
+                          className={`h-3.5 w-3.5 ${star <= Math.round(feedback.rating)
+                            ? "fill-current text-yellow-300"
+                            : "text-gray-200"
+                            }`}
                         />
                       ))}
                     </div>
@@ -589,7 +583,7 @@ const Home = () => {
             </div>
 
             <div className="flex flex-col items-center text-center gap-4">
-              <span className="font-bold text-[15px] text-black">Facebook</span>
+              <span className="font-bold text-[15px] text-black">Facebook #HelaEats</span>
               <div className="w-12 h-12 rounded-full border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-light/30 transition-colors cursor-pointer">
                 <img
                   src="https://www.svgrepo.com/show/303117/facebook-2-logo.svg"
@@ -601,7 +595,7 @@ const Home = () => {
 
             <div className="flex flex-col items-center text-center gap-4">
               <span className="font-bold text-[15px] text-black">
-                Instagram
+                Instagram #HelaEats
               </span>
               <div className="w-12 h-12 rounded-full border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-light/30 transition-colors cursor-pointer">
                 <img
