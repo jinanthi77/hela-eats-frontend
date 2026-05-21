@@ -18,13 +18,24 @@ import {
   X,
 } from 'lucide-react';
 
+const FALLBACK_CATEGORIES: Category[] = [
+  { _id: 'fallback-diet-meal-plans', name: 'Diet Meal Plans', slug: 'diet-meal-plans', description: '' },
+  { _id: 'fallback-rices', name: 'Rices', slug: 'rices', description: '' },
+  { _id: 'fallback-roti', name: 'Roti', slug: 'roti', description: '' },
+  { _id: 'fallback-sambol-salad', name: 'Sambol & Salad', slug: 'sambol-salad', description: '' },
+  { _id: 'fallback-sri-lankan-curries', name: 'Sri Lankan Curries', slug: 'sri-lankan-curries', description: '' },
+  { _id: 'fallback-sweets', name: 'Sweets', slug: 'sweets', description: '' },
+];
+
+const isFallbackCategory = (category: Category) => category._id.startsWith('fallback-');
+
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>(FALLBACK_CATEGORIES);
   const selectedCategory = new URLSearchParams(location.search).get('category');
   const showCategoryBar = location.pathname !== '/profile';
 
@@ -32,9 +43,10 @@ const Navbar = () => {
     const fetchCategories = async () => {
       try {
         const data = await getCategories();
-        setCategories(data);
+        const usableCategories = data.filter((category) => category._id && category.name);
+        setCategories(usableCategories.length > 0 ? usableCategories : FALLBACK_CATEGORIES);
       } catch {
-        setCategories([]);
+        setCategories(FALLBACK_CATEGORIES);
       }
     };
 
@@ -203,9 +215,13 @@ const Navbar = () => {
           {categories.map((category) => (
             <Link
               key={category._id}
-              to={`/recipes?category=${encodeURIComponent(category._id)}`}
+              to={
+                isFallbackCategory(category)
+                  ? `/recipes?search=${encodeURIComponent(category.name)}`
+                  : `/recipes?category=${encodeURIComponent(category._id)}`
+              }
               className={`shrink-0 font-heading text-lg font-bold transition-colors ${
-                selectedCategory === category._id
+                !isFallbackCategory(category) && selectedCategory === category._id
                   ? 'text-brand-light underline decoration-4 underline-offset-8'
                   : 'text-white hover:text-brand-light'
               }`}
