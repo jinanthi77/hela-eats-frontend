@@ -160,9 +160,25 @@ const RecipeDetail = () => {
   }, [recipe]);
 
   const nutrition = recipe?.nutritionPerStandardServing || recipe?.nutrition;
-  const selectedIngredients = ingredients.filter((ingredient) => ingredient.available && !excludedIngredients.includes(ingredient.id));
-  const unavailableIngredients = ingredients.filter((ingredient) => !ingredient.available);
-  const selectedTotal = selectedIngredients.reduce((sum, ingredient) => sum + ingredient.price, 0);
+  const availableIngredients = useMemo(() => ingredients.filter((ingredient) => ingredient.available), [ingredients]);
+  const selectedIngredients = useMemo(
+    () => availableIngredients.filter((ingredient) => !excludedIngredients.includes(ingredient.id)),
+    [availableIngredients, excludedIngredients]
+  );
+  const excludedAvailableIngredients = useMemo(
+    () => availableIngredients.filter((ingredient) => excludedIngredients.includes(ingredient.id)),
+    [availableIngredients, excludedIngredients]
+  );
+  const unavailableIngredients = useMemo(() => ingredients.filter((ingredient) => !ingredient.available), [ingredients]);
+  const selectedTotal = useMemo(
+    () => Number(selectedIngredients.reduce((sum, ingredient) => sum + ingredient.price, 0).toFixed(2)),
+    [selectedIngredients]
+  );
+  const availableTotal = useMemo(
+    () => Number(availableIngredients.reduce((sum, ingredient) => sum + ingredient.price, 0).toFixed(2)),
+    [availableIngredients]
+  );
+  const excludedTotal = Math.max(0, Number((availableTotal - selectedTotal).toFixed(2)));
   const hasPrices = ingredients.some((ingredient) => ingredient.price > 0) || pricePreview.length > 0;
   const estimatedCalories = nutrition?.calories || selectedIngredients.reduce((sum, ingredient) => sum + (ingredient.calories || 0), 0);
   const caloriesRows = selectedIngredients.map((ingredient) => ({
@@ -265,6 +281,16 @@ const RecipeDetail = () => {
             Rs {hasPrices ? selectedTotal.toFixed(2) : '0.00'}/=
             {previewLoading && <span className="ml-3 align-middle text-sm font-bold text-gray-400">updating...</span>}
           </p>
+          {hasPrices && (
+            <div className="mt-2 inline-flex flex-wrap items-center gap-2 rounded-full border border-brand/25 bg-brand-light/50 px-4 py-2 text-xs font-black text-brand-dark">
+              <span>{selectedIngredients.length} selected item{selectedIngredients.length !== 1 ? 's' : ''}</span>
+              {excludedAvailableIngredients.length > 0 && (
+                <span className="text-red-600">
+                  Rs {excludedTotal.toFixed(2)} removed from total
+                </span>
+              )}
+            </div>
+          )}
           <p className="mt-3 max-w-3xl text-sm font-semibold leading-relaxed text-black">
             {recipe.description || 'Fresh ingredients measured for your kitchen and ready for checkout.'}
           </p>
@@ -322,8 +348,13 @@ const RecipeDetail = () => {
               </button>
             </div>
             <p className="mt-2 text-center text-[10px] font-medium text-gray-400">
-              Untick ingredients you already have at home. Items marked out of stock are unavailable from approved vendors right now.
+              Untick ingredients you already have at home. The recipe total updates from selected ingredients only.
             </p>
+            {excludedAvailableIngredients.length > 0 && hasPrices && (
+              <p className="mt-2 rounded-full bg-red-50 px-4 py-2 text-center text-[11px] font-black text-red-600">
+                {excludedAvailableIngredients.length} ingredient{excludedAvailableIngredients.length !== 1 ? 's' : ''} skipped - Rs {excludedTotal.toFixed(2)} removed.
+              </p>
+            )}
             {unavailableIngredients.length > 0 && (
               <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center">
                 <p className="text-[11px] font-black text-amber-700">
@@ -367,7 +398,7 @@ const RecipeDetail = () => {
                   <span className="min-w-0 truncate">{ingredient.name}</span>
                   <span>{formatAmount(ingredient.quantity)}{ingredient.unit ? ` ${ingredient.unit}` : ''}</span>
                   <span className="min-w-20 text-right">
-                    {unavailable ? 'Out of stock' : hasPrices ? `${ingredient.price.toFixed(2)}/=` : '-'}
+                    {unavailable ? 'Out of stock' : excluded ? `- Rs ${ingredient.price.toFixed(2)}` : hasPrices ? `${ingredient.price.toFixed(2)}/=` : '-'}
                   </span>
                 </button>
               );
