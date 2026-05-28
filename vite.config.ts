@@ -3,9 +3,6 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
+  base: "/hela-eats-frontend/",
   plugins: [react(), tailwindcss()],
-  server: {
-    host: "127.0.0.1",
-    port: 3000,
-  },
 });
