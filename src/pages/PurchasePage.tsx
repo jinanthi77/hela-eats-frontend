@@ -41,6 +41,12 @@ type PurchaseOrder = Order & {
 
 const fallbackImage = publicAsset('Home_page_slide_img-01.png');
 
+const isVisiblePurchaseOrder = (order: PurchaseOrder) => {
+  if (order.paymentMethod !== 'Card') return true;
+  if (order.paymentStatus === 'Paid' || order.paymentStatus === 'Refunded') return true;
+  return order.status === 'Processing' || order.status === 'OutForDelivery' || order.status === 'Delivered' || order.status === 'Cancelled';
+};
+
 const PurchasePage = () => {
   const { showToast } = useToast();
   const [searchParams] = useSearchParams();
@@ -62,7 +68,7 @@ const PurchasePage = () => {
           getOrders(),
           getRecipes({ limit: 100 }).catch(() => []),
         ]);
-        setOrders(Array.isArray(data) ? data : []);
+        setOrders(Array.isArray(data) ? data.filter(isVisiblePurchaseOrder) : []);
         setRecipes(recipeData);
       } catch {
         showToast('Failed to load past orders', 'error');

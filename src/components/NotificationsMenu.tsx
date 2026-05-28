@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { adminGetAllOrders } from '../services/adminService';
 import { getOrders } from '../services/orderService';
 import { getVendorOrders } from '../services/vendorService';
-import type { OrderStatus, User, VendorOrder } from '../types';
+import type { OrderStatus, PaymentMethodType, PaymentStatusType, User, VendorOrder } from '../types';
 
 type Role = User['role'];
 
@@ -15,6 +15,8 @@ interface NoticeSource {
   _id: string;
   orderNumber?: string;
   status?: OrderStatus | string;
+  paymentMethod?: PaymentMethodType | string;
+  paymentStatus?: PaymentStatusType | string;
   createdAt?: string;
   updatedAt?: string;
   cancelledAt?: string;
@@ -131,6 +133,13 @@ const toNotification = (order: NoticeSource, role: Role): NotificationItem => {
   };
 };
 
+const isUserVisibleOrderNotification = (order: NoticeSource) => {
+  if (order.status === 'Cancelled' || order.status === 'Delivered') return true;
+  if (order.status === 'Processing' || order.status === 'OutForDelivery') return true;
+  if (order.paymentMethod !== 'Card') return true;
+  return order.paymentStatus === 'Paid';
+};
+
 const isString = (value: unknown): value is string => typeof value === 'string';
 
 const readStoredIds = (key: string) => {
@@ -158,7 +167,7 @@ const fetchRoleNotifications = async (role: Role): Promise<NotificationItem[]> =
   }
 
   const orders = await getOrders();
-  return orders.map((order) => toNotification(order, role));
+  return orders.filter(isUserVisibleOrderNotification).map((order) => toNotification(order, role));
 };
 
 const NotificationsMenu = () => {
