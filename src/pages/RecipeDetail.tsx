@@ -444,15 +444,35 @@ const RecipeDetail = () => {
             </button>
           </div>
 
-          <div className={`overflow-hidden transition-[max-height,opacity,margin] duration-500 ease-in-out ${caloriesOpen ? 'mt-8 max-h-[900px] opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className="mx-auto grid max-w-4xl gap-3 sm:grid-cols-3">
+          <div className={`overflow-hidden transition-[max-height,opacity,margin] duration-500 ease-in-out ${caloriesOpen ? 'mt-8 max-h-[1200px] opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-brand/50 bg-white shadow-[0_12px_28px_rgba(5,72,2,0.08)]">
+              <div className="hidden grid-cols-[1.3fr_0.8fr_0.8fr] bg-brand-dark px-4 py-3 text-center text-xs font-black uppercase tracking-[0.08em] text-white sm:grid">
+                <span>Ingredient</span>
+                <span>Amount</span>
+                <span>Calories</span>
+              </div>
               {caloriesRows.map((ingredient) => (
-                <div key={`cal-${ingredient.id}-${ingredient.name}`} className="contents">
-                  <div className="bg-brand-light border border-brand px-3 py-2 text-center text-xs font-bold">{ingredient.name}</div>
-                  <div className="bg-brand-light border border-brand px-3 py-2 text-center text-xs font-bold">
-                    {formatAmount(ingredient.quantity)} {ingredient.unit}
+                <div
+                  key={`cal-${ingredient.id}-${ingredient.name}`}
+                  className="grid gap-3 border-b border-brand/25 bg-brand-light/45 px-4 py-4 last:border-b-0 sm:grid-cols-[1.3fr_0.8fr_0.8fr] sm:items-center sm:gap-0 sm:bg-brand-light/35 sm:py-3 sm:text-center"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-black uppercase tracking-[0.12em] text-brand-dark/60 sm:hidden">Ingredient</p>
+                    <p className="truncate text-sm font-black text-black">{ingredient.name}</p>
                   </div>
-                  <div className="bg-brand-light border border-brand px-3 py-2 text-center text-xs font-bold">{ingredient.calories} kcal</div>
+                  <div className="grid grid-cols-2 gap-3 sm:block">
+                    <div className="rounded-xl bg-white px-3 py-2 text-center shadow-[0_6px_14px_rgba(5,72,2,0.06)] sm:bg-transparent sm:p-0 sm:shadow-none">
+                      <p className="text-[10px] font-black uppercase tracking-[0.12em] text-brand-dark/60 sm:hidden">Amount</p>
+                      <p className="text-xs font-black text-brand-dark">
+                        {formatAmount(ingredient.quantity)} {ingredient.unit}
+                      </p>
+                    </div>
+                    <div className="rounded-xl bg-white px-3 py-2 text-center shadow-[0_6px_14px_rgba(5,72,2,0.06)] sm:hidden">
+                      <p className="text-[10px] font-black uppercase tracking-[0.12em] text-brand-dark/60">Calories</p>
+                      <p className="text-xs font-black text-brand-dark">{ingredient.calories} kcal</p>
+                    </div>
+                  </div>
+                  <div className="hidden text-xs font-black text-brand-dark sm:block">{ingredient.calories} kcal</div>
                 </div>
               ))}
             </div>
