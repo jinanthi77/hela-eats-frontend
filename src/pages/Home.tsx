@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getRecipes } from "../services/recipeService";
 import { getTestimonials } from "../services/ratingService";
+import { publicAsset } from "../utils/publicAsset";
 import type { Recipe } from "../types";
 import {
   UtensilsCrossed,
@@ -16,10 +17,10 @@ const heroFallback =
   "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1800&q=80";
 const heroPhrases = ["CART", "CALORIE COUNTER", "RECIPE MASTER"];
 const homeHeroImages = [
-  "/Home_page_slide_img-01.png",
-  "/Home_page_slide_img-02.png",
-  "/Home_page_slide_img-03.png",
-  "/Home_page_slide_img-04.png",
+  publicAsset("Home_page_slide_img-01.png"),
+  publicAsset("Home_page_slide_img-02.png"),
+  publicAsset("Home_page_slide_img-03.png"),
+  publicAsset("Home_page_slide_img-04.png"),
 ];
 
 type PresentationFeedback = {
@@ -499,7 +500,7 @@ const Home = () => {
             </div>
             <div className="flex w-full justify-center md:w-1/2 md:justify-end">
               <img
-                src="/The Little Things - Business Planning.png"
+                src={publicAsset("The Little Things - Business Planning.png")}
                 alt="Community Illustration"
                 className="h-auto w-[min(450px,100%)] object-contain"
               />

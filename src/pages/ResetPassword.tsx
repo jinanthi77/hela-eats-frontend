@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Loader2, Eye, EyeOff, ShieldCheck, CheckCircle2, AlertCircle, Lock } from 'lucide-react';
 import { resetPassword } from '../services/authService';
 import { getApiErrorMessage } from '../utils/apiError';
+import { publicAsset } from '../utils/publicAsset';
 
 const ResetPassword = () => {
   const { token } = useParams<{ token: string }>();
@@ -269,7 +270,7 @@ const ResetPassword = () => {
       {/* ─── Right Column (Image) ─────────────────────────────────── */}
       <div className="hidden lg:flex w-[50%] relative justify-end pointer-events-none">
         <img
-          src="/login.png"
+          src={publicAsset('login.png')}
           alt="Decorative mask"
           className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-[-10%] h-[90vh] w-auto object-contain drop-shadow-2xl"
         />
