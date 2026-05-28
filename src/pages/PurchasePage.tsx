@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { cancelOrder, deleteOrderFromHistory, getOrderById, getOrders } from '../services/orderService';
 import { getRecipes } from '../services/recipeService';
 import { useToast } from '../components/Toast';
+import { publicAsset } from '../utils/publicAsset';
 import type { Order, OrderStatus, Recipe } from '../types';
 import {
   AlertTriangle,
@@ -38,7 +39,7 @@ type PurchaseOrder = Order & {
   hasMealKit?: boolean;
 };
 
-const fallbackImage = '/Home_page_slide_img-01.png';
+const fallbackImage = publicAsset('Home_page_slide_img-01.png');
 
 const PurchasePage = () => {
   const { showToast } = useToast();

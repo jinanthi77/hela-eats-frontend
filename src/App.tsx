@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ToastProvider } from "./components/Toast";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { publicAsset } from "./utils/publicAsset";
 
 // ─── Pages ───────────────────────────────────────────────────────────
 import Home from "./pages/Home";
@@ -37,13 +38,14 @@ import PantryPage from "./pages/PantryPage";
 
 // Google Client ID
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const routerBasename = import.meta.env.BASE_URL === "/" ? "/" : import.meta.env.BASE_URL.replace(/\/$/, "");
 
 function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AuthProvider>
         <ToastProvider>
-          <Router>
+          <Router basename={routerBasename}>
             <div className="min-h-screen bg-white flex flex-col font-body">
               <Navbar />
               <main className="flex-grow">
@@ -215,7 +217,7 @@ function App() {
               <footer className="bg-brand-light border-t border-brand/20 flex items-center py-8 sm:py-10 mt-auto">
                 <div className="max-w-7xl mx-auto px-4 text-center text-black text-sm font-medium">
                   <img
-                    src="/logo22.png"
+                    src={publicAsset("logo22.png")}
                     alt="Hela Eats Logo"
                     className="h-16 w-32 object-contain mx-auto mb-3"
                   />

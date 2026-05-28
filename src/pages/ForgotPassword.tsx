@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2, Mail, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import { requestPasswordReset } from '../services/authService';
 import { getApiErrorMessage } from '../utils/apiError';
+import { publicAsset } from '../utils/publicAsset';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -179,7 +180,7 @@ const ForgotPassword = () => {
       {/* ─── Right Column (Image) ─────────────────────────────────── */}
       <div className="hidden lg:flex w-[50%] relative justify-end pointer-events-none">
         <img
-          src="/login.png"
+          src={publicAsset('login.png')}
           alt="Decorative mask"
           className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-[-10%] h-[90vh] w-auto object-contain drop-shadow-2xl"
         />
