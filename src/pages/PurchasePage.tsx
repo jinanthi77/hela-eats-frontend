@@ -591,7 +591,13 @@ const getMatchedRecipe = (order: PurchaseOrder, recipes: Recipe[]) => {
     || recipes.find((recipe) => title.includes(recipe.title.trim().toLowerCase()) || recipe.title.trim().toLowerCase().includes(title));
 };
 
-const orderSteps: OrderStatus[] = ['Confirmed', 'Processing', 'OutForDelivery', 'Delivered'];
+const orderSteps: Array<{ status: OrderStatus; label: string }> = [
+  { status: 'Pending', label: 'Pending' },
+  { status: 'Confirmed', label: 'Confirmed' },
+  { status: 'Processing', label: 'Preparing' },
+  { status: 'OutForDelivery', label: 'On way' },
+  { status: 'Delivered', label: 'Done' },
+];
 
 const OrderStateRail = ({ status }: { status: OrderStatus }) => {
   if (status === 'Cancelled') {
@@ -602,19 +608,50 @@ const OrderStateRail = ({ status }: { status: OrderStatus }) => {
     );
   }
 
-  const activeIndex = Math.max(0, orderSteps.indexOf(status));
+  const activeIndex = Math.max(0, orderSteps.findIndex((step) => step.status === status));
 
   return (
-    <div className="mt-3">
-      <div className="flex items-center gap-1.5">
+    <div className="mt-3 rounded-xl border border-brand-dark/10 bg-brand-light/25 px-2.5 py-2">
+      <div className="grid grid-cols-5 items-start gap-1">
         {orderSteps.map((step, index) => {
-          const active = index <= activeIndex;
+          const completed = index < activeIndex;
+          const current = index === activeIndex;
+          const upcoming = index > activeIndex;
+
           return (
-            <span
-              key={step}
-              className={`h-1.5 flex-1 rounded-full ${active ? 'bg-brand' : 'bg-gray-200'}`}
-              title={getStatusLabel(step)}
-            />
+            <div key={step.status} className="relative flex min-w-0 flex-col items-center gap-1">
+              {index > 0 && (
+                <span
+                  className={`absolute right-1/2 top-2.5 h-0.5 w-full -translate-y-1/2 ${
+                    index <= activeIndex ? 'bg-brand' : 'bg-gray-200'
+                  }`}
+                  aria-hidden="true"
+                />
+              )}
+              <span
+                className={`relative z-10 grid h-5 w-5 place-items-center rounded-full border-2 bg-white transition ${
+                  completed
+                    ? 'border-brand bg-brand text-white'
+                    : current
+                      ? 'animate-pulse border-yellow-400 bg-yellow-50 text-yellow-700 shadow-[0_0_0_5px_rgba(250,204,21,0.35)]'
+                      : 'border-gray-200 text-gray-300'
+                }`}
+                title={step.label}
+              >
+                {completed ? (
+                  <CheckCircle2 className="h-3 w-3" />
+                ) : (
+                  <span className={`h-1.5 w-1.5 rounded-full ${upcoming ? 'bg-gray-300' : 'bg-brand-dark'}`} />
+                )}
+              </span>
+              <span
+                className={`w-full truncate text-center text-[8px] font-black uppercase tracking-[0.04em] ${
+                  current ? 'text-brand-dark' : completed ? 'text-brand' : 'text-gray-400'
+                }`}
+              >
+                {step.label}
+              </span>
+            </div>
           );
         })}
       </div>
