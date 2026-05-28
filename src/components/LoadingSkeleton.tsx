@@ -1,9 +1,9 @@
 // ─── Base Shimmer Block ──────────────────────────────────────────────
-const Shimmer = ({ className = '' }: { className?: string }) => (
+const Shimmer = ({ className = "" }: { className?: string }) => (
   <div className={`animate-pulse bg-gray-200 rounded-lg ${className}`} />
 );
 
-// ─── Card Skeleton (recipe / category cards) ─────────────────────────
+// ─── Card Skeleton (recipe / category cards) ─────────────────
 export const CardSkeleton = () => (
   <div className="hela-recipe-card">
     <Shimmer className="h-44 w-full rounded-none" />
@@ -19,7 +19,7 @@ export const CardSkeleton = () => (
   </div>
 );
 
-// ─── Card Grid Skeleton ──────────────────────────────────────────────
+// ─── Card Grid Skeleton ────────────────────────────────────
 export const CardGridSkeleton = ({ count = 8 }: { count?: number }) => (
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
     {Array.from({ length: count }).map((_, i) => (
@@ -28,7 +28,7 @@ export const CardGridSkeleton = ({ count = 8 }: { count?: number }) => (
   </div>
 );
 
-// ─── List Row Skeleton ───────────────────────────────────────────────
+// ─── List Row Skeleton ────────────────────────────────────
 export const ListSkeleton = ({ rows = 5 }: { rows?: number }) => (
   <div className="space-y-4">
     {Array.from({ length: rows }).map((_, i) => (
@@ -50,7 +50,7 @@ export const TextSkeleton = ({ lines = 3 }: { lines?: number }) => (
     {Array.from({ length: lines }).map((_, i) => (
       <Shimmer
         key={i}
-        className={`h-4 ${i === lines - 1 ? 'w-3/5' : 'w-full'}`}
+        className={`h-4 ${i === lines - 1 ? "w-3/5" : "w-full"}`}
       />
     ))}
   </div>
