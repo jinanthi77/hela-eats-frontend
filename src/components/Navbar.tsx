@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { getCategories } from '../services/categoryService';
 import type { Category } from '../types';
 import NotificationsMenu from './NotificationsMenu';
+import { publicAsset } from '../utils/publicAsset';
 import {
   BarChart3,
   CalendarDays,
@@ -84,7 +85,7 @@ const Navbar = () => {
           <div className="flex items-center justify-between gap-4 py-3 lg:py-3.5">
             <Link to="/" className="flex items-center hover:opacity-90 transition-opacity shrink-0">
               <img
-                src="/logo22.png"
+                src={publicAsset('logo22.png')}
                 alt="Hela Eats Logo"
                 className="h-12 w-32 sm:h-14 sm:w-36 lg:h-16 lg:w-40 object-contain"
               />

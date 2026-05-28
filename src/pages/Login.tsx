@@ -4,6 +4,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import type { CredentialResponse } from '@react-oauth/google';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../components/Toast';
+import { publicAsset } from '../utils/publicAsset';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
@@ -213,7 +214,7 @@ const Login = () => {
       {/* ─── Right Column (Image) ─────────────────────────────────── */}
       <div className="hidden lg:flex w-[50%] relative justify-end pointer-events-none">
         <img
-          src="/login.png"
+          src={publicAsset('login.png')}
           alt="Decorative mask"
           className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-[-10%] h-[90vh] w-auto object-contain drop-shadow-2xl"
         />
