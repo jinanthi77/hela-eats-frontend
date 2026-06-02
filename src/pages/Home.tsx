@@ -4,6 +4,7 @@ import { getRecipes } from "../services/recipeService";
 import { getTestimonials } from "../services/ratingService";
 import { publicAsset } from "../utils/publicAsset";
 import type { Recipe } from "../types";
+import MobileAppBanner from "../components/MobileAppBanner";
 import {
   UtensilsCrossed,
   Loader2,
@@ -271,6 +272,7 @@ const Home = () => {
       </section>
 
       <div className="hela-shell py-9 sm:py-14">
+
         {loading ? (
           <div className="flex items-center justify-center py-32">
             <Loader2 className="h-12 w-12 text-brand animate-spin" />
@@ -464,6 +466,9 @@ const Home = () => {
             </p>
           </div>
         </div>
+
+        {/* ── Mobile App Coming Soon ──────────────────────────────── */}
+        <MobileAppBanner />
 
         <div className="mb-20 px-0 text-center sm:mb-24 sm:px-4">
           <div
