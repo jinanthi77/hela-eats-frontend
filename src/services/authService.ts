@@ -7,7 +7,12 @@ import type {
   User,
 } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://127.0.0.1:5000';
+const API_BASE = (() => {
+  const url = import.meta.env.VITE_API_URL || '';
+  // Strip trailing /api to reach auth routes outside the API namespace.
+  // With the Vite proxy, "/api" becomes an empty base and "/auth" stays relative.
+  return url.replace(/\/api$/, '');
+})();
 
 type MessageResponse = {
   message: string;
