@@ -42,6 +42,9 @@ const emptyAddress: DeliveryForm = {
   postalCode: '',
 };
 
+// Keep a small buffer above Stripe's converted 50-cent minimum.
+const CARD_PAYMENT_MINIMUM_LKR = 200;
+
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -70,6 +73,7 @@ const CheckoutPage = () => {
     [addresses]
   );
   const hasSavedDeliveryAddress = validDeliveryAddresses.length > 0;
+  const isCardPaymentBelowMinimum = paymentMethod === 'Card' && (cart?.totalPrice || 0) < CARD_PAYMENT_MINIMUM_LKR;
 
   useEffect(() => {
     const init = async () => {
@@ -138,6 +142,11 @@ const CheckoutPage = () => {
   }, [validDeliveryAddresses, selectedAddress, manualAddress, user?.name, user?.phone]);
 
   const handlePlaceOrder = async () => {
+    if (isCardPaymentBelowMinimum) {
+      showToast(`Online card payments require a total of at least Rs. ${CARD_PAYMENT_MINIMUM_LKR}. Please add more items or use Cash on Delivery.`, 'error');
+      return;
+    }
+
     if (!hasSavedDeliveryAddress) {
       showToast('Please add a saved delivery address with a phone number before checkout', 'error');
       navigate('/profile');
@@ -291,12 +300,17 @@ const CheckoutPage = () => {
 
               <button
                 onClick={handlePlaceOrder}
-                disabled={placing || !hasSavedDeliveryAddress}
+                disabled={placing || !hasSavedDeliveryAddress || isCardPaymentBelowMinimum}
                 className="hela-action mt-5 flex w-full items-center justify-center gap-2 px-5 py-4 disabled:opacity-60"
               >
                 {placing ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle2 className="h-5 w-5" />}
                 {paymentMethod === 'COD' ? 'Confirm COD Purchase' : 'Proceed to Stripe'}
               </button>
+              {isCardPaymentBelowMinimum && (
+                <p className="mt-3 text-center text-xs font-bold leading-relaxed text-red-600">
+                  Card payments need at least Rs. {CARD_PAYMENT_MINIMUM_LKR}. Add more items or choose Cash on Delivery.
+                </p>
+              )}
             </div>
           </section>
 
