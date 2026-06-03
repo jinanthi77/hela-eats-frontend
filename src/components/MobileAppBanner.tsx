@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { Smartphone, Bell, Zap, ChefHat, ShoppingCart } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Smartphone, Bell, Zap, ChefHat, ShoppingCart, CheckCircle2 } from "lucide-react";
 import { publicAsset } from "../utils/publicAsset";
 
-const MobileAppBanner = () => {
+const App = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [emailValue, setEmailValue] = useState("");
   const [subscribed, setSubscribed] = useState(false);
-  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef(null);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -42,130 +42,132 @@ const MobileAppBanner = () => {
   ];
 
   return (
-    <section
-      ref={sectionRef}
-      id="mobile-app-announcement"
-      className={`mobile-app-banner ${isVisible ? "is-visible" : ""}`}
-    >
-      {/* Decorative floating circles */}
-      <div className="mobile-app-bg-circle mobile-app-bg-circle-1" />
-      <div className="mobile-app-bg-circle mobile-app-bg-circle-2" />
-      <div className="mobile-app-bg-circle mobile-app-bg-circle-3" />
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-8">
+      <section
+        ref={sectionRef}
+        id="mobile-app-announcement"
+        className={`relative w-full max-w-6xl mx-auto rounded-3xl overflow-hidden shadow-2xl bg-white transition-all duration-1000 transform ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+          }`}
+      >
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-emerald-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
+        <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-teal-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
 
-      <div className="hela-shell">
-        <div className="mobile-app-inner">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 p-8 lg:p-16 items-center">
+
           {/* Left Content */}
-          <div className="mobile-app-content">
-            <div className="mobile-app-badge">
-              <Smartphone className="mobile-app-badge-icon" />
+          <div className="space-y-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-800 font-semibold text-sm tracking-wide">
+              <Smartphone className="w-4 h-4" />
               <span>EXCITING NEWS</span>
             </div>
 
-            <h2 className="mobile-app-title">
+            <h2 className="text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight">
               Our Mobile App
               <br />
-              <span className="mobile-app-title-highlight">Coming Soon!</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-600">
+                Coming Soon!
+              </span>
             </h2>
 
-            <p className="mobile-app-subtitle">
+            <p className="text-lg text-gray-600 leading-relaxed max-w-lg">
               Get HelaEats in your pocket! Order authentic Sri Lankan meals, track
-              deliveries in real-time, and access personalized meal plans — all
+              deliveries in real-time, and access personalized meal plans. All
               from your phone.
             </p>
 
             {/* Feature Grid */}
-            <div className="mobile-app-features">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
               {features.map((feature, index) => (
                 <div
                   key={feature.label}
-                  className="mobile-app-feature-item"
-                  style={{ animationDelay: `${0.15 + index * 0.1}s` }}
+                  className={`flex items-start gap-4 transition-all duration-700 delay-[${index * 150}ms] ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
+                    }`}
                 >
-                  <div className="mobile-app-feature-icon-wrap">
-                    <feature.icon className="mobile-app-feature-icon" />
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                    <feature.icon className="w-6 h-6" />
                   </div>
                   <div>
-                    <h4 className="mobile-app-feature-label">{feature.label}</h4>
-                    <p className="mobile-app-feature-desc">{feature.desc}</p>
+                    <h4 className="font-semibold text-gray-900">{feature.label}</h4>
+                    <p className="text-sm text-gray-500 mt-1">{feature.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Notify Me Form */}
-            <div className="mobile-app-notify-section">
-              <p className="mobile-app-notify-label">
-                <Bell className="inline-block w-4 h-4 mr-1.5 -mt-0.5" />
+            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+              <p className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                <Bell className="w-4 h-4 text-emerald-500" />
                 Be the first to know when we launch
               </p>
+
               {subscribed ? (
-                <div className="mobile-app-subscribed">
-                  <span className="mobile-app-subscribed-check">✓</span>
-                  <span>You're on the list! We'll notify you at launch.</span>
+                <div className="flex items-center gap-3 text-green-700 bg-green-50 p-4 rounded-xl border border-green-200">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span className="font-medium">You're on the list! We'll notify you at launch.</span>
                 </div>
               ) : (
-                <form onSubmit={handleNotifySubmit} className="mobile-app-notify-form">
+                <form onSubmit={handleNotifySubmit} className="flex flex-col sm:flex-row gap-3">
                   <input
                     type="email"
-                    placeholder="Enter your email..."
+                    placeholder="Enter your email address"
                     value={emailValue}
                     onChange={(e) => setEmailValue(e.target.value)}
-                    className="mobile-app-notify-input"
+                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                     required
                   />
-                  <button type="submit" className="mobile-app-notify-btn">
+                  <button
+                    type="submit"
+                    className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl transition-colors shadow-md hover:shadow-lg whitespace-nowrap"
+                  >
                     Notify Me
                   </button>
                 </form>
               )}
             </div>
+          </div>
 
-            {/* Store badges coming soon */}
-            <div className="mobile-app-stores">
-              <div className="mobile-app-store-badge">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                </svg>
-                <div>
-                  <span className="mobile-app-store-soon">Coming soon on</span>
-                  <span className="mobile-app-store-name">App Store</span>
-                </div>
+          {/* Right — Phone Mockup Container */}
+          <div className="relative flex justify-center items-center lg:justify-end mt-12 lg:mt-0">
+            {/* Ambient Glow behind phone */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-400 to-teal-400 rounded-full blur-3xl opacity-30 transform scale-75 animate-pulse" />
+
+            {/* CSS Phone Frame */}
+            <div className="relative z-20 w-[280px] h-[580px] bg-gray-900 rounded-[3rem] p-3 shadow-2xl border-4 border-gray-800">
+
+              {/* Phone Notch/Dynamic Island */}
+              <div className="absolute top-3 inset-x-0 mx-auto w-32 h-7 bg-gray-900 rounded-b-3xl z-30 flex items-center justify-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-gray-800" />
+                <div className="w-12 h-2 rounded-full bg-gray-800" />
               </div>
-              <div className="mobile-app-store-badge">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-1.4l2.302 1.327-2.302 1.328-1.697-1.327 1.697-1.328zm-4.606-2.74L4.457 0.228l10.937 6.334-2.302 2.005z"/>
-                </svg>
-                <div>
-                  <span className="mobile-app-store-soon">Coming soon on</span>
-                  <span className="mobile-app-store-name">Google Play</span>
-                </div>
+
+              {/* Screen Content (Video) */}
+              <div className="relative w-full h-full bg-black rounded-[2.25rem] overflow-hidden">
+                <video
+                  src={publicAsset("hela-eats-mobile-app.mp4")}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
               </div>
+            </div>
+
+            {/* Floating Emojis matching Sri Lankan context */}
+            <div className="absolute inset-0 pointer-events-none">
+              <span className="absolute top-10 left-10 text-4xl animate-bounce" style={{ animationDelay: '0ms' }}>🍛</span>
+              <span className="absolute top-1/4 right-0 text-4xl animate-bounce" style={{ animationDelay: '500ms' }}>🍔</span>
+              <span className="absolute bottom-1/4 left-0 text-4xl animate-bounce" style={{ animationDelay: '1000ms' }}>🌶️</span>
+              <span className="absolute bottom-10 right-10 text-4xl animate-bounce" style={{ animationDelay: '1500ms' }}>🥘</span>
             </div>
           </div>
 
-          {/* Right — Phone Mockup */}
-          <div className="mobile-app-phone-wrap">
-            <div className="mobile-app-phone-glow" />
-            <video
-              src={publicAsset("hela-eats-mobile-app.mp4")}
-              className="mobile-app-phone-img"
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
-            <div className="mobile-app-phone-particles">
-              <span className="mobile-app-particle mobile-app-particle-1">🍛</span>
-              <span className="mobile-app-particle mobile-app-particle-2">🥘</span>
-              <span className="mobile-app-particle mobile-app-particle-3">🍲</span>
-              <span className="mobile-app-particle mobile-app-particle-4">🌶️</span>
-              <span className="mobile-app-particle mobile-app-particle-5">🥥</span>
-            </div>
-          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 };
 
-export default MobileAppBanner;
+export default App;
