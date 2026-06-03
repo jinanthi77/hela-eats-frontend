@@ -146,10 +146,13 @@ const MobileAppBanner = () => {
           {/* Right — Phone Mockup */}
           <div className="mobile-app-phone-wrap">
             <div className="mobile-app-phone-glow" />
-            <img
-              src={publicAsset("hela-eats-mobile-app.png")}
-              alt="Hela Eats Mobile App Preview"
+            <video
+              src={publicAsset("hela-eats-mobile-app.mp4")}
               className="mobile-app-phone-img"
+              autoPlay
+              loop
+              muted
+              playsInline
             />
             <div className="mobile-app-phone-particles">
               <span className="mobile-app-particle mobile-app-particle-1">🍛</span>
