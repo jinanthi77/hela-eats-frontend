@@ -4,7 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ToastProvider } from "./components/Toast";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { publicAsset } from "./utils/publicAsset";
+import Footer from "./components/Footer";
 
 // ─── Pages ───────────────────────────────────────────────────────────
 import Home from "./pages/Home";
@@ -213,18 +213,7 @@ function App() {
                 </Routes>
               </main>
 
-              <footer className="bg-brand-light border-t border-brand/20 flex items-center py-8 sm:py-10 mt-auto">
-                <div className="max-w-7xl mx-auto px-4 text-center text-black text-sm font-medium">
-                  <img
-                    src={publicAsset("logo22.png")}
-                    alt="Hela Eats Logo"
-                    className="h-16 w-32 object-contain mx-auto mb-3"
-                  />
-                  <p className="text-black">
-                    Developed by Udara | Nilupul | Jinanthi | Dilshika
-                  </p>
-                </div>
-              </footer>
+              <Footer />
             </div>
           </Router>
         </ToastProvider>
