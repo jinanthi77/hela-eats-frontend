@@ -89,16 +89,15 @@ const PaymentSuccess = () => {
     }
     setSubmittingFeedback(true);
     try {
-      await createRating({
+      const res = await createRating({
         recipeId: selectedRecipe,
         rating: selectedRating,
         review: feedback.trim(),
       });
       setFeedbackSent(true);
-      showToast('Thank you for your feedback!', 'success');
+      showToast(res?.message === 'Rating updated successfully' ? 'Your feedback has been updated!' : 'Thank you for your feedback!', 'success');
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Failed to submit feedback';
-      showToast(msg, 'error');
+      showToast('Something went wrong. Please try again later.', 'error');
     } finally {
       setSubmittingFeedback(false);
     }
@@ -111,17 +110,16 @@ const PaymentSuccess = () => {
     }
     setSubmittingFeedback(true);
     try {
-      await createRating({
+      const res = await createRating({
         recipeId: selectedRecipe,
         rating: selectedRating,
         review: feedback.trim() || undefined,
       });
       setRatingSubmitted(true);
-      showToast('Thank you for rating us!', 'success');
+      showToast(res?.message === 'Rating updated successfully' ? 'Your rating has been updated!' : 'Thank you for rating us!', 'success');
       setShowRatingPopup(false);
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Failed to submit rating';
-      showToast(msg, 'error');
+      showToast('Something went wrong. Please try again later.', 'error');
     } finally {
       setSubmittingFeedback(false);
     }
