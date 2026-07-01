@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { getProfile, updateProfile, uploadProfilePicture, deleteProfilePicture } from '../services/userService';
+import { getProfile, updateProfile, uploadProfilePicture, deleteProfilePicture, addAddress } from '../services/userService';
 import { useToast } from '../components/Toast';
 import type { User, Address } from '../types';
 import { User as UserIcon, MapPin, Loader2, Save, Plus, X, ShieldCheck, Camera, Trash2, Carrot } from 'lucide-react';
@@ -22,6 +22,7 @@ const ProfilePage = () => {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addressLabel, setAddressLabel] = useState('');
   const [addressFullName, setAddressFullName] = useState('');
+  const [addressPhone, setAddressPhone] = useState('');
   const [addressZipcode, setAddressZipcode] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
@@ -45,6 +46,13 @@ const ProfilePage = () => {
   }, [showToast]);
 
   const handleSave = async () => {
+    if (phone) {
+      const digitsOnly = phone.replace(/[\s\-()]/g, '');
+      if (!/^\d{10}$/.test(digitsOnly)) {
+        showToast('Phone number must be exactly 10 digits', 'error');
+        return;
+      }
+    }
     setSaving(true);
     try {
       const updated = await updateProfile({ name, phone });
@@ -59,29 +67,41 @@ const ProfilePage = () => {
   };
 
   const handleAddAddress = async () => {
-    if (!addressLabel || !addressFullName || !addressLine1 || !addressCity) return;
+    if (!addressFullName || !addressLine1 || !addressCity) {
+      showToast('Please fill in required fields (Full Name, Address Line 1, City)', 'error');
+      return;
+    }
+
+    if (addressPhone) {
+      const digitsOnly = addressPhone.replace(/[\s\-()]/g, '');
+      if (!/^\d{10}$/.test(digitsOnly)) {
+        showToast('Address phone number must be exactly 10 digits', 'error');
+        return;
+      }
+    }
+
     setSaving(true);
     try {
-      const newAddress: Address = {
-        label: addressLabel,
+      const res = await addAddress({
+        label: addressLabel.trim() || 'Home',
         fullName: addressFullName,
-        phone: addressZipcode,
+        phone: addressPhone,
         addressLine1,
         addressLine2,
         city: addressCity,
-        isDefault: false,
-      };
-      const updated = await updateProfile({ addresses: [...(profile?.addresses || []), newAddress] });
-      setProfile(updated);
+        postalCode: addressZipcode,
+      });
+      setProfile((prev) => prev ? { ...prev, addresses: res.addresses } : prev);
       await refreshUser();
       setShowAddressForm(false);
       setAddressLabel('');
       setAddressFullName('');
+      setAddressPhone('');
       setAddressZipcode('');
       setAddressLine1('');
       setAddressLine2('');
       setAddressCity('');
-      showToast('Address added!', 'success');
+      showToast('Address added successfully!', 'success');
     } catch (err: any) {
       showToast(err.response?.data?.message || 'Failed to add address', 'error');
     } finally {
@@ -278,8 +298,13 @@ const ProfilePage = () => {
                       {addr.isDefault && <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-black text-emerald-600">Default</span>}
                     </div>
                     <p className="text-sm font-bold text-gray-700">{addr.fullName}</p>
-                    <p className="text-xs font-semibold text-gray-500">{addr.addressLine1}{addr.addressLine2 ? `, ${addr.addressLine2}` : ''}, {addr.city}</p>
-                    <p className="text-xs font-semibold text-gray-500">{addr.phone}</p>
+                    <p className="text-xs font-semibold text-gray-500">
+                      {addr.addressLine1}
+                      {addr.addressLine2 ? `, ${addr.addressLine2}` : ''}
+                      , {addr.city}
+                      {addr.postalCode ? ` - ${addr.postalCode}` : ''}
+                    </p>
+                    {addr.phone && <p className="text-xs font-semibold text-gray-500">{addr.phone}</p>}
                   </div>
                 ))}
               </div>
@@ -290,11 +315,12 @@ const ProfilePage = () => {
             {showAddressForm && (
               <div className="mt-4 rounded-xl border border-brand-light bg-brand-light/30 p-4">
                 <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <input type="text" value={addressLabel} onChange={(e) => setAddressLabel(e.target.value)} placeholder="Label (e.g. Home)" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm" />
-                  <input type="text" value={addressFullName} onChange={(e) => setAddressFullName(e.target.value)} placeholder="Full Name" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm" />
-                  <input type="text" value={addressZipcode} onChange={(e) => setAddressZipcode(e.target.value)} placeholder="Zipcode" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm" />
-                  <input type="text" value={addressCity} onChange={(e) => setAddressCity(e.target.value)} placeholder="City" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm" />
-                  <input type="text" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} placeholder="Address Line 1" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm sm:col-span-2" />
+                  <input type="text" value={addressLabel} onChange={(e) => setAddressLabel(e.target.value)} placeholder="Label (defaults to Home)" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm" />
+                  <input type="text" value={addressFullName} onChange={(e) => setAddressFullName(e.target.value)} placeholder="Full Name *" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm" />
+                  <input type="text" value={addressPhone} onChange={(e) => setAddressPhone(e.target.value)} placeholder="Phone Number (optional)" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm" />
+                  <input type="text" value={addressZipcode} onChange={(e) => setAddressZipcode(e.target.value)} placeholder="Zipcode (optional)" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm" />
+                  <input type="text" value={addressCity} onChange={(e) => setAddressCity(e.target.value)} placeholder="City *" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm sm:col-span-2" />
+                  <input type="text" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} placeholder="Address Line 1 *" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm sm:col-span-2" />
                   <input type="text" value={addressLine2} onChange={(e) => setAddressLine2(e.target.value)} placeholder="Address Line 2 (optional)" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm sm:col-span-2" />
                 </div>
                 <button onClick={handleAddAddress} disabled={saving} className="hela-action px-5 py-2 text-sm disabled:opacity-50">

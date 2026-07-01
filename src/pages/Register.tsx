@@ -21,10 +21,19 @@ const Register = () => {
   const { register, googleLogin } = useAuth();
   const { showToast } = useToast();
 
-  // ─── Email / Password Register ────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Phone number validation: optional but if provided must be exactly 10 digits
+    if (phone) {
+      const digitsOnly = phone.replace(/[\s\-()]/g, '');
+      if (!/^\d{10}$/.test(digitsOnly)) {
+        setError('Phone number must be exactly 10 digits.');
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
