@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getProfile, updateProfile, uploadProfilePicture, deleteProfilePicture, addAddress } from '../services/userService';
 import { useToast } from '../components/Toast';
-import type { User, Address } from '../types';
+import type { User } from '../types';
 import { User as UserIcon, MapPin, Loader2, Save, Plus, X, ShieldCheck, Camera, Trash2, Carrot } from 'lucide-react';
 
 const ProfilePage = () => {
