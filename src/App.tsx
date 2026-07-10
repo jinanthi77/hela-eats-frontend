@@ -5,6 +5,7 @@ import { ToastProvider } from "./components/Toast";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 
 // ─── Pages ───────────────────────────────────────────────────────────
 import Home from "./pages/Home";
@@ -214,6 +215,7 @@ function App() {
               </main>
 
               <Footer />
+              <ScrollToTop />
             </div>
           </Router>
         </ToastProvider>
