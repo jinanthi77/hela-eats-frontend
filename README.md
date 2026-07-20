@@ -3,6 +3,12 @@
 Hela Eats is a personalized **Recipe-to-Cart Platform** designed to solve authentic Sri Lankan recipe discovery, meal planning, and automated ingredient shopping. Developed by students at SLTC, this React Single Page Application (SPA) allows users to explore traditional dishes, scale ingredients dynamically based on portion sizes, manage their personal pantries, schedule weekly meal plans, and checkout consolidated ingredient lists sourced from approved local vendors.
 
 ---
+## 🔗 Project Links
+
+- 🖥️ **Live Demo:** [Live Link](https://udarasadaruwan.github.io/hela-eats-frontend/#/)
+- ⚙️ **Backend Repository:** [Hela Eats Backend](https://github.com/nilupul-madhusanka/hela-eats-backend)
+
+---
 
 ## 🎨 Design & Aesthetics
 * **Theme & Layout**: Responsive shell layout with tailored color palettes, styled using Vanilla CSS and Tailwind CSS.
